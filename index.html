@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PlanBiz — business plan dynamique</title>
+<meta name="description" content="PlanBiz : construis ton business plan sur 3 ans (compte de produits et charges, trésorerie, bilan, indicateurs) selon les règles marocaines, avec questionnaire guidé et assistant IA.">
+<meta name="theme-color" content="#0B5B57">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230B5B57'/%3E%3Cpath d='M11 23V9h5.5a3.6 3.6 0 0 1 0 7.2H11' fill='none' stroke='%23F4D9A8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+<div id="boot" class="boot"><div class="spin" role="status" aria-label="Chargement"></div></div>
+<div id="auth" hidden></div>
+<div id="hub" hidden></div>
+<div id="editor" class="app" hidden><nav class="rail" id="rail" aria-label="Parcours"></nav><div class="main"><header class="top" id="top"></header><main class="content" id="content"></main></div></div>
+<div id="dls" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/data.js"></script>
+<script src="/js/engine.js"></script>
+<script src="/js/ui/01-core.js"></script>
+<script src="/js/ui/02-projet.js"></script>
+<script src="/js/ui/03-chiffres.js"></script>
+<script src="/js/ui/04-resultats.js"></script>
+<script src="/js/ui/05-import-ia.js"></script>
+<script src="/js/ui/06-app.js"></script>
+<script src="/js/platform.js"></script>
+</body>
+</html>

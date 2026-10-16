@@ -1,0 +1,8 @@
+{
+  "name": "planbiz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PlanBiz — business plan dynamique sur 3 ans (Maroc) : CPC, trésorerie, bilan, scénarios, assistant IA.",
+  "engines": { "node": ">=20" },
+  "scripts": { "dev": "vercel dev" }
+}
