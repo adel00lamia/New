@@ -8,13 +8,13 @@ const GUIDE = `Guide de l'application PlanBiz :
 - Démarrer > Importer depuis mon IA : copier le template PlanBiz dans ChatGPT/Claude/Gemini, recoller la réponse JSON ; ou coller ses notes dans l'IA intégrée. Aperçu avant import.
 - Le projet : Identité, Équipe & personnel (salaires NETS, l'outil calcule brut, CNSS/AMO, IR, coût employeur), Cadrage & vision, Marché clients & benchmark (TAM/SAM/SOM), Offre & business model (BMC), Communication & marketing (canaux et budgets mensuels), Plan d'actions & Gantt, Analyse PESTEL, SWOT & stratégies (TOWS), Risques.
 - Les chiffres : Hypothèses (statut juridique par année, dates, saisonnalité, inflation, délais clients/fournisseurs, trésorerie de sécurité, dividendes), Produits & charges variables (jusqu'à 15 offres : prix HT, volumes MENSUELS par scénario, coûts variables unitaires), Investissements (amortissement selon barème DGI), Charges fixes (mensuelles HT, périodicité), Financements (apports, subventions, prêts avec différé).
-- Résultats : Tableau de bord (indicateurs, alertes, métriques startup MRR/CAC/LTV), Scénarios & stress test, États financiers (CPC, trésorerie 36 mois, bilan, affectation), Conformité & loi de finances 2026 (mesures LF 2026 qui concernent le projet, régime fiscal et social par année, calendrier des paiements TVA/CNSS/IR/IS, comparaison des statuts juridiques, check-list des obligations légales), Business plan & exports (PDF, HTML, Excel, JSON).
+- Résultats : Tableau de bord (indicateurs, alertes, métriques startup MRR/CAC/LTV), Scénarios & stress test, États financiers (CPC, trésorerie 36 mois, bilan, affectation), Ressources : Glossaire (255 termes expliqués) et Choisir son statut (comparatif détaillé des statuts juridiques). Chaque section a aussi un « Guide de cette étape » repliable en haut. Conformité & loi de finances 2026 (mesures LF 2026 qui concernent le projet, régime fiscal et social par année, calendrier des paiements TVA/CNSS/IR/IS, comparaison des statuts juridiques, check-list des obligations légales), Business plan & exports (PDF, HTML, Excel, JSON).
 - Boutons IA dans Marché, PESTEL, SWOT et Stratégie. Le bandeau du haut : scénario actif et 4 indicateurs en direct. Les cases ocre sont des hypothèses.
 - Règles 2026 utilisées : IS 20 %, cotisation minimale 0,25 % (exonérée 36 mois), TVA 20 %, auto-entrepreneur IR 0,5 % ou 1 % du CA, CNSS/AMO, barème IR 2025-2026.`;
 
 /* ---------- help chat ---------- */
 let msgs = [], busy = false, ctl = null;
-function context() {
+function context(q) {
   let c = GUIDE;
   try {
     if (typeof S !== 'undefined' && S && typeof R !== 'undefined' && R && document.body.dataset.screen === 'editor') {
@@ -24,6 +24,14 @@ function context() {
         + `\nOffres : ${(S.offers || []).map(o => o.nom).join(', ') || 'aucune'}. Effectif fin an 3 : ${R.K.head[2]}.`
         + `\nAlertes : ${R.alerts.map(a => a[1]).join(' | ') || 'aucune'}.`;
     } else c += `\n\nL'utilisateur est sur la page « ${document.body.dataset.screen === 'hub' ? 'Mes business' : 'accueil'} ».`;
+  } catch (e) { }
+  try {
+    if (typeof EDU !== 'undefined') {
+      const g = (EDU.data.guides[view] || [])[0];
+      if (g && g.intro && document.body.dataset.screen === 'editor') c += `\n\nGuide de la section (formateur) : ${g.intro.slice(0, 900)}`;
+      const terms = EDU.termsFor(q || '');
+      if (terms.length) c += `\n\nDéfinitions du glossaire PlanBiz à utiliser telles quelles :\n- ${terms.join('\n- ').slice(0, 5000)}`;
+    }
   } catch (e) { }
   return c;
 }
@@ -50,7 +58,7 @@ async function ask(q) {
   const bubbles = document.querySelectorAll('#hpBody .hp-msg.bot'); const bub = bubbles[bubbles.length - 1];
   try {
     const t = await PB.token(); ctl = new AbortController();
-    const r = await fetch(CFG.aiEndpoint || '/api/ai', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + t }, body: JSON.stringify({ mode: 'help', context: context(), messages: msgs.slice(0, -1) }), signal: ctl.signal });
+    const r = await fetch(CFG.aiEndpoint || '/api/ai', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + t }, body: JSON.stringify({ mode: 'help', context: context(q), messages: msgs.slice(0, -1) }), signal: ctl.signal });
     if (!r.ok) throw new Error(await r.text());
     const rd = r.body.getReader(), dec = new TextDecoder(); let text = '';
     for (;;) { const { value, done } = await rd.read(); if (done) break; text += dec.decode(value, { stream: true }); bub.innerHTML = md(text); const b = document.getElementById('hpBody'); b.scrollTop = b.scrollHeight; }

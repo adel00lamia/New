@@ -238,15 +238,23 @@ tr.tot td{font-weight:700;background:#EAF0FA!important}tr.grand td{font-weight:7
 .crit{display:inline-block;min-width:22px;text-align:center;border-radius:10px;padding:0 6px;font-weight:700}.c3{background:#F6D2CC;color:#8A1F10}.c2{background:#FBE6C8;color:#7A4306}.c1{background:#D6EFE3;color:#0B5E40}
 .legend{font-size:8.5pt;color:#4F5D73;margin:2mm 0 0}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 12px;vertical-align:-1px}
 .note{border-radius:6px;padding:3mm 4mm;background:#F3F6FD;font-size:9.5pt;margin:4mm 0}.note.warn{background:#FCE8E5;color:#8A1F10}.note.ok{background:#E3F5EE;color:#0B5E40}
+.sig{display:grid;grid-template-columns:1fr 1fr;gap:2mm 6mm;font-size:8.8pt}.sig div{display:flex;gap:3mm;break-inside:avoid}.sig b{min-width:14mm;color:#1652F0}
 .cl2{display:grid;grid-template-columns:1fr 1fr;gap:1.5mm 5mm;font-size:9pt}.cl2 div{display:flex;gap:2mm;break-inside:avoid}.cl2 span{color:#8A97AB;font-weight:700}.cl2 .on span{color:#0E8A5F}
 .foot{padding:8mm 14mm;font-size:8.5pt;color:#6B7A90}
 @media screen{.page{box-shadow:0 4px 30px rgba(0,0,0,.12);margin:20px auto}.cover{height:auto;min-height:297mm}.sec.brk{border-top:10px solid #E9EDF2;padding-top:2mm}}
 @media print{body{background:#fff}.bar{display:none}.page{max-width:none;margin:0;box-shadow:none}}`;
 
+function withAnnex(body) {
+  if (typeof EDU === 'undefined') return body;
+  const text = body.replace(/<[^>]+>/g, ' ');
+  const used = EDU.data.glossary.filter(g => g.sig && g.t.length >= 2 && new RegExp('(^|[^A-Za-zÀ-ÿ])' + g.t.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&') + '([^A-Za-zÀ-ÿ]|$)').test(text));
+  if (!used.length) return body;
+  return body + sec('A', 'Annexe : sigles utilisés dans ce document', `<div class="sig">${used.map(g => `<div><b>${X(g.t)}</b><span>${X(g.full)}${g.c ? ` : ${X(g.c)}` : ''}</span></div>`).join('')}</div><p class="mut small">Définitions issues du glossaire pédagogique de Yassine Bakir.</p>`, { brk: true });
+}
 function html(opts = {}) {
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Business plan — ${X(S.id.nom || '')}</title><style>${CSS}</style></head><body>
   <div class="bar"><span>Aperçu du rapport · choisis « Enregistrer au format PDF » dans la fenêtre d'impression</span><button onclick="print()">Imprimer / PDF</button><button class="g" onclick="window.close()">Fermer</button></div>
-  <div class="page">${build()}<p class="foot">Document généré avec PlanBiz le ${new Date().toLocaleDateString('fr-FR')} · modèle de calcul Business Plan V4.1 · règles fiscales et sociales marocaines 2026. Les prévisions reposent sur les hypothèses saisies par le porteur de projet.</p></div>
+  <div class="page">${withAnnex(build())}<p class="foot">Document généré avec PlanBiz le ${new Date().toLocaleDateString('fr-FR')} · modèle de calcul Business Plan V4.1 · règles fiscales et sociales marocaines 2026. Les prévisions reposent sur les hypothèses saisies par le porteur de projet.</p></div>
   ${opts.autoprint ? '<script>window.addEventListener("load",()=>setTimeout(()=>print(),500))<\/script>' : ''}</body></html>`;
 }
 window.PBReport = { html, build };

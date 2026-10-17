@@ -5,7 +5,7 @@ SECTIONS.unshift(
   { id: 'questionnaire', group: 'Démarrer', title: 'Questionnaire express', lead: '', render: renderQuiz, done: () => S.quiz && S.quiz.done ? 2 : S.quiz ? 1 : 0 },
   { id: 'importia', group: 'Démarrer', title: 'Importer depuis mon IA', lead: '', render: renderImportIA, done: () => S.meta && S.meta.source === 'PlanBiz IA' ? 2 : 0 });
 function renderHome() {
-  const st = SECTIONS.filter(s => !['accueil', 'questionnaire', 'importia'].includes(s.id));
+  const st = SECTIONS.filter(s => !['accueil', 'questionnaire', 'importia'].includes(s.id) && s.group !== 'Ressources');
   return `<p class="eyebrow">Business plan 3 ans · Maroc 2026</p>
   <h1 style="font-size:32px;margin:6px 0 4px">PlanBiz</h1><p style="font-family:var(--display);font-size:18px;margin-bottom:8px">Ton business plan dynamique${S.id.nom ? ` · projet en cours : <b>${esc(S.id.nom)}</b>${S.meta && S.meta.example ? ' <span class="pill warn">modèle d\'exemple</span>' : ''}` : ''}</p>
   <p class="lead">Réponds aux questions ou remplis chaque section : le compte de produits et charges, la trésorerie sur 36 mois, le bilan, les indicateurs investisseurs et le document de business plan se recalculent à chaque saisie. Fiscalité, TVA, CNSS/AMO et IR selon les règles marocaines 2026.</p>
@@ -276,18 +276,18 @@ const ICONS = { accueil: 'M3 11l9-8 9 8M5 10v10h14V10', questionnaire: 'M4 5h16v
   offre: 'M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z', marketing: 'M3 10v4h4l7 4V6l-7 4zM18 9a4 4 0 0 1 0 6', plan: 'M4 6h9M7 12h10M11 18h9', pestel: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3.5 3.5 3.5 14.5 0 18M12 3c-3.5 3.5-3.5 14.5 0 18',
   swot: 'M3 3h18v18H3zM12 3v18M3 12h18', risques: 'M12 3l10 18H2zM12 10v5M12 18v.01', hypotheses: 'M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1M15 4v4M9 10v4M17 16v4', offres: 'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',
   investissements: 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6', charges: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6', financements: 'M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 21h18',
-  tableau: 'M4 20V11M10 20V5M16 20v-6M3 20h18', scenarios: 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9c0 6-12 3-12 9', etats: 'M3 4h18v16H3zM3 10h18M9 4v16', conformite: 'M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6zM8.5 12l2.5 2.5 4.5-5', bp: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6' };
+  tableau: 'M4 20V11M10 20V5M16 20v-6M3 20h18', scenarios: 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9c0 6-12 3-12 9', etats: 'M3 4h18v16H3zM3 10h18M9 4v16', conformite: 'M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6zM8.5 12l2.5 2.5 4.5-5', glossaire: 'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M9 8h6M9 12h4', statuts: 'M12 3v18M5 7h14M5 7l-2 6a3 3 0 0 0 6 0zM19 7l-2 6a3 3 0 0 0 6 0zM8 21h8', bp: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6' };
 function ico(id, cls = 'ico') { return `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICONS[id] || ICONS.accueil}"/></svg>`; }
 function railHTML() {
   const groups = [...new Set(SECTIONS.map(s => s.group))];
   let n = 0;
-  const done = SECTIONS.filter(s => !['accueil', 'questionnaire', 'importia', 'tableau', 'scenarios', 'etats'].includes(s.id));
+  const done = SECTIONS.filter(s => !['accueil', 'questionnaire', 'importia', 'tableau', 'scenarios', 'etats'].includes(s.id) && s.group !== 'Ressources');
   const pct = done.reduce((a, s) => a + s.done(), 0) / (done.length * 2);
   const P = Math.round(pct * 100), C = 2 * Math.PI * 15;
   return `<div class="brand"><div class="brand-mark">${window.PB ? PB.logo() : 'PB'}</div><div><b>PlanBiz</b><small>Business plan 3 ans · Maroc</small></div></div>
   <button class="bizchip" data-pb="hub" title="Revenir à mes business"><span class="mono-av">${esc((S.id.nom || '?').trim().slice(0, 2).toUpperCase())}</span><span class="bz"><small>Business ouvert</small><b>${esc(S.id.nom || 'Sans nom')}</b></span><svg class="ico" viewBox="0 0 24 24"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></svg></button>
   <div class="ring"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" class="rb"/><circle cx="18" cy="18" r="15" class="rf" stroke-dasharray="${C * pct} ${C}"/></svg><div><b>${P} %</b><small>du business plan rempli</small></div></div>
-  ${groups.map(g => `<div class="navg"><div class="navg-t">${g}</div>${SECTIONS.filter(s => s.group === g).map(s => { const d = s.done(); const ix = g === 'Démarrer' ? '' : ++n; return `<button class="nav ${view === s.id ? 'on' : ''}" data-go="${s.id}">${ico(s.id)}<span class="nt">${s.title}</span>${ix ? `<span class="ix">${ix}</span>` : ''}<span class="st ${d === 2 ? 'full' : d === 1 ? 'half' : ''}"></span></button>`; }).join('')}</div>`).join('')}
+  ${groups.map(g => `<div class="navg"><div class="navg-t">${g}</div>${SECTIONS.filter(s => s.group === g).map(s => { const d = s.done(); const ix = g === 'Démarrer' || g === 'Ressources' ? '' : ++n; return `<button class="nav ${view === s.id ? 'on' : ''}" data-go="${s.id}">${ico(s.id)}<span class="nt">${s.title}</span>${ix ? `<span class="ix">${ix}</span>` : ''}${g === 'Ressources' ? '' : `<span class="st ${d === 2 ? 'full' : d === 1 ? 'half' : ''}"></span>`}</button>`; }).join('')}</div>`).join('')}
   <div class="prog"><span id="saved">${window.PB ? PB.statusText() : ''}</span></div>`;
 }
 function topHTML() {
@@ -298,7 +298,7 @@ function topHTML() {
   ${window.PB ? PB.userMenu() : ''}`;
 }
 function stepNav(s) {
-  const i = SECTIONS.indexOf(s); const p = SECTIONS[i - 1], n = SECTIONS[i + 1];
+  const i = SECTIONS.indexOf(s); const p = SECTIONS[i - 1]; let n = SECTIONS[i + 1]; if (n && n.group === 'Ressources' && s.group !== 'Ressources') n = null;
   if (s.id === 'accueil' || s.id === 'questionnaire') return '';
   return `<nav class="stepnav">${p ? `<button class="btn" data-go="${p.id}">← ${p.title}</button>` : '<span></span>'}${n ? `<button class="btn pri" data-go="${n.id}">${n.title} →</button>` : ''}</nav>`;
 }
@@ -310,10 +310,11 @@ function render() {
   const ex = S.meta && S.meta.example && !['accueil', 'importia'].includes(view) ? `<div class="banner"><span class="sp"><b>Modèle d'exemple</b> : SAQYA Tech est une startup fictive qui montre un BP complet. Remplace ces données par celles de ton business.</span><button class="btn sm" data-go="importia">Importer depuis mon IA</button><button class="btn sm" data-go="questionnaire">Questionnaire express</button><button class="btn sm" data-act="newBlank">Repartir de zéro</button></div>` : '';
   const i = SECTIONS.indexOf(s);
   const head = s.id === 'importia' ? '' : s.id === 'accueil' ? '' : s.id === 'questionnaire' ? `<div class="head"><span class="hico">${ico(s.id)}</span><div><p class="eyebrow">Démarrer</p><h1>Questionnaire express</h1></div></div><p class="lead">Réponds à quelques questions : l'outil construit un premier business plan complet et chiffré. Tu l'affineras ensuite section par section.</p>`
-    : `<div class="head"><span class="hico">${ico(s.id)}</span><div><p class="eyebrow">${s.group} · étape ${i - 2} sur ${SECTIONS.length - 3}</p><h1>${s.title}</h1></div></div><p class="lead">${s.lead}</p>`;
+    : `<div class="head"><span class="hico">${ico(s.id)}</span><div><p class="eyebrow">${s.group === 'Ressources' ? 'Ressources' : `${s.group} · étape ${i - 2} sur ${SECTIONS.filter(x => x.group !== 'Ressources').length - 3}`}</p><h1>${s.title}</h1></div></div><p class="lead">${s.lead}</p>${typeof EDU !== 'undefined' ? EDU.block(s.id) : ''}`;
   $('#content').innerHTML = ex + head + s.render() + (window.PBReview ? PBReview.block(s.id) : '') + stepNav(s);
   if (view === 'tableau') drawDash();
   if (view === 'scenarios') drawScen();
+  if (view === 'glossaire' && typeof EDU !== 'undefined') EDU.applyFilter();
 }
 function go(id) { view = id; try { history.replaceState(null, '', '#' + id); } catch (e) { } render(); window.scrollTo(0, 0); }
 function rerenderKeepFocus() {
