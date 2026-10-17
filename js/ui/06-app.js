@@ -311,7 +311,7 @@ function render() {
   const i = SECTIONS.indexOf(s);
   const head = s.id === 'importia' ? '' : s.id === 'accueil' ? '' : s.id === 'questionnaire' ? `<div class="head"><span class="hico">${ico(s.id)}</span><div><p class="eyebrow">Démarrer</p><h1>Questionnaire express</h1></div></div><p class="lead">Réponds à quelques questions : l'outil construit un premier business plan complet et chiffré. Tu l'affineras ensuite section par section.</p>`
     : `<div class="head"><span class="hico">${ico(s.id)}</span><div><p class="eyebrow">${s.group} · étape ${i - 2} sur ${SECTIONS.length - 3}</p><h1>${s.title}</h1></div></div><p class="lead">${s.lead}</p>`;
-  $('#content').innerHTML = ex + head + s.render() + stepNav(s);
+  $('#content').innerHTML = ex + head + s.render() + (window.PBReview ? PBReview.block(s.id) : '') + stepNav(s);
   if (view === 'tableau') drawDash();
   if (view === 'scenarios') drawScen();
 }

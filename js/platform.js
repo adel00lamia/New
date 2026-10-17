@@ -154,9 +154,10 @@ function bizCard(b) {
 function renderHub(loading) {
   const el = document.getElementById('hub');
   el.innerHTML = `<header class="hub-top"><div class="auth-brand"><span class="logo-sm">${LOGO}</span><b>PlanBiz</b></div><span class="sp"></span>
-   ${demo ? `<span class="pill warn">Mode démo : rien n'est enregistré</span><button class="btn pri sm" data-pb="leaveDemo">Créer mon compte</button>` : sb ? `<span class="muted small hide-sm">${esc(user ? user.email : '')}</span><button class="btn ghost sm" data-pb="logout">Se déconnecter</button>` : '<span class="pill warn">Mode local : données dans ce navigateur</span>'}</header>
+   ${demo ? `<span class="pill warn">Mode démo : rien n'est enregistré</span><button class="btn pri sm" data-pb="leaveDemo">${user ? 'Quitter la démo' : 'Créer mon compte'}</button>` : sb ? `<span class="muted small hide-sm">${esc(user ? user.email : '')}</span><button class="btn ghost sm" data-pb="logout">Se déconnecter</button>` : '<span class="pill warn">Mode local : données dans ce navigateur</span>'}</header>
   <section class="hub-hero"><div><p class="eyebrow">Mon espace</p><h1>Mes business</h1><p class="lead">Chaque business a son propre business plan, ses chiffres et ses scénarios. Crée-en autant que tu veux.</p></div>
    <div class="row"><button class="btn pri big" data-pb="new">+ Nouveau business</button><label class="btn big" for="hubImport">Importer un fichier</label><input type="file" id="hubImport" accept=".json,.txt,application/json" hidden></div></section>
+  ${demo ? '' : `<section class="discover"><div class="disc-t"><b>Découvrir PlanBiz</b><span>Regarde la vidéo d'une minute ou explore un business plan complet, sans toucher à tes données.</span></div><div class="row"><button class="btn" data-pb="video">▶ Voir la vidéo</button><button class="btn" data-pb="demo">Explorer la démo guidée</button></div></section>`}
   <section class="biz-grid">${loading ? '<div class="biz skel"></div><div class="biz skel"></div><div class="biz skel"></div>' : list.length ? list.map(bizCard).join('') : `<div class="empty"><span class="logo-lg">${LOGO}</span><h3>Aucun business pour l'instant</h3><p class="muted">Crée ton premier business plan : questionnaire guidé, import depuis ton IA, ou modèle d'exemple pour découvrir l'outil.</p><button class="btn pri" data-pb="new">Créer mon premier business</button></div>`}</section>`;
 }
 function newModal() {
@@ -253,7 +254,7 @@ async function startDemo() {
   await openBiz(row.id, 'tableau');
   setTimeout(() => { if (window.PBTour) PBTour.start(); }, 700);
 }
-function leaveDemo(mode) { demo = false; store = sb ? SupaStore : LocalStore; DemoStore.clear(); current = null; S = null; if (sb) { authMode = mode || 'signup'; authMsg = ''; renderAuth(); } else openHub(); }
+function leaveDemo(mode) { demo = false; store = sb ? SupaStore : LocalStore; DemoStore.clear(); current = null; S = null; if (sb && !user) { authMode = mode || 'signup'; authMsg = ''; renderAuth(); } else openHub(); }
 
 /* ---------- boot ---------- */
 document.getElementById('dls').innerHTML = datalists();
