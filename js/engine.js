@@ -10,6 +10,8 @@ const REG = {
   IR: [[0,40000,0,0],[40000,60000,0.1,4000],[60000,80000,0.2,10000],[80000,100000,0.3,18000],[100000,180000,0.34,22000],[180000,1e15,0.37,27400]],
   FPseuil: 78000, FP1: 0.35, FP2: 0.25, FPmax: 35000, famDed: 600, famMax: 6, SMIG: 3422.72,
   RAS: 0.10,
+  // prime d'ancienneté (Code du travail, art. 350) : mois d'ancienneté → taux
+  ANC: [[300, 0.25], [240, 0.20], [144, 0.15], [60, 0.10], [24, 0.05]],
   // contribution sociale de solidarité sur les bénéfices (LF 2026 : reconduite pour 2026, 2027 et 2028)
   CSS: { years: [2026, 2027, 2028], grid: [[1e6, 0.015], [5e6, 0.025], [10e6, 0.035], [40e6, 0.05]] },
   RES: { 'SARL': [0.05, 0.1], 'SARL-AU': [0.05, 0.1], 'SAS': [0.05, 0.1], 'SA': [0.05, 0.1],
@@ -133,7 +135,7 @@ function run(S, L, scenIdx) {
   const varPF = [0,1,2].map(y => stk[2][y] - (y ? stk[2][y - 1] : 0));
 
   // ---- payroll ----
-  const pers = { gross: Z(T + 1), pat: Z(T + 1), net: Z(T + 1), cs: Z(T + 1), ir: Z(T + 1), ext: Z(T + 1), extTva: Z(T + 1), head: Z(T + 1) };
+  const pers = { gross: Z(T + 1), pat: Z(T + 1), net: Z(T + 1), cs: Z(T + 1), ir: Z(T + 1), ext: Z(T + 1), extTva: Z(T + 1), head: Z(T + 1), anc: Z(T + 1) };
   const staffOut = [];
   (S.staff || []).forEach(p => {
     const c = Contr[p.contrat] || ['', 'Charges de personnel', 'Oui', 'Non', 'SAL'];
@@ -147,13 +149,20 @@ function run(S, L, scenIdx) {
     const a = Math.max(1, mIdx(p.debut, 1)), b = p.fin ? mIdx(p.fin, 999) : 999;
     const calc = nets.map(n => code === 'SAL' ? netToGross(n, N(p.dep), true) : code === 'TNS' ? netToGross(n, N(p.dep), false) : { gross: n, cs: 0, ir: 0, pat: 0 });
     const ann = Z(3);
+    const entry = p.debut ? mIdx(p.debut, 1) : 1, ancOn = code === 'SAL' && H.anciennete !== 'Non', ancCache = {};
+    const ancRate = m => { if (!ancOn) return 0; const mo = m - entry; for (const [th, r] of REG.ANC) if (mo >= th) return r; return 0; };
+    const withAnc = (y, r) => { const key = y + '|' + r; if (ancCache[key]) return ancCache[key]; const g = calc[y].gross * (1 + r), t = grossToNet(g, N(p.dep), true);
+      return (ancCache[key] = { gross: g, cs: t.cs, ir: t.ir, net: t.net, pat: g * REG.empAll + Math.min(g, REG.plafond) * REG.empCap }); };
+    const ancAmt = Z(3);
     for (let m = Math.max(1, a); m <= Math.min(T, b); m++) {
-      const y = yOf(m), k = calc[y]; if (!nets[y]) continue;
+      const y = yOf(m); let k = calc[y]; if (!nets[y]) continue;
+      const ar = ancRate(m); let netM = nets[y];
+      if (ar && k.gross) { const w = withAnc(y, ar); ancAmt[y] += w.gross - k.gross; netM = w.net; k = w; }
       if (code === 'EXT' || code === 'EXTTVA') { pers.ext[m] += nets[y]; if (code === 'EXTTVA') pers.extTva[m] += nets[y] * REG.TVA; ann[y] += nets[y]; continue; }
-      pers.gross[m] += k.gross; pers.pat[m] += k.pat; pers.net[m] += nets[y]; pers.cs[m] += k.cs; pers.ir[m] += k.ir; pers.head[m] += 1;
+      pers.gross[m] += k.gross; pers.pat[m] += k.pat; pers.net[m] += netM; pers.cs[m] += k.cs; pers.ir[m] += k.ir; pers.head[m] += 1; pers.anc[m] += ar && calc[y].gross ? k.gross - calc[y].gross : 0;
       ann[y] += k.gross + k.pat;
     }
-    staffOut.push({ nom: p.nom, code, calc, ann, smigWarn: code === 'SAL' && calc.some(k => k.gross > 0 && k.gross < REG.SMIG) && !/partiel|Saisonnier/.test(p.contrat || '') });
+    staffOut.push({ nom: p.nom, code, calc, ann, anc: ancAmt, smigWarn: code === 'SAL' && calc.some(k => k.gross > 0 && k.gross < REG.SMIG) && !/partiel|Saisonnier/.test(p.contrat || '') });
   });
   // AE: CNSS forfait handled with taxes below
 
@@ -305,6 +314,11 @@ function run(S, L, scenIdx) {
   const shift = (arr, d) => { const out = Z(T + 3), i0 = Math.floor(d), f = d - i0; for (let m = 1; m <= T; m++) { if (m + i0 <= T) out[m + i0] += arr[m] * (1 - f); if (m + i0 + 1 <= T) out[m + i0 + 1] += arr[m] * f; } return out; };
   const cashIn = shift(billedTTC, dC);
   const cashInTva = shift(tvaColl, dC);
+  // impayés : part des ventes jamais encaissée, constatée à la date d'encaissement prévue (TVA non due, régime de l'encaissement)
+  const badR = Math.min(0.5, Math.max(0, N(H.impayes))), lossTTC = Z(T + 3), lossTva = Z(T + 3);
+  P.impayes = Z(3);
+  if (badR) for (let m = 1; m <= T; m++) { lossTTC[m] = cashIn[m] * badR; lossTva[m] = cashInTva[m] * badR; cashIn[m] -= lossTTC[m]; cashInTva[m] -= lossTva[m]; P.impayes[yOf(m)] += lossTTC[m] - lossTva[m]; }
+  yrs.forEach(y => { rubY[5][y] += P.impayes[y]; });
   // variable purchases
   const varHT = Z(T + 1), varDed = Z(T + 1), varBilled = Z(T + 1);
   for (let m = 1; m <= T; m++) { varHT[m] = sum(RUB.map((_, i) => varRub[i][m])); const y = yOf(m); varDed[m] = fTVA[y] ? varTva[m] : 0; varBilled[m] = varHT[m] + varTva[m]; }
@@ -486,10 +500,10 @@ function run(S, L, scenIdx) {
     b.actifImmo = b.nv + b.incorp + b.corp + b.finImmo + b.avances;
     b.stkM = y < 0 ? openStock : stk[0][y]; b.stkMat = y < 0 ? 0 : stk[1][y]; b.stkPF = y < 0 ? 0 : stk[2][y];
     b.stocks = b.stkM + b.stkMat + b.stkPF;
-    b.clients = cumAt(billedTTC, Mend) - cumAt(cashIn, Mend);
+    b.clients = cumAt(billedTTC, Mend) - cumAt(cashIn, Mend) - cumAt(lossTTC, Mend);
     // TVA position (accrual): collected billed − deductible billed − paid
     let coll = 0, dedAcc = 0;
-    for (let m = 1; m <= Mend; m++) { const a = fTVA[yOf(m)]; coll += a ? tvaColl[m] : 0; dedAcc += a ? (varTva[m] + stkTva[m] + fixPaidTva[m] + ponTva[m] + mkTot[m] * REG.TVA + pers.extTva[m] + invTvaAcq[m]) : 0; }
+    for (let m = 1; m <= Mend; m++) { const a = fTVA[yOf(m)]; coll += a ? tvaColl[m] - lossTva[m] : 0; dedAcc += a ? (varTva[m] + stkTva[m] + fixPaidTva[m] + ponTva[m] + mkTot[m] * REG.TVA + pers.extTva[m] + invTvaAcq[m]) : 0; }
     const tvaPos = coll - dedAcc - cumAt(tvaPay, Mend);
     // tax position
     let taxDue = 0; for (let k = 0; k <= y; k++) taxDue += P.impot[k];

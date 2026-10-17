@@ -27,7 +27,7 @@ function blankProject() {
     mkt: { canaux: [], actions: [] },
     plan: [], pestel: { P: [], E: [], S: [], T: [], En: [], L: [] },
     swot: { S: [], W: [], O: [], T: [], SO: [], WO: [], ST: [], WT: [] }, risks: [],
-    hyp: { scenario: 'Réaliste', profil: 'Startup tech / innovante (forte croissance)', statut: ['SARL', 'SARL', 'SARL'], aeNature: 'Services', debutSoc: '', reserveSarl: 'Oui', start: nextJan(), ventes: '', saison: ['', '', '', '', '', '', '', '', '', '', '', ''], inflation: 0.02, inflPrix: 'Non', delaiClient: 30, delaiFourn: 30, coussin: 50000, distrib: [0, 0, 0], prelev: [0, 0, 0] },
+    hyp: { scenario: 'Réaliste', profil: 'Startup tech / innovante (forte croissance)', statut: ['SARL', 'SARL', 'SARL'], aeNature: 'Services', debutSoc: '', reserveSarl: 'Oui', impayes: '', anciennete: 'Oui', start: nextJan(), ventes: '', saison: ['', '', '', '', '', '', '', '', '', '', '', ''], inflation: 0.02, inflPrix: 'Non', delaiClient: 30, delaiFourn: 30, coussin: 50000, distrib: [0, 0, 0], prelev: [0, 0, 0] },
     offers: [], stocks: [['', '', ''], ['', '', ''], ['', '', '']], invExist: [], openCash: 0, openStock: 0, inv: [], fixRec: [], fixPon: [], fin: [], loans: [],
     kpi: { clients0: 0, nouveaux: ['', '', ''], actifs: ['', '', ''], churn: ['', '', ''], vie: ['', '', ''], commercial: ['', '', ''], expansion: ['', '', ''] },
     strategy: '', notes: ''

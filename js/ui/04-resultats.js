@@ -100,11 +100,11 @@ function drawDash() {
 }
 
 /* ---- Scénarios & stress test ---- */
-const WHAT = { prix: 0, vol: 0, cout: 0, sal: 0, retard: 0, delai: 0 };
+const WHAT = { prix: 0, vol: 0, cout: 0, sal: 0, retard: 0, delai: 0, fx: 0 };
 function applyWhat(src) {
   const s = clone(src);
   const f = (v, k) => isB(v) ? v : N(v) * (1 + k);
-  s.offers.forEach(o => { o.prix = o.prix.map(v => f(v, WHAT.prix / 100)); o.vol = o.vol.map(r => r.map(v => f(v, WHAT.vol / 100))); o.comps.forEach(c => c.cout = c.cout.map(v => f(v, WHAT.cout / 100))); });
+  s.offers.forEach(o => { o.prix = o.prix.map(v => f(v, WHAT.prix / 100)); o.vol = o.vol.map(r => r.map(v => f(v, WHAT.vol / 100))); const fxK = (1 + WHAT.cout / 100) * (1 + WHAT.fx / 100 * Math.min(1, N(s.hyp.partImport))) - 1; o.comps.forEach(c => c.cout = c.cout.map(v => f(v, fxK))); });
   s.staff.forEach(p => p.net = p.net.map(v => f(v, WHAT.sal / 100)));
   if (WHAT.retard) {
     const sh = d => { if (!d) return d; const x = new Date(d + 'T00:00:00'); x.setMonth(x.getMonth() + WHAT.retard); return x.toISOString().slice(0, 10); };
@@ -130,7 +130,7 @@ sec('scenarios', 'Résultats', 'Scénarios & stress test', 'Compare les 3 scéna
    <tr><td>Point mort</td>${what.map(r => `<td class="n">${r.C.pointMort ? mLong(r.C.pointMort) : 'Non atteint'}</td>`).join('')}</tr></table></div>`;
   return `${card('Comparaison des 3 scénarios', 'Les volumes de chaque offre changent selon le scénario ; tout le reste est identique.', t)}
   <div class="charts" style="grid-template-columns:minmax(0,1fr)"><div class="chart"><h3>Trésorerie selon le scénario</h3><div class="cv"><canvas id="ch5"></canvas></div></div></div>
-  ${card('Stress test (sans modifier tes données)', 'Fais varier les hypothèses clés et vois si le projet tient. Rien n\'est enregistré.', `<div class="grid g3">${sl('prix', 'Prix de vente', -40, 40, 5, ' %')}${sl('vol', 'Volumes', -50, 50, 5, ' %')}${sl('cout', 'Coûts variables', -30, 50, 5, ' %')}${sl('sal', 'Salaires', -20, 40, 5, ' %')}${sl('retard', 'Retard de lancement', 0, 12, 1, ' mois')}${sl('delai', 'Délai clients en plus', 0, 120, 15, ' j')}</div>
+  ${card('Stress test (sans modifier tes données)', 'Fais varier les hypothèses clés et vois si le projet tient. Rien n\'est enregistré.', `<div class="grid g3">${sl('prix', 'Prix de vente', -40, 40, 5, ' %')}${sl('vol', 'Volumes', -50, 50, 5, ' %')}${sl('cout', 'Coûts variables', -30, 50, 5, ' %')}${sl('sal', 'Salaires', -20, 40, 5, ' %')}${sl('retard', 'Retard de lancement', 0, 12, 1, ' mois')}${sl('delai', 'Délai clients en plus', 0, 120, 15, ' j')}${sl('fx', 'Hausse de l\'euro ou du dollar', -20, 40, 5, ' %')}${fPct('hyp.partImport', 'Part des achats variables payée en devises', { hyp: true, help: N(S.hyp.partImport) ? 'Le curseur de change s\'applique à cette part de tes coûts variables.' : 'Renseigne-la pour que le curseur de change ait un effet (ex. 60 % si tu importes tes composants).' })}</div>
   <div class="row" style="margin-top:10px"><button class="btn sm" data-act="whatreset">Remettre à zéro</button></div><div id="whatres">${wt}</div>`)}`;
 }, () => 2);
 function drawScen() {

@@ -124,6 +124,7 @@ const CF = (() => {
     if (pf.staff) {
       add('Social', 'cnss', 'Affiliation à la CNSS et déclaration des salariés', 'Avant la première paie. Cotisations avant le 10 du mois suivant.');
       add('Social', 'contrats', 'Contrats de travail écrits et registre du personnel', 'CDI, CDD ou contrat ANAPEC selon les postes.');
+      add('Social', 'anciennete', 'Prime d\'ancienneté', S.hyp.anciennete === 'Non' ? '⚠ Désactivée dans tes hypothèses : elle est pourtant obligatoire (5 % après 2 ans, 10 % après 5 ans).' : '5 % après 2 ans, 10 % après 5 ans, 15 % après 12 ans. Déjà comptée dans tes salaires.');
       add('Social', 'smig', 'Salaires au moins égaux au SMIG', `SMIG mensuel retenu dans le calcul : ${fmt(E.REG.SMIG, 2)} DH.`);
       add('Social', 'reglement', 'Règlement intérieur et délégués des salariés', 'Obligatoires à partir de 10 salariés.', pf.head >= 10);
       add('Social', 'medecine', 'Service médical du travail, comité d\'entreprise, comité d\'hygiène et sécurité', 'Obligatoires à partir de 50 salariés.', pf.head >= 50);
