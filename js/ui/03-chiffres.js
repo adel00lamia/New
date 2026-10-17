@@ -9,7 +9,7 @@ const SAISONS = {
 };
 sec('hypotheses', 'Les chiffres', 'Hypothèses', 'Les choix qui pilotent tout le business plan : statut par année, calendrier, saisonnalité, inflation, délais de paiement et distribution des bénéfices. Les cases ocre sont des hypothèses.', () => {
   const H = S.hyp, F = R ? R.flags : null;
-  const regime = y => { if (!F) return ''; if (F.fAE[y]) return 'IR libératoire (auto-entrepreneur), hors TVA'; if (F.fIS[y]) return `TVA 20 % · IS 20 % · cotisation minimale ${F.cmExo[y] ? 'exonérée (36 premiers mois)' : 'due'}`; return 'Exonérée (coopérative / association), hors TVA'; };
+  const regime = y => { if (!F) return ''; if (F.fAE[y]) return 'IR libératoire (auto-entrepreneur), hors TVA'; if (F.fIS[y]) return `TVA 20 % · IS 20 % · cotisation minimale ${F.cmExo[y] ? 'exonérée (36 premiers mois)' : 'due'}${R.P.css && R.P.css[y] ? ` · contribution de solidarité ${pc(R.P.cssRate[y], 1)}` : ''}`; return 'Exonérée (coopérative / association), hors TVA'; };
   return card('1. Statut juridique & régime fiscal par année', 'Tu peux démarrer en auto-entrepreneur puis passer en SARL. L\'outil applique la fiscalité correspondante.',
     `<div class="grid g3">${[0, 1, 2].map(y => fSel(`hyp.statut.${y}`, yrLab(y), L.L_Statut || [], { hyp: true, help: regime(y) })).join('')}</div>
      <div class="grid g3" style="margin-top:12px">${fSel('hyp.aeNature', 'Si auto-entrepreneur : nature de l\'activité', ['Commerce', 'Industrie', 'Artisanat', 'Services'], { hyp: true, help: 'Services : 1 % du CA, plafond 200 000 DH. Commerce/industrie : 0,5 %, plafond 500 000 DH.' })}

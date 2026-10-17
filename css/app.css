@@ -437,3 +437,17 @@ body[data-screen="auth"] .fab,body[data-screen="boot"] .fab{display:none}
 .rv ul,.rv ol{margin:0;padding-left:20px;font-size:13.5px}.rv li{margin-bottom:4px}
 .rv-reco li{margin-bottom:7px}
 @media (max-width:700px){.rv-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---- conformité & LF 2026 ---- */
+.pill.info{background:var(--primary-soft);color:var(--primary)}
+.lf{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.lfi{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--surface)}
+.lfi.on{border-color:var(--primary);box-shadow:inset 3px 0 0 var(--primary)}
+.lfi .row{gap:6px;flex-wrap:wrap;align-items:flex-start}.lfi .row b{flex:1 1 180px}
+.lfi p{margin:6px 0 0}.lfi .imp{background:var(--surface2);border-radius:6px;padding:8px 10px;margin-top:8px;font-size:13.5px}
+.cfg{margin:14px 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.cl{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+.cli{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--surface)}
+.cli input{margin-top:3px;width:16px;height:16px;accent-color:var(--primary);flex:none}
+.cli:has(input:checked){background:var(--good-soft);border-color:transparent}
+.cmp td:first-child{min-width:240px}.cmp .pill{white-space:normal;margin-top:4px}

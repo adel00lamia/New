@@ -10,6 +10,8 @@ const REG = {
   IR: [[0,40000,0,0],[40000,60000,0.1,4000],[60000,80000,0.2,10000],[80000,100000,0.3,18000],[100000,180000,0.34,22000],[180000,1e15,0.37,27400]],
   FPseuil: 78000, FP1: 0.35, FP2: 0.25, FPmax: 35000, famDed: 600, famMax: 6, SMIG: 3422.72,
   RAS: 0.10,
+  // contribution sociale de solidarité sur les bénéfices (LF 2026 : reconduite pour 2026, 2027 et 2028)
+  CSS: { years: [2026, 2027, 2028], grid: [[1e6, 0.015], [5e6, 0.025], [10e6, 0.035], [40e6, 0.05]] },
   RES: { 'SARL': [0.05, 0.1], 'SARL-AU': [0.05, 0.1], 'SAS': [0.05, 0.1], 'SA': [0.05, 0.1],
     "Coopérative — collecte & vente en l'état": [0.1, 1], 'Coopérative — transformation': [0.1, 1], 'Coopérative de services': [0.1, 1] }
 };
@@ -360,7 +362,7 @@ function run(S, L, scenIdx) {
   // tax
   const socStart = H.debutSoc ? mIdx(H.debutSoc, 1) : (() => { for (let y = 0; y < 3; y++) if (fSoc[y]) return y * 12 + 1; return null; })();
   const cmExo = yrs.map(y => fSoc[y] && socStart !== null && (socStart + REG.CMexoM - 1) >= (y + 1) * 12 ? 1 : 0);
-  P.is = Z(3); P.deficit = Z(3); P.cm = Z(3); P.isTheo = Z(3); P.aeIr = Z(3); P.cmExo = cmExo;
+  P.is = Z(3); P.deficit = Z(3); P.cm = Z(3); P.isTheo = Z(3); P.aeIr = Z(3); P.css = Z(3); P.cssRate = Z(3); P.isBase = Z(3); P.cmExo = cmExo;
   let defPrev = 0;
   yrs.forEach(y => {
     if (fIS[y]) {
@@ -369,12 +371,14 @@ function run(S, L, scenIdx) {
       const cmBase = CA[y] + P.sexp[y] + P.autresProd[y] + P.prodFin[y] + P.don[y];
       P.cm[y] = !cmExo[y] ? Math.max(REG.CM * cmBase, REG.CMmin) : 0;
       P.is[y] = Math.max(P.isTheo[y], P.cm[y]);
+      P.isBase[y] = base;
+      if (REG.CSS.years.includes(sY + y)) { let r = 0; REG.CSS.grid.forEach(([th, rt]) => { if (base >= th) r = rt; }); P.cssRate[y] = r; P.css[y] = base * r; }
       P.deficit[y] = Math.max(0, defPrev - Math.max(0, P.rai[y])) + Math.max(0, -P.rai[y]);
       defPrev = P.deficit[y];
     } else defPrev = 0;
     P.aeIr[y] = fAE[y] ? Ysum(aeIr, y) : 0;
   });
-  P.impot = yrs.map(y => P.is[y] + P.aeIr[y]);
+  P.impot = yrs.map(y => P.is[y] + P.css[y] + P.aeIr[y]);
   P.rn = yrs.map(y => P.rai[y] - P.impot[y]);
   // SIG
   P.margeMarch = yrs.map(y => P.caM[y] - rubY[0][y]);
@@ -416,7 +420,7 @@ function run(S, L, scenIdx) {
     const acPrev = y > 0 && fIS[y - 1] ? P.is[y - 1] : 0; // acomptes paid during year y
     const solde = P.is[y] - acPrev;
     const m3 = (y + 1) * 12 + 3;
-    if (m3 <= T) isPay[m3] += Math.max(0, solde);
+    if (m3 <= T) isPay[m3] += Math.max(0, solde) + P.css[y];
     if (y + 1 < 3 && fIS[y + 1]) [3, 6, 9, 12].forEach(k => { const m = (y + 1) * 12 + k; if (m <= T) isPay[m] += P.is[y] * 0.25; });
   });
 

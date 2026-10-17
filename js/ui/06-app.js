@@ -276,7 +276,7 @@ const ICONS = { accueil: 'M3 11l9-8 9 8M5 10v10h14V10', questionnaire: 'M4 5h16v
   offre: 'M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z', marketing: 'M3 10v4h4l7 4V6l-7 4zM18 9a4 4 0 0 1 0 6', plan: 'M4 6h9M7 12h10M11 18h9', pestel: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3.5 3.5 3.5 14.5 0 18M12 3c-3.5 3.5-3.5 14.5 0 18',
   swot: 'M3 3h18v18H3zM12 3v18M3 12h18', risques: 'M12 3l10 18H2zM12 10v5M12 18v.01', hypotheses: 'M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1M15 4v4M9 10v4M17 16v4', offres: 'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',
   investissements: 'M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6', charges: 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6', financements: 'M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 21h18',
-  tableau: 'M4 20V11M10 20V5M16 20v-6M3 20h18', scenarios: 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9c0 6-12 3-12 9', etats: 'M3 4h18v16H3zM3 10h18M9 4v16', bp: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6' };
+  tableau: 'M4 20V11M10 20V5M16 20v-6M3 20h18', scenarios: 'M6 3v12M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9c0 6-12 3-12 9', etats: 'M3 4h18v16H3zM3 10h18M9 4v16', conformite: 'M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6zM8.5 12l2.5 2.5 4.5-5', bp: 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6' };
 function ico(id, cls = 'ico') { return `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICONS[id] || ICONS.accueil}"/></svg>`; }
 function railHTML() {
   const groups = [...new Set(SECTIONS.map(s => s.group))];
