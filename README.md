@@ -5,6 +5,13 @@ Chaque utilisateur crée son compte et gère autant de business qu'il veut. Pour
 
 Modèle de calcul : Business Plan V4.1 (fiscalité, TVA, CNSS/AMO et IR selon les règles marocaines 2026).
 
+## Aide et démonstration
+
+- **Assistant d'aide** (bouton « Aide » en bas à droite) : répond aux questions sur l'outil et sur les chiffres du business ouvert. Réservé aux comptes connectés, quota séparé de la génération.
+- **Démo sans compte** : bouton « Essayer la démo » sur la page de connexion. Ouvre le modèle SAQYA Tech dans le navigateur, sans rien enregistrer en ligne, et lance la visite guidée.
+- **Visite guidée** : 12 étapes, relançable depuis l'assistant ou le menu du profil.
+- **Vidéo** : `media/planbiz-demo.mp4` (1 min 12), accessible depuis la page de connexion et l'assistant.
+
 ## Architecture
 
 | Élément | Rôle |
@@ -23,7 +30,8 @@ Base de données et connexion : projet Supabase **PlanBiz** (région Paris), dé
 2. Framework preset : **Other**. Laisse Build Command et Output Directory vides.
 3. Dans **Environment Variables**, ajoute :
    - `ANTHROPIC_API_KEY` : ta clé API (console.anthropic.com). Obligatoire pour l'assistant IA.
-   - `AI_DAILY_LIMIT` (optionnel) : demandes IA par utilisateur et par jour, 30 par défaut.
+   - `AI_DAILY_LIMIT` (optionnel) : demandes de génération IA par utilisateur et par jour, 30 par défaut.
+   - `AI_HELP_DAILY_LIMIT` (optionnel) : messages à l'assistant d'aide par utilisateur et par jour, 60 par défaut.
    - `ANTHROPIC_MODEL` (optionnel) : `claude-sonnet-5-5` par défaut.
 4. **Deploy**. Note l'adresse obtenue, par exemple `https://planbiz.vercel.app`.
 

@@ -14,21 +14,26 @@ const SupaStore = {
   async update(id, patch) { const { error } = await sb.from('businesses').update(patch).eq('id', id); if (error) throw error; },
   async remove(id) { const { error } = await sb.from('businesses').delete().eq('id', id); if (error) throw error; }
 };
-const LK = 'planbiz.local.businesses';
-const lread = () => { try { return JSON.parse(localStorage.getItem(LK) || '[]'); } catch (e) { return []; } };
-const lwrite = a => { try { localStorage.setItem(LK, JSON.stringify(a)); } catch (e) { throw new Error('Stockage du navigateur indisponible'); } };
-const LocalStore = {
-  async list() { return lread().map(r => ({ id: r.id, name: r.name, sector: r.sector, updated_at: r.updated_at, created_at: r.created_at, summary: r.data && r.data.summary })).sort((a, b) => b.updated_at.localeCompare(a.updated_at)); },
-  async get(id) { const r = lread().find(x => x.id === id); if (!r) throw new Error('Business introuvable'); return r; },
-  async create(name, data) { const a = lread(); const now = new Date().toISOString(); const r = { id: 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, sector: data.id.secteur || '', data, created_at: now, updated_at: now }; a.push(r); lwrite(a); return r; },
-  async update(id, patch) { const a = lread(); const r = a.find(x => x.id === id); if (!r) return; Object.assign(r, patch, { updated_at: new Date().toISOString() }); lwrite(a); },
-  async remove(id) { lwrite(lread().filter(x => x.id !== id)); }
-};
-const store = sb ? SupaStore : LocalStore;
+function makeLocal(LK) {
+  const lread = () => { try { return JSON.parse(localStorage.getItem(LK) || '[]'); } catch (e) { return []; } };
+  const lwrite = a => { try { localStorage.setItem(LK, JSON.stringify(a)); } catch (e) { throw new Error('Stockage du navigateur indisponible'); } };
+  return {
+    async list() { return lread().map(r => ({ id: r.id, name: r.name, sector: r.sector, updated_at: r.updated_at, created_at: r.created_at, summary: r.data && r.data.summary })).sort((a, b) => b.updated_at.localeCompare(a.updated_at)); },
+    async get(id) { const r = lread().find(x => x.id === id); if (!r) throw new Error('Business introuvable'); return r; },
+    async create(name, data) { const a = lread(); const now = new Date().toISOString(); const r = { id: 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, sector: data.id.secteur || '', data, created_at: now, updated_at: now }; a.push(r); lwrite(a); return r; },
+    async update(id, patch) { const a = lread(); const r = a.find(x => x.id === id); if (!r) return; Object.assign(r, patch, { updated_at: new Date().toISOString() }); lwrite(a); },
+    async remove(id) { lwrite(lread().filter(x => x.id !== id)); },
+    clear() { try { localStorage.removeItem(LK); } catch (e) { } }
+  };
+}
+const LocalStore = makeLocal('planbiz.local.businesses');
+const DemoStore = makeLocal('planbiz.demo.businesses');
+let store = sb ? SupaStore : LocalStore;
+let demo = false;
 
 /* ---------- state ---------- */
 let user = null, current = null, saveState = 'saved', saveTimer = null, lastSaved = null, list = [];
-const show = id => ['boot', 'auth', 'hub', 'editor'].forEach(k => { const el = document.getElementById(k); if (el) el.hidden = k !== id; });
+const show = id => { ['boot', 'auth', 'hub', 'editor'].forEach(k => { const el = document.getElementById(k); if (el) el.hidden = k !== id; }); document.body.dataset.screen = id; };
 function setStatus(st) { saveState = st; const el = document.getElementById('saved'); if (el) { el.textContent = PB.statusText(); el.className = 'svd ' + st; } }
 function summaryOf() { try { return { ca: R.P.ca.map(Math.round), rn: R.P.rn.map(Math.round), min: Math.round(R.C.min), fonds: Math.round(R.C.fonds), pm: R.C.pointMort ? mLong(R.C.pointMort) : null, stade: S.id.stade || '', example: !!(S.meta && S.meta.example) }; } catch (e) { return null; } }
 async function flush() {
@@ -52,8 +57,10 @@ async function flush() {
 window.PB = {
   logo: () => LOGO,
   queueSave() { if (!current) return; setStatus('pending'); clearTimeout(saveTimer); saveTimer = setTimeout(flush, 1200); },
-  statusText() { return { saved: lastSaved ? `✓ Enregistré ${sb ? 'en ligne' : 'sur cet appareil'}` : (sb ? 'Sauvegarde en ligne active' : 'Sauvegarde sur cet appareil'), pending: 'Modifications en attente…', saving: 'Enregistrement…', error: '⚠ Hors ligne : nouvel essai automatique' }[saveState]; },
-  userMenu() { return `<div class="umenu"><button class="avatar" data-pb="menu" title="${esc(user ? user.email : 'Mode local')}">${esc(user ? user.email[0].toUpperCase() : '•')}</button></div>`; },
+  statusText() { if (demo) return 'Démo : rien n\'est enregistré en ligne'; return { saved: lastSaved ? `✓ Enregistré ${sb ? 'en ligne' : 'sur cet appareil'}` : (sb ? 'Sauvegarde en ligne active' : 'Sauvegarde sur cet appareil'), pending: 'Modifications en attente…', saving: 'Enregistrement…', error: '⚠ Hors ligne : nouvel essai automatique' }[saveState]; },
+  userMenu() { return `<div class="umenu"><button class="avatar" data-pb="menu" title="${esc(demo ? 'Mode démo' : user ? user.email : 'Mode local')}">${esc(demo ? 'D' : user ? user.email[0].toUpperCase() : '•')}</button></div>`; },
+  isDemo: () => demo, hasAccount: () => !!user, email: () => user ? user.email : '', currentName: () => current ? current.name : '',
+  async startDemo() { await startDemo(); },
   async token() { if (!sb) return ''; const { data } = await sb.auth.getSession(); return data.session ? data.session.access_token : ''; }
 };
 
@@ -101,6 +108,7 @@ function renderAuth() {
     ${authMode !== 'reset' ? `<div class="f"><label for="aPass">Mot de passe</label><input class="in" id="aPass" type="password" autocomplete="${authMode === 'signup' ? 'new-password' : 'current-password'}" minlength="8" required>${authMode === 'signup' ? '<span class="help">8 caractères minimum.</span>' : ''}</div>` : ''}
     ${authMsg ? `<div class="al ${authMsg.startsWith('✓') ? 'good' : 'warn'}"><span>${esc(authMsg)}</span></div>` : ''}
     <button class="btn pri big" type="submit" id="aSubmit">${{ login: 'Se connecter', signup: 'Créer mon compte', reset: 'Envoyer le lien' }[authMode]}</button>
+    <div class="auth-demo"><span>Pas encore prêt ?</span><button type="button" class="btn" data-pb="demo">Essayer la démo sans compte</button><button type="button" class="btn ghost" data-pb="video">▶ Voir la vidéo</button></div>
     <div class="auth-alt">${authMode === 'login' ? `<button type="button" class="linkbtn" data-auth="signup">Créer un compte</button><button type="button" class="linkbtn" data-auth="reset">Mot de passe oublié ?</button>` : `<button type="button" class="linkbtn" data-auth="login">J'ai déjà un compte</button>`}</div>
    </form></main></div>`;
   show('auth');
@@ -146,7 +154,7 @@ function bizCard(b) {
 function renderHub(loading) {
   const el = document.getElementById('hub');
   el.innerHTML = `<header class="hub-top"><div class="auth-brand"><span class="logo-sm">${LOGO}</span><b>PlanBiz</b></div><span class="sp"></span>
-   ${sb ? `<span class="muted small hide-sm">${esc(user ? user.email : '')}</span><button class="btn ghost sm" data-pb="logout">Se déconnecter</button>` : '<span class="pill warn">Mode local : données dans ce navigateur</span>'}</header>
+   ${demo ? `<span class="pill warn">Mode démo : rien n'est enregistré</span><button class="btn pri sm" data-pb="leaveDemo">Créer mon compte</button>` : sb ? `<span class="muted small hide-sm">${esc(user ? user.email : '')}</span><button class="btn ghost sm" data-pb="logout">Se déconnecter</button>` : '<span class="pill warn">Mode local : données dans ce navigateur</span>'}</header>
   <section class="hub-hero"><div><p class="eyebrow">Mon espace</p><h1>Mes business</h1><p class="lead">Chaque business a son propre business plan, ses chiffres et ses scénarios. Crée-en autant que tu veux.</p></div>
    <div class="row"><button class="btn pri big" data-pb="new">+ Nouveau business</button><label class="btn big" for="hubImport">Importer un fichier</label><input type="file" id="hubImport" accept=".json,.txt,application/json" hidden></div></section>
   <section class="biz-grid">${loading ? '<div class="biz skel"></div><div class="biz skel"></div><div class="biz skel"></div>' : list.length ? list.map(bizCard).join('') : `<div class="empty"><span class="logo-lg">${LOGO}</span><h3>Aucun business pour l'instant</h3><p class="muted">Crée ton premier business plan : questionnaire guidé, import depuis ton IA, ou modèle d'exemple pour découvrir l'outil.</p><button class="btn pri" data-pb="new">Créer mon premier business</button></div>`}</section>`;
@@ -207,10 +215,14 @@ document.addEventListener('click', async e => {
   else if (k === 'new') newModal();
   else if (k === 'open') openBiz(id);
   else if (k === 'logout') { await flush(); await sb.auth.signOut(); }
+  else if (k === 'demo') { startDemo(); }
+  else if (k === 'tour') { const m = document.querySelector('.menu-pop'); if (m) m.remove(); if (window.PBTour) PBTour.start(); }
+  else if (k === 'leaveDemo') { leaveDemo('signup'); }
+  else if (k === 'video') { if (window.PBTour) PBTour.video(); }
   else if (k === 'menu') {
     const old = document.querySelector('.menu-pop'); if (old) { old.remove(); return; }
     const m = document.createElement('div'); m.className = 'menu-pop';
-    m.innerHTML = `<p class="small muted">${esc(user ? user.email : 'Mode local')}</p><button data-pb="hub">Mes business</button>${sb ? '<button data-pb="logout">Se déconnecter</button>' : ''}`;
+    m.innerHTML = `<p class="small muted">${esc(demo ? 'Mode démo' : user ? user.email : 'Mode local')}</p><button data-pb="hub">Mes business</button><button data-pb="tour">Visite guidée</button><button data-pb="video">Vidéo de démonstration</button>${demo ? '<button data-pb="leaveDemo">Créer mon compte</button>' : sb ? '<button data-pb="logout">Se déconnecter</button>' : ''}`;
     t.parentElement.appendChild(m);
   }
   else if (k === 'dup') { try { const r = await store.get(id); const d = r.data; d.id = Object.assign({}, d.id, { nom: (d.id.nom || r.name) + ' (copie)' }); await store.create(r.name + ' (copie)', d); openHub(); toast('Business dupliqué.'); } catch (err) { toast('Duplication impossible.'); } }
@@ -231,6 +243,17 @@ document.addEventListener('change', async e => {
 });
 window.addEventListener('beforeunload', e => { if (saveTimer || saveState === 'saving') { flush(); e.preventDefault(); e.returnValue = ''; } });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && saveTimer) flush(); });
+
+/* ---------- demo ---------- */
+async function startDemo() {
+  demo = true; store = DemoStore; DemoStore.clear();
+  const ex = exampleProject();
+  const row = await store.create('SAQYA Tech (démo)', ex);
+  await store.create('Dar Atay — salon de thé (démo vierge)', Object.assign(blankProject(), { id: Object.assign(blankProject().id, { nom: 'Dar Atay', secteur: 'Restauration / café / traiteur' }) }));
+  await openBiz(row.id, 'tableau');
+  setTimeout(() => { if (window.PBTour) PBTour.start(); }, 700);
+}
+function leaveDemo(mode) { demo = false; store = sb ? SupaStore : LocalStore; DemoStore.clear(); current = null; S = null; if (sb) { authMode = mode || 'signup'; authMsg = ''; renderAuth(); } else openHub(); }
 
 /* ---------- boot ---------- */
 document.getElementById('dls').innerHTML = datalists();
