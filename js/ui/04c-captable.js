@@ -52,7 +52,7 @@ const CAP = (() => {
       `${warn}${roundsT}<div style="margin-top:12px">${table}</div>
       <div class="grid g3" style="margin-top:12px">${fNum('hyp.multCA', 'Multiple du chiffre d\'affaires', { hyp: true, ph: String(m.ca), help: 'Valeur ≈ CA de l\'année 3 × multiple. Startup SaaS : 3 à 6. TPME : 0,5 à 1,5.' })}${fNum('hyp.multEBE', 'Multiple de l\'EBE', { hyp: true, ph: String(m.ebe), help: 'Utilisé quand l\'EBE de l\'année 3 est positif. PME : 4 à 8.' })}
       <div class="tile"><small>Valeur des titres (multiple de CA)</small><b>${kdh(c.eqCA)}</b><span>${kdh(c.vCA)} − dettes ${kdh(c.debt)} + trésorerie ${kdh(c.cash)}</span></div></div>
-      <p class="small muted" style="margin-top:8px">Ordre de grandeur pour préparer une discussion avec des investisseurs, pas une évaluation. Le rendement annuel compte de la date de la levée à la fin du plan.</p>`);
+      <p class="small muted" style="margin-top:8px">Ordre de grandeur pour préparer une discussion avec des investisseurs, pas une évaluation. Repères : un SaaS non coté se valorise autour de 5,7 fois son chiffre d'affaires (médiane 2025, surtout États-Unis et Europe, <a href="https://aventis-advisors.com/?p=5430" target="_blank" rel="noopener">Aventis</a>). Pour une PME marocaine non cotée, applique une décote prudente sur ces multiples. Le rendement annuel compte de la date de la levée à la fin du plan.</p>`);
   }
   return { compute, card: card_ };
 })();

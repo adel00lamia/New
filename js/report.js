@@ -136,6 +136,7 @@ function build() {
 
   const acteurs = ['Mon entreprise', ...(m.acteurs || [])], tots = acteurs.map((_, j) => sum((m.criteres || []).map(c => N(c.notes[j]))));
   const s4 = sec('04', 'Marché, clients et concurrence', `${[['Secteur et tendances', m.tendances], ['Problème', m.probleme], ['Solution', m.solution], ['Proposition de valeur', m.valeur], ['Avantage concurrentiel', m.avantage], ['Pourquoi maintenant', m.pourquoi]].filter(x => x[1]).map(([t, v]) => `<h3>${t}</h3>${pp(v)}`).join('')}
+   ${typeof MENA !== 'undefined' ? (() => { const z = MENA.current(); if (!z.s) return ''; return `<h3>Repères de marché (${X(z.s.k)})</h3>${tb(['Zone', 'Taille du marché', 'Croissance'], [`<tr><td>Maroc</td><td>${X(z.s.ma)}</td><td rowspan="2">${X(z.s.g)}</td></tr>`, `<tr><td>${X(z.zone === 'Maroc' ? 'Région MENA' : z.zone)}</td><td>${X(z.s.mena)}</td></tr>`], 'tsmall')}<p class="mut small">Sources : ${z.s.src.map(x => X(x[0])).join(', ')}.</p>`; })() : ''}
    ${m.segments.length ? `<p><b>Segments visés :</b> ${m.segments.map(X).join(' · ')}</p>` : ''}
    ${K.tam[0] ? `<div class="fig"><h4>Taille du marché (année 3)</h4>${funnel([{ name: 'TAM', value: K.tam[2], sub: `${fmt(N(m.tam.n[2]))} clients potentiels` }, { name: 'SAM', value: K.sam[2], sub: `${fmt(K.samN[2])} clients accessibles` }, { name: 'SOM', value: K.som[2], sub: `${fmt(K.somN[2])} clients visés · CA prévu = ${pc(K.caSom[2], 0)} du SOM` }])}</div>` : ''}
    ${(m.bench || []).length ? `<h3>Benchmark concurrentiel</h3>${tb(['Acteur', 'Offre', 'Prix', 'Forces', 'Faiblesses'], m.bench.map(b => `<tr><td><b>${X(b.acteur)}</b></td><td>${X(b.offre)}</td><td>${X(b.prix)}</td><td>${X(b.forces)}</td><td>${X(b.faiblesses)}</td></tr>`), 'tsmall')}` : ''}
@@ -249,7 +250,7 @@ function withAnnex(body) {
   const text = body.replace(/<[^>]+>/g, ' ');
   const used = EDU.data.glossary.filter(g => g.sig && g.t.length >= 2 && new RegExp('(^|[^A-Za-zÀ-ÿ])' + g.t.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&') + '([^A-Za-zÀ-ÿ]|$)').test(text));
   if (!used.length) return body;
-  return body + sec('A', 'Annexe : sigles utilisés dans ce document', `<div class="sig">${used.map(g => `<div><b>${X(g.t)}</b><span>${X(g.full)}${g.c ? ` : ${X(g.c)}` : ''}</span></div>`).join('')}</div><p class="mut small">Définitions issues du glossaire pédagogique de Yassine Bakir.</p>`, { brk: true });
+  return body + sec('A', 'Annexe : sigles utilisés dans ce document', `<div class="sig">${used.map(g => `<div><b>${X(g.t)}</b><span>${X(g.full)}${g.c ? ` : ${X(g.c)}` : ''}</span></div>`).join('')}</div>`, { brk: true });
 }
 function html(opts = {}) {
   return `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Business plan — ${X(S.id.nom || '')}</title><style>${CSS}</style></head><body>
@@ -257,7 +258,7 @@ function html(opts = {}) {
   <div class="page">${withAnnex(build())}<p class="foot">Document généré avec PlanBiz le ${new Date().toLocaleDateString('fr-FR')} · modèle de calcul Business Plan V4.1 · règles fiscales et sociales marocaines 2026. Les prévisions reposent sur les hypothèses saisies par le porteur de projet.</p></div>
   ${opts.autoprint ? '<script>window.addEventListener("load",()=>setTimeout(()=>print(),500))<\/script>' : ''}</body></html>`;
 }
-window.PBReport = { html, build };
+window.PBReport = { html, build, charts: { bars, line, hbars, donut, stacked, funnel } };
 // rich report for the .html download too
 expHtml = function () { saveFile(`${slug()}-business-plan.html`, html()); };
 })();

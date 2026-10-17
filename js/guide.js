@@ -1,7 +1,7 @@
 /* ================= Guides pédagogiques, glossaire et guide des statuts ================= */
 const EDU = (() => {
   const D = typeof EDU_DATA !== 'undefined' ? EDU_DATA : { guides: {}, glossary: [], statut: null, metrics: [] };
-  const CREDIT = 'Contenu pédagogique de Yassine Bakir, repris avec son autorisation.';
+
 
   /* ---- compléments PlanBiz (parties absentes du fichier d'origine) ---- */
   const EXTRA = {
@@ -33,25 +33,28 @@ const EDU = (() => {
   const SIG = D.glossary.filter(g => g.sig && g.t.length >= 2 && g.t.length <= 6 && /^[A-ZÉ0-9&/-]+$/.test(g.t));
   const SIGRE = SIG.length ? new RegExp('\\b(' + SIG.map(g => g.t.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')).sort((a, b) => b.length - a.length).join('|') + ')\\b', 'g') : null;
   const sigMap = Object.fromEntries(SIG.map(g => [g.t, g]));
+  let seenSig = null;
   function glossify(escaped) {
     if (!SIGRE) return escaped;
-    return escaped.replace(SIGRE, m => { const g = sigMap[m]; return `<abbr class="gl" data-gl="${esc(m)}" title="${esc(g.full + (g.c ? ' : ' + g.c : ''))}">${m}</abbr>`; });
+    return escaped.replace(SIGRE, m => { if (seenSig) { if (seenSig.has(m)) return m; seenSig.add(m); } const g = sigMap[m]; return `<abbr class="gl" data-gl="${esc(m)}" title="${esc(g.full + (g.c ? ' : ' + g.c : ''))}">${m}</abbr>`; });
   }
   const para = t => String(t || '').split(/\n+/).map(l => l.replace(/^[☀-➿\u{1F300}-\u{1FAFF}️\s]+/u, '').trim()).filter(Boolean).map(l => `<p>${glossify(esc(l))}</p>`).join('');
 
   /* ---- guide block for a section ---- */
   function block(id) {
-    const parts = (D.guides[id] || []).slice(), ex = EXTRA[id];
-    if (!parts.length && !ex) return '';
-    let body = parts.map(p => `${p.h ? `<h4 class="gh">${esc(p.h)}</h4>` : ''}${p.intro ? `<div class="gi">${para(p.intro)}</div>` : ''}${p.tips.length ? `<div class="gtips">${p.tips.map(t => `<div class="gtip">${para(t)}</div>`).join('')}</div>` : ''}`).join('');
-    const hasOrig = parts.some(p => p.intro || p.tips.length);
+    const parts = (D.guides[id] || []).slice(), ex = EXTRA[id], sh = typeof EDU_SHORT !== 'undefined' ? EDU_SHORT[id] : null;
+    if (!parts.length && !ex && !sh) return '';
+    seenSig = new Set();
+    let full = parts.map(p => `${p.h ? `<h4 class="gh">${esc(p.h)}</h4>` : ''}${p.intro ? `<div class="gi">${para(p.intro)}</div>` : ''}${p.tips.length ? `<div class="gtips">${p.tips.map(t => `<div class="gtip">${para(t)}</div>`).join('')}</div>` : ''}`).join('');
     if (ex) {
-      if (ex.metrics && D.metrics.length) body += `<h4 class="gh">${esc(ex.h)}</h4><div class="tw"><table class="gmet"><tr><th>Métrique et formule</th><th>Repères</th><th>Comment l'améliorer</th></tr>${D.metrics.map(m => `<tr><td><b>${glossify(esc(m.m))}</b>${m.f ? `<br><span class="small muted mono">${esc(m.f)}</span>` : ''}</td><td>${glossify(esc(m.rep))}</td><td>${esc(m.lev || '—')}</td></tr>`).join('')}</table></div>${D.metricsSrc ? `<p class="small muted">${esc(D.metricsSrc)}</p>` : ''}`;
-      else body += `${ex.h ? `<h4 class="gh">${esc(ex.h)}</h4>` : ''}${ex.intro ? `<div class="gi">${para(ex.intro)}</div>` : ''}<div class="gtips">${(ex.tips || []).map(t => `<div class="gtip">${para(t)}</div>`).join('')}</div>`;
+      if (ex.metrics && D.metrics.length) full += `<h4 class="gh">${esc(ex.h)}</h4><div class="tw"><table class="gmet"><tr><th>Métrique et formule</th><th>Repères</th><th>Comment l'améliorer</th></tr>${D.metrics.map(m => `<tr><td><b>${glossify(esc(m.m))}</b>${m.f ? `<br><span class="small muted mono">${esc(m.f)}</span>` : ''}</td><td>${glossify(esc(m.rep))}</td><td>${esc(m.lev || '—')}</td></tr>`).join('')}</table></div>${D.metricsSrc ? `<p class="small muted">${esc(D.metricsSrc)}</p>` : ''}`;
+      else full += `${ex.h ? `<h4 class="gh">${esc(ex.h)}</h4>` : ''}${ex.intro ? `<div class="gi">${para(ex.intro)}</div>` : ''}<div class="gtips">${(ex.tips || []).map(t => `<div class="gtip">${para(t)}</div>`).join('')}</div>`;
     }
+    const short = sh ? `<p class="gbref">${glossify(esc(sh.b))}</p><ul class="gkey">${sh.t.map(t => `<li>${glossify(esc(t))}</li>`).join('')}</ul>` : '';
+    seenSig = null;
     const open = (() => { try { return localStorage.getItem('pb.guide.' + id) === '1'; } catch (e) { return false; } })();
-    return `<details class="guide" data-guide="${id}" ${open ? 'open' : ''}><summary><span class="gico">${typeof ico === 'function' ? ico('glossaire') : ''}</span><span><b>Guide de cette étape</b><small>Explications, conseils et pièges à éviter</small></span></summary>
-      <div class="gbody">${body}${hasOrig ? `<p class="gcredit">${CREDIT} <a href="#glossaire" data-go="glossaire">Ouvrir le glossaire</a></p>` : `<p class="gcredit"><a href="#glossaire" data-go="glossaire">Ouvrir le glossaire</a></p>`}</div></details>`;
+    return `<details class="guide" data-guide="${id}" ${open ? 'open' : ''}><summary><span class="gico">${typeof ico === 'function' ? ico('glossaire') : ''}</span><span><b>L'essentiel de cette étape</b><small>${sh ? esc(sh.b) : 'Explications et conseils'}</small></span></summary>
+      <div class="gbody">${short}${full ? `<details class="gmore"><summary>Lire le guide complet</summary>${full}</details>` : ''}<p class="gcredit"><a href="#glossaire" data-go="glossaire">Ouvrir le glossaire</a></p></div></details>`;
   }
 
   /* ---- glossary page ---- */
@@ -66,7 +69,7 @@ const EDU = (() => {
   }
   function glossaryPage() {
     const list = D.glossary.map(entryHTML).join('');
-    return card('Rechercher un mot', `${D.glossary.length} mots du business plan expliqués simplement, avec un exemple et le piège à éviter. ${CREDIT}`,
+    return card('Rechercher un mot', `${D.glossary.length} mots du business plan expliqués simplement, avec un exemple et le piège à éviter.`,
       `<div class="gsearch"><input id="glq" type="search" placeholder="Chercher un mot : EBE, BFR, pré-money, churn…" value="${esc(q)}" autocomplete="off"></div>
        <div class="row gcats"><button class="chip ${cat ? '' : 'on'}" data-glcat="">Tout</button>${cats().map(c => `<button class="chip ${cat === c ? 'on' : ''}" data-glcat="${esc(c)}">${esc(c)}</button>`).join('')}</div>
        <p class="small muted" id="glcount"></p><div class="glist">${list}</div>`);
@@ -82,7 +85,7 @@ const EDU = (() => {
     const st = D.statut; if (!st) return '';
     const cols = st.cols || [];
     const mark = v => esc(v).replace(/^✅/, '<span class="ok">✓</span>').replace(/^❌/, '<span class="no">✕</span>');
-    return card('Choisir son statut juridique', `${esc(st.intro || '')} ${CREDIT}`,
+    return card('Choisir son statut juridique', esc(st.intro || ''),
       st.groups.map(g => `<h4 class="gh">${esc(g.g.charAt(0) + g.g.slice(1).toLowerCase())}</h4><div class="tw"><table class="stt"><tr><th>Critère</th>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr>
         ${g.rows.map(r => `<tr><td><b>${esc(r.k)}</b>${r.h ? `<br><span class="small muted">${esc(r.h)}</span>` : ''}</td>${cols.map((_, j) => `<td>${mark(r.v[j] || '')}</td>`).join('')}</tr>`).join('')}</table></div>`).join('')
       + (st.notes || []).map(n => `<div class="gtip">${para(n)}</div>`).join('')

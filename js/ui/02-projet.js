@@ -79,6 +79,7 @@ sec('marche', 'Le projet', 'Marché, clients & benchmark', 'Le cœur du récit :
     <div class="row" style="margin-top:8px"><button class="btn sm" data-act="add" data-arr="market.criteres" data-new='${esc(JSON.stringify({ critere: '', notes: ['', '', '', '', ''] }))}'>+ Critère</button><button class="btn sm" data-act="addacteur">+ Acteur</button></div>`)}
   ${card('5. Personas', 'Un client-type incarné par une personne : décris-en au moins 3.',
     tableEd('market.personas', [{ k: 'nom', l: 'Prénom, âge & lieu', w: 140 }, { k: 'profession', l: 'Profession', t: 'area', w: 140 }, { k: 'besoins', l: 'Besoins', t: 'area', w: 150 }, { k: 'freins', l: 'Freins', t: 'area', w: 150 }, { k: 'canaux', l: 'Où le trouver', t: 'area', w: 130 }, { k: 'budget', l: 'Budget', t: 'area', w: 120 }, { k: 'phrase', l: 'Sa phrase', t: 'area', w: 140 }, { k: 'offre', l: 'Offre associée', w: 130 }], { add: 'Ajouter un persona', newRow: {} }))}
+  ${typeof MENA !== 'undefined' ? MENA.render() : ''}
   ${card('6. Taille du marché : TAM → SAM → SOM', 'Clients × dépense annuelle. Le SOM est ton objectif réaliste ; ton CA prévu doit rester en dessous.',
     `<div class="tw"><table class="et"><tr><th>Étape</th>${[0, 1, 2].map(y => `<th class="n">${yrLab(y)}</th>`).join('')}</tr>
      <tr><td>Nombre total de clients potentiels (TAM)</td>${[0, 1, 2].map(y => `<td>${cellIn(`market.tam.n.${y}`, 'num')}</td>`).join('')}</tr>
