@@ -2,7 +2,7 @@
 (function () {
 'use strict';
 const CFG = window.PLANBIZ_CONFIG || {};
-const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2l3.6 6.2L26 6l-2.2 6.4L30 16l-6.2 3.6L26 26l-6.4-2.2L16 30l-3.6-6.2L6 26l2.2-6.4L2 16l6.2-3.6L6 6l6.4 2.2z" fill="currentColor" opacity=".9"/><path d="M11 21V11h5.2a3.2 3.2 0 0 1 0 6.4H11" fill="none" stroke="var(--primary)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const LOGO = `<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="17" width="5" height="9" rx="1" fill="currentColor" opacity=".55"/><rect x="13.5" y="11" width="5" height="15" rx="1" fill="currentColor" opacity=".8"/><rect x="21" y="5" width="5" height="21" rx="1" fill="currentColor"/></svg>`;
 const ago = iso => { const s = (Date.now() - new Date(iso).getTime()) / 1000; if (s < 60) return 'à l\'instant'; if (s < 3600) return `il y a ${Math.floor(s / 60)} min`; if (s < 86400) return `il y a ${Math.floor(s / 3600)} h`; return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }); };
 
 /* ---------- stores ---------- */
@@ -87,9 +87,13 @@ function renderAuth() {
   const el = document.getElementById('auth');
   el.innerHTML = `<div class="auth-wrap">
    <aside class="auth-art"><div class="auth-brand"><span class="logo-lg">${LOGO}</span><b>PlanBiz</b></div>
-    <h1>Ton business plan sur 3 ans, du premier chiffre au document final.</h1>
-    <ul class="auth-points"><li>Compte de produits et charges, trésorerie 36 mois et bilan calculés à chaque saisie</li><li>Fiscalité, TVA, CNSS/AMO et IR selon les règles marocaines 2026</li><li>Questionnaire guidé, import depuis ton IA, PESTEL et SWOT assistés</li><li>Plusieurs business par compte, sauvegardés en ligne</li></ul>
-    <p class="auth-foot">Pour les startups, TPME et coopératives.</p></aside>
+    <div class="auth-copy"><p class="eyebrow-l">Business plan · 3 ans · Maroc</p><h1>Des prévisions financières claires, prêtes pour vos financeurs.</h1>
+    <p class="auth-sub">CPC, trésorerie sur 36 mois, bilan et scénarios, calculés selon la fiscalité marocaine 2026.</p></div>
+    <div class="preview" aria-hidden="true"><div class="pv-head"><span>Aperçu · exemple</span><span class="pv-pill">Réaliste</span></div>
+     <div class="pv-kpis"><div><small>CA An 3</small><b>10,59 M</b><i class="up">+96 %</i></div><div><small>EBE An 3</small><b>1,81 M</b><i class="up">17,1 %</i></div><div><small>Tréso. min.</small><b>225 k</b><i>févr. 27</i></div></div>
+     <div class="pv-chart">${[22,30,26,38,34,46,52,48,60,68,74,86].map((h,i)=>`<span style="height:${h}%" class="${i>8?'hi':''}"></span>`).join('')}</div>
+     <div class="pv-foot"><span>An 1</span><span>An 2</span><span>An 3</span></div></div>
+    <ul class="auth-points"><li>Questionnaire guidé ou import depuis votre IA</li><li>Fiscalité, TVA, CNSS/AMO et IR intégrés</li><li>Export PDF et Excel</li></ul></aside>
    <main class="auth-main"><form class="auth-card" id="authForm" novalidate>
     <h2>${{ login: 'Connexion', signup: 'Créer un compte', reset: 'Mot de passe oublié' }[authMode]}</h2>
     <p class="muted small">${{ login: 'Retrouve tes business plans.', signup: 'Gratuit. Un compte pour tous tes projets.', reset: 'Reçois un lien pour choisir un nouveau mot de passe.' }[authMode]}</p>
