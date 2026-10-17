@@ -12,8 +12,8 @@ function renderHome() {
   <div class="grid g2" style="margin-bottom:18px">
    <div class="card" style="margin:0"><h3>1. Questionnaire express</h3><p class="sub">15 questions simples pour obtenir un premier business plan chiffré en 10 minutes.</p><button class="btn pri" data-go="questionnaire">Répondre aux questions</button></div>
    <div class="card" style="margin:0;border-color:var(--primary)"><h3>2. Importer depuis mon IA</h3><p class="sub">Donne le template PlanBiz à ton IA (ChatGPT, Claude, Gemini…) ou colle tes notes dans l'IA intégrée : tout le BP est généré et relié à l'application.</p><button class="btn pri ai" data-go="importia">Relier mon IA</button></div>
-   <div class="card" style="margin:0"><h3>3. Voir le modèle d'exemple</h3><p class="sub">SAQYA Tech n'est qu'un modèle : une startup agritech fictive entièrement remplie, pour voir à quoi ressemble un BP complet.</p><button class="btn" data-act="loadExample">Charger le modèle</button></div>
-   <div class="card" style="margin:0"><h3>4. Projet vierge</h3><p class="sub">Toutes les sections vides, à remplir dans l'ordre du parcours. Tu peux aussi importer un projet sauvegardé.</p><div class="row"><button class="btn" data-act="newBlank">Commencer à zéro</button><label class="btn ghost" for="importFile">Importer (.json)</label><input type="file" id="importFile" accept=".json,application/json" hidden></div></div>
+   <div class="card" style="margin:0"><h3>3. Voir un BP complet</h3><p class="sub">Explore le modèle SAQYA Tech, une startup fictive entièrement remplie, avec la visite guidée. Ton business n'est pas modifié.</p><div class="row"><button class="btn" data-pb="demo">Explorer la démo</button><button class="btn ghost" data-pb="video">▶ Vidéo</button></div></div>
+   <div class="card" style="margin:0"><h3>4. Repartir de zéro</h3><p class="sub">Vide toutes les sections de ce business pour recommencer. Tu peux aussi importer un projet sauvegardé.</p><div class="row"><button class="btn" data-act="newBlank">Repartir de zéro</button><label class="btn ghost" for="importFile">Importer (.json)</label><input type="file" id="importFile" accept=".json,application/json" hidden></div></div>
   </div>
   ${card('Réglages globaux', 'À choisir en premier : ils s\'appliquent à tout le business plan.', `<div class="grid g2">
    ${fSel('hyp.profil', 'Profil du projet', PROFILS, { hyp: true, help: 'Adapte les repères du tableau de bord (croissance, marges, ratios).' })}
@@ -152,7 +152,7 @@ function docHTML() {
   <p class="small muted" style="margin-top:24px">Document généré avec PlanBiz (modèle de calcul Business Plan V4.1 ; règles fiscales et sociales marocaines 2026). Les projections reposent sur les hypothèses saisies.</p></div>`;
 }
 sec('bp', 'Résultats', 'Business plan & exports', 'Le document se rédige à partir de tes saisies et de tes chiffres. Ajoute une stratégie, puis exporte le business plan, les tableaux financiers ou ton projet.', () => `
-<div class="card"><div class="row"><h3>Exporter</h3><span class="sp"></span></div><p class="sub">« Imprimer / PDF » ouvre le document mis en page : choisis « Enregistrer en PDF » dans la fenêtre d'impression.</p>
+<div class="card"><div class="row"><h3>Exporter</h3><span class="sp"></span></div><p class="sub">« Imprimer / PDF » ouvre le rapport complet avec graphiques : choisis « Enregistrer en PDF » dans la fenêtre d'impression.</p>
  <div class="row"><button class="btn pri" data-act="printDoc">Imprimer / PDF</button><button class="btn" data-act="expHtml">Business plan (.html)</button><button class="btn" data-act="expXlsx">Tableaux financiers (.xlsx)</button><button class="btn" data-act="expJson">Sauvegarder le projet (.json)</button><label class="btn ghost" for="importFile2">Importer un projet</label><input type="file" id="importFile2" accept=".json,application/json" hidden></div></div>
 <div class="card"><div class="row"><h3>Stratégie & recommandations</h3><span class="sp"></span><button class="btn pri ai" data-ai="strategy">Rédiger la stratégie avec l'IA</button></div>
  <p class="sub">L'IA lit tout ton business plan (marché, offres, chiffres, SWOT) et propose : positionnement, go-to-market, stratégie de financement, priorités 12 mois et points à corriger avant de présenter. Le texte reste modifiable.</p>
@@ -375,7 +375,7 @@ document.addEventListener('click', e => {
   else if (a === 'qprev') { S.quiz.step = Math.max(0, (S.quiz.step || 0) - 1); }
   else if (a === 'quizBuild') { confirmBox('Le projet actuel sera remplacé par le business plan du questionnaire.', quizBuild); return; }
   else if (a === 'loadExample') { confirmBox('Charger l\'exemple SAQYA Tech ? Le projet actuel sera remplacé.', () => { S = exampleProject(); save(); recalc(); go('tableau'); }); return; }
-  else if (a === 'newBlank') { confirmBox('Commencer un projet vierge ? Le projet actuel sera remplacé (exporte-le d\'abord si tu veux le garder).', () => { S = blankProject(); save(); recalc(); go('questionnaire'); }); return; }
+  else if (a === 'newBlank') { confirmBox('Repartir de zéro ? Toutes les données de ce business seront effacées (le nom est conservé).', () => { const nom = S.meta && S.meta.example ? '' : S.id.nom; S = blankProject(); S.id.nom = nom || (window.PB ? PB.currentName() : ''); save(); recalc(); go('questionnaire'); }); return; }
   else if (a === 'whatreset') { Object.keys(WHAT).forEach(k => WHAT[k] = 0); }
   else if (a === 'aiApply') { aiApply(d.k, d.mode); return; }
   else if (a === 'aiClose') { const o = document.getElementById('ai-' + d.k); if (o) o.innerHTML = ''; return; }

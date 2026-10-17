@@ -83,6 +83,7 @@ sampleReady = true;
 dlFn = { async save({ filename, data }) { const blob = data instanceof Blob ? data : new Blob([data], { type: /\.json$/.test(filename) ? 'application/json' : /\.html?$/.test(filename) ? 'text/html' : /\.md$/.test(filename) ? 'text/markdown' : /\.xlsx$/.test(filename) ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/octet-stream' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); return { status: 'saved' }; } };
 function printDoc() {
   const w = window.open('', '_blank'); if (!w) { toast('Autorise les fenêtres pop-up pour imprimer.'); return; }
+  if (window.PBReport) { w.document.write(PBReport.html({ autoprint: true })); w.document.close(); return; }
   const css = `body{font-family:Georgia,'Times New Roman',serif;color:#14242a;max-width:880px;margin:32px auto;padding:0 24px;line-height:1.5;font-size:13.5px}h1{font-size:30px;margin:0 0 4px;font-family:Helvetica,Arial,sans-serif}h2{font-family:Helvetica,Arial,sans-serif;color:#0B5B57;border-bottom:2px solid #0B5B57;padding-bottom:4px;margin-top:28px;page-break-after:avoid}h3{margin:14px 0 6px;font-family:Helvetica,Arial,sans-serif}table{border-collapse:collapse;width:100%;font-size:12px;margin:8px 0 14px;page-break-inside:avoid}th,td{border:1px solid #cdd8da;padding:5px 7px;text-align:left;vertical-align:top}th{background:#eaf2f1}td.n,th.n{text-align:right;white-space:nowrap}tr.tot td{font-weight:bold;background:#f3f7f6}tr.grand td{font-weight:bold;border-top:2px solid #14242a}.eyebrow{color:#C27B2A;text-transform:uppercase;letter-spacing:.08em;font-size:11px;font-weight:bold;font-family:Helvetica,Arial,sans-serif}.muted{color:#56686d}.small{font-size:11.5px}@page{margin:16mm}`;
   w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Business plan — ${esc(S.id.nom || '')}</title><style>${css}</style></head><body>${docHTML().replace('<div class="doc" id="bpdoc">', '<div>')}<script>setTimeout(()=>print(),400)<\/script></body></html>`);
   w.document.close();
@@ -123,7 +124,7 @@ async function onAuthSubmit(e) {
     else { const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/#reset' }); if (error) throw error; authMsg = '✓ Lien envoyé : vérifie ta boîte mail.'; authMode = 'login'; renderAuth(); }
   } catch (err) {
     const m = String(err.message || err);
-    authMsg = /Invalid login/i.test(m) ? 'E-mail ou mot de passe incorrect.' : /Email not confirmed/i.test(m) ? 'Confirme d\'abord ton e-mail avec le lien reçu.' : /already registered/i.test(m) ? 'Un compte existe déjà avec cet e-mail : connecte-toi.' : /Password should/i.test(m) ? 'Mot de passe trop court (8 caractères minimum).' : /rate limit/i.test(m) ? 'Trop de tentatives : réessaie dans quelques minutes.' : m;
+    authMsg = /Invalid login/i.test(m) ? 'E-mail ou mot de passe incorrect.' : /Email not confirmed/i.test(m) ? 'Confirme d\'abord ton e-mail avec le lien reçu.' : /already registered/i.test(m) ? 'Un compte existe déjà avec cet e-mail : connecte-toi.' : /Password should/i.test(m) ? 'Mot de passe trop court (8 caractères minimum).' : /email rate limit|over_email_send/i.test(m) || (err && err.code === 'over_email_send_rate_limit') ? 'Trop d\'inscriptions en même temps : l\'envoi des e-mails est saturé. Réessaie dans une heure, ou essaie la démo en attendant.' : /rate limit/i.test(m) ? 'Trop de tentatives : réessaie dans quelques minutes.' : m;
     renderAuth();
   } finally { const b = document.getElementById('aSubmit'); if (b) b.disabled = false; }
 }
@@ -137,7 +138,7 @@ async function openHub() {
   renderHub(false);
 }
 function bizCard(b) {
-  const s = b.summary || {}; const ca = s.ca ? s.ca[2] : null, rn = s.rn ? s.rn[2] : null;
+  const s = b.summary || {}; const empty = !s.ca || s.ca.every(v => !v); const ca = empty ? null : s.ca[2], rn = empty || !s.rn ? null : s.rn[2]; if (empty) s.min = undefined;
   const ini = (b.name || '?').trim().split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const hue = [...(b.name || 'x')].reduce((a, c) => a + c.charCodeAt(0), 0) % 6;
   return `<article class="biz">
