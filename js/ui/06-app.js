@@ -271,7 +271,7 @@ function confirmBox(msg, ok) {
   bg.addEventListener('click', e => { const x = e.target.dataset.x; if (x === 'ok') { bg.remove(); ok(); } else if (x === 'no' || e.target === bg) bg.remove(); });
   document.body.appendChild(bg);
 }
-const ICONS = { accueil: 'M3 11l9-8 9 8M5 10v10h14V10', questionnaire: 'M4 5h16v11H8l-4 4zM9 9h6M9 12h4', importia: 'M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8zM19 15l.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8 1.7-.8z',
+const ICONS = { faq: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9a2.5 2.5 0 1 1 3.3 2.4c-.5.2-.8.6-.8 1.1V13M12 16.5v.01', accueil: 'M3 11l9-8 9 8M5 10v10h14V10', questionnaire: 'M4 5h16v11H8l-4 4zM9 9h6M9 12h4', importia: 'M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8zM19 15l.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8 1.7-.8z',
   identite: 'M3 6h18v12H3zM7 10h4M7 14h6M15 10h3', equipe: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c0-3 3-5 6-5s6 2 6 5M16 5.5a3 3 0 0 1 0 5.5M18 15c2 .6 3 2.3 3 5', vision: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12 11v2', marche: 'M12 3v9h9M20.5 15A9 9 0 1 1 9 3.5',
   offre: 'M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h8v8h-8z', marketing: 'M3 10v4h4l7 4V6l-7 4zM18 9a4 4 0 0 1 0 6', plan: 'M4 6h9M7 12h10M11 18h9', pestel: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c3.5 3.5 3.5 14.5 0 18M12 3c-3.5 3.5-3.5 14.5 0 18',
   swot: 'M3 3h18v18H3zM12 3v18M3 12h18', risques: 'M12 3l10 18H2zM12 10v5M12 18v.01', hypotheses: 'M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1M15 4v4M9 10v4M17 16v4', offres: 'M3 7l9-4 9 4-9 4zM3 7v10l9 4 9-4V7M12 11v10',

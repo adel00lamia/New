@@ -33,7 +33,7 @@ let demo = false;
 
 /* ---------- state ---------- */
 let user = null, current = null, saveState = 'saved', saveTimer = null, lastSaved = null, list = [];
-const show = id => { ['boot', 'auth', 'hub', 'editor'].forEach(k => { const el = document.getElementById(k); if (el) el.hidden = k !== id; }); document.body.dataset.screen = id; };
+const show = id => { ['boot', 'landing', 'auth', 'hub', 'editor'].forEach(k => { const el = document.getElementById(k); if (el) el.hidden = k !== id; }); document.body.dataset.screen = id; };
 function setStatus(st) { saveState = st; const el = document.getElementById('saved'); if (el) { el.textContent = PB.statusText(); el.className = 'svd ' + st; } }
 function summaryOf() { try { return { ca: R.P.ca.map(Math.round), rn: R.P.rn.map(Math.round), min: Math.round(R.C.min), fonds: Math.round(R.C.fonds), pm: R.C.pointMort ? mLong(R.C.pointMort) : null, stade: S.id.stade || '', example: !!(S.meta && S.meta.example) }; } catch (e) { return null; } }
 async function flush() {
@@ -120,6 +120,10 @@ function printDoc() {
 
 /* ---------- auth screen ---------- */
 let authMode = 'login', authMsg = '';
+function renderLanding() {
+  if (typeof PBLanding === 'undefined' || /connexion|reset/.test(location.hash)) return renderAuth();
+  PBLanding.render(); show('landing'); window.scrollTo(0, 0);
+}
 function renderAuth() {
   const el = document.getElementById('auth');
   el.innerHTML = `<div class="auth-wrap">
@@ -132,6 +136,7 @@ function renderAuth() {
      <div class="pv-foot"><span>An 1</span><span>An 2</span><span>An 3</span></div></div>
     <ul class="auth-points"><li>Questionnaire guidé ou import depuis votre IA</li><li>Fiscalité, TVA, CNSS/AMO et IR intégrés</li><li>Export PDF et Excel</li></ul><p class="auth-credit">Conçu et développé par <b>Lamia Adel</b> · Contenu pédagogique : <b>Yassine Bakir</b> · <a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></p></aside>
    <main class="auth-main"><form class="auth-card" id="authForm" novalidate>
+    <button type="button" class="linkbtn auth-back" data-pb="landing">← Découvrir PlanBiz</button>
     <h2>${{ login: 'Connexion', signup: 'Créer un compte', reset: 'Mot de passe oublié' }[authMode]}</h2>
     <p class="muted small">${{ login: 'Retrouve tes business plans.', signup: 'Gratuit. Un compte pour tous tes projets.', reset: 'Reçois un lien pour choisir un nouveau mot de passe.' }[authMode]}</p>
     <div class="f"><label for="aEmail">E-mail</label><input class="in" id="aEmail" type="email" autocomplete="email" required></div>
@@ -263,6 +268,7 @@ document.addEventListener('click', async e => {
     });
   }
   else if (k === 'demo') { startDemo(); }
+  else if (k === 'landing') { renderLanding(); }
   else if (k === 'tour') { const m = document.querySelector('.menu-pop'); if (m) m.remove(); if (window.PBTour) PBTour.start(); }
   else if (k === 'leaveDemo') { leaveDemo('signup'); }
   else if (k === 'video') { if (window.PBTour) PBTour.video(); }
@@ -310,10 +316,10 @@ async function boot() {
   sb.auth.onAuthStateChange((ev, session) => {
     const was = user; user = session ? session.user : null;
     if (ev === 'PASSWORD_RECOVERY') { promptBox('Choisis un nouveau mot de passe (8 caractères min.)', '', async v => { const { error } = await sb.auth.updateUser({ password: v }); toast(error ? 'Échec : ' + error.message : 'Mot de passe mis à jour.'); }); }
-    if (!user && was) { current = null; S = null; renderAuth(); }
+    if (!user && was) { current = null; S = null; if (authMsg) renderAuth(); else renderLanding(); }
     else if (user && !was) openHub();
   });
-  if (user) openHub(); else renderAuth();
+  if (user) openHub(); else renderLanding();
 }
 boot();
 })();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>PlanBiz — business plan dynamique</title>
+<title>PlanBiz · business plan chiffré pour les projets au Maroc</title>
 <meta name="description" content="PlanBiz : construis ton business plan sur 3 ans (compte de produits et charges, trésorerie, bilan, indicateurs) selon les règles marocaines, avec questionnaire guidé et assistant IA.">
 <meta name="theme-color" content="#0A2540">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230A2540'/%3E%3Crect x='7' y='17' width='4.5' height='8' rx='1' fill='%237FB0FF'/%3E%3Crect x='13.75' y='12' width='4.5' height='13' rx='1' fill='%23A9CBFF'/%3E%3Crect x='20.5' y='7' width='4.5' height='18' rx='1' fill='%23ffffff'/%3E%3C/svg%3E">
@@ -14,6 +14,7 @@
 </head>
 <body>
 <div id="boot" class="boot"><div class="spin" role="status" aria-label="Chargement"></div></div>
+<div id="landing" class="landing" hidden></div>
 <div id="auth" hidden></div>
 <div id="hub" hidden></div>
 <div id="editor" class="app" hidden><nav class="rail" id="rail" aria-label="Parcours"></nav><div class="main"><header class="top" id="top"></header><main class="content" id="content"></main></div></div>
@@ -37,6 +38,7 @@
 <script src="/js/edu-data.js"></script>
 <script src="/js/guide-short.js"></script>
 <script src="/js/guide.js"></script>
+<script src="/js/landing.js"></script>
 <script src="/js/review.js"></script>
 <script src="/js/report.js"></script>
 <script src="/js/platform.js"></script>
