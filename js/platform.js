@@ -134,7 +134,7 @@ function renderAuth() {
      <div class="pv-kpis"><div><small>CA An 3</small><b>10,59 M</b><i class="up">+96 %</i></div><div><small>EBE An 3</small><b>1,81 M</b><i class="up">17,1 %</i></div><div><small>Tréso. min.</small><b>225 k</b><i>févr. 27</i></div></div>
      <div class="pv-chart">${[22,30,26,38,34,46,52,48,60,68,74,86].map((h,i)=>`<span style="height:${h}%" class="${i>8?'hi':''}"></span>`).join('')}</div>
      <div class="pv-foot"><span>An 1</span><span>An 2</span><span>An 3</span></div></div>
-    <ul class="auth-points"><li>Questionnaire guidé ou import depuis votre IA</li><li>Fiscalité, TVA, CNSS/AMO et IR intégrés</li><li>Export PDF et Excel</li></ul><p class="auth-credit">Conçu et développé par <b>Lamia Adel</b> · Contenu pédagogique : <b>Yassine Bakir</b> · <a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></p></aside>
+    <ul class="auth-points"><li>Questionnaire guidé ou import depuis votre IA</li><li>Fiscalité, TVA, CNSS/AMO et IR intégrés</li><li>Export PDF et Excel</li></ul><p class="auth-credit"><a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></p></aside>
    <main class="auth-main"><form class="auth-card" id="authForm" novalidate>
     <button type="button" class="linkbtn auth-back" data-pb="landing">← Découvrir PlanBiz</button>
     <h2>${{ login: 'Connexion', signup: 'Créer un compte', reset: 'Mot de passe oublié' }[authMode]}</h2>
@@ -195,7 +195,7 @@ function renderHub(loading) {
    <div class="row"><button class="btn pri big" data-pb="new">+ Nouveau business</button><label class="btn big" for="hubImport">Importer un fichier</label><input type="file" id="hubImport" accept=".json,.txt,application/json" hidden></div></section>
   ${demo ? '' : `<section class="discover"><div class="disc-t"><b>Découvrir PlanBiz</b><span>Regarde la vidéo d'une minute ou explore un business plan complet, sans toucher à tes données.</span></div><div class="row"><button class="btn" data-pb="video">▶ Voir la vidéo</button><button class="btn" data-pb="demo">Explorer la démo guidée</button></div></section>`}
   <section class="biz-grid">${loading ? '<div class="biz skel"></div><div class="biz skel"></div><div class="biz skel"></div>' : list.length ? list.map(bizCard).join('') : `<div class="empty"><span class="logo-lg">${LOGO}</span><h3>Aucun business pour l'instant</h3><p class="muted">Crée ton premier business plan : questionnaire guidé, import depuis ton IA, ou modèle d'exemple pour découvrir l'outil.</p><button class="btn pri" data-pb="new">Créer mon premier business</button></div>`}</section>
-  <footer class="hub-credit">Conçu et développé par <b>Lamia Adel</b> · Contenu pédagogique : <b>Yassine Bakir</b>, avec son autorisation · <a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></footer>`;
+  <footer class="hub-credit"><a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></footer>`;
 }
 function newModal() {
   const bg = document.createElement('div'); bg.className = 'modal-bg';

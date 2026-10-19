@@ -4,8 +4,7 @@ const PBLanding = (() => {
     ['Le concept', [
       ['C\'est quoi, PlanBiz ?', 'Un outil en ligne qui t\'aide à construire le business plan de ton projet au Maroc, avec des prévisions financières sur 3 ans : compte de produits et charges, trésorerie mois par mois, bilan et indicateurs. Tu décris ton projet, PlanBiz fait les calculs selon la fiscalité marocaine et rédige un dossier prêt à présenter.'],
       ['À qui s\'adresse PlanBiz ?', 'Aux porteurs de projet, aux auto-entrepreneurs, aux TPE, aux startups et aux coopératives qui doivent présenter leur projet à une banque, à un programme de financement, à un incubateur ou à un investisseur.'],
-      ['Ai-je besoin de connaissances en finance ?', 'Non. Chaque étape a un guide court avec l\'essentiel et des conseils, un glossaire explique 255 termes, et un assistant répond à tes questions. Le questionnaire express te donne un premier business plan chiffré en une dizaine de minutes.'],
-      ['Qui est derrière PlanBiz ?', 'L\'application est conçue et développée par Lamia Adel. Le contenu pédagogique (guides, conseils, glossaire) est celui de Yassine Bakir, repris avec son autorisation.']
+      ['Ai-je besoin de connaissances en finance ?', 'Non. Chaque étape a un guide court avec l\'essentiel et des conseils, un glossaire explique 255 termes, et un assistant répond à tes questions. Le questionnaire express te donne un premier business plan chiffré en une dizaine de minutes.']
     ]],
     ['Les calculs et le dossier', [
       ['Les calculs suivent-ils les règles marocaines ?', 'Oui : IS, cotisation minimale, contribution sociale de solidarité 2026-2028, TVA à l\'encaissement, CNSS et AMO, IR sur salaires, prime d\'ancienneté et mesures de la loi de finances 2026. Les règles sont mises à jour à chaque loi de finances. Pour une décision fiscale importante, fais valider ton choix par un expert-comptable.'],
@@ -92,7 +91,7 @@ const PBLanding = (() => {
 
     <section class="ld-final"><div class="ld-wrap"><h2>Commence ton business plan aujourd'hui</h2><p>Un premier dossier chiffré en une dizaine de minutes avec le questionnaire express.</p>
       <div class="row ld-cta"><button class="btn pri big" data-auth="signup">Créer mon compte gratuit</button><button class="btn big" data-pb="demo">Explorer la démo</button></div></div></section>
-    <footer class="hub-credit">Conçu et développé par <b>Lamia Adel</b> · Contenu pédagogique : <b>Yassine Bakir</b> · <a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></footer>`;
+    <footer class="hub-credit"><a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></footer>`;
   }
 
   document.addEventListener('click', e => {
