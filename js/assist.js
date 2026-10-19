@@ -47,6 +47,7 @@ function panelHTML() {
    ${!can ? `<div class="hp-note">${PB && PB.isDemo() ? 'En démo, l\'assistant IA est désactivé. Crée ton compte gratuit pour lui poser des questions.' : 'Connecte-toi pour poser tes questions à l\'assistant.'}</div>` : ''}
   </div>
   <div class="hp-actions"><button class="btn sm" data-hp="tour">Visite guidée</button><button class="btn sm ghost" data-hp="video">▶ Vidéo</button>${msgs.length ? '<button class="btn sm ghost" data-hp="reset">Nouvelle conversation</button>' : ''}</div>
+  ${can ? '<p class="hp-priv">Réponses générées par l\'IA Claude (Anthropic, États-Unis). Tes questions sont gardées sans ton nom pour améliorer l\'outil. <a href="/legal.html#confidentialite" target="_blank" rel="noopener">En savoir plus</a></p>' : ''}
   <form class="hp-form" id="hpForm"><textarea class="in" id="hpIn" rows="2" placeholder="${can ? 'Écris ta question…' : 'Assistant réservé aux comptes'}" ${can ? '' : 'disabled'}></textarea><button class="btn pri" type="submit" ${can ? '' : 'disabled'} aria-label="Envoyer">➤</button></form>`;
 }
 function openPanel() { let p = document.getElementById('hpPanel'); if (!p) { p = document.createElement('aside'); p.id = 'hpPanel'; p.className = 'hp'; document.body.appendChild(p); } p.innerHTML = panelHTML(); p.hidden = false; const b = document.getElementById('hpBody'); b.scrollTop = b.scrollHeight; const i = document.getElementById('hpIn'); if (i && !i.disabled) i.focus(); }
@@ -57,8 +58,9 @@ async function ask(q) {
   msgs.push({ role: 'user', content: q }); msgs.push({ role: 'assistant', content: '…' }); busy = true; openPanel();
   const bubbles = document.querySelectorAll('#hpBody .hp-msg.bot'); const bub = bubbles[bubbles.length - 1];
   try {
+    if (PB.aiConsent && !(await PB.aiConsent())) throw new Error('tu as refusé l\'envoi au service d\'IA. L\'aide sans IA reste disponible : visite guidée et guides de chaque étape.');
     const t = await PB.token(); ctl = new AbortController();
-    const r = await fetch(CFG.aiEndpoint || '/api/ai', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + t }, body: JSON.stringify({ mode: 'help', context: context(q), messages: msgs.slice(0, -1) }), signal: ctl.signal });
+    const r = await fetch(CFG.aiEndpoint || '/api/ai', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + t }, body: JSON.stringify({ mode: 'help', section: (typeof view !== 'undefined' ? String(view) : ''), context: context(q), messages: msgs.slice(0, -1) }), signal: ctl.signal });
     if (!r.ok) throw new Error(await r.text());
     const rd = r.body.getReader(), dec = new TextDecoder(); let text = '';
     for (;;) { const { value, done } = await rd.read(); if (done) break; text += dec.decode(value, { stream: true }); bub.innerHTML = md(text); const b = document.getElementById('hpBody'); b.scrollTop = b.scrollHeight; }

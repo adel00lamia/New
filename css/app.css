@@ -488,3 +488,12 @@ abbr.gl{text-decoration:underline dotted var(--primary);text-underline-offset:3p
 .guide[open]>summary small{display:none}
 .pframe{width:100%;border:0;border-radius:8px;background:#E9EDF2;min-height:300px;display:block}
 .mk3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 6px}.mk3 div{background:var(--surface2);border-radius:8px;padding:12px 14px}.mk3 small{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}.mk3 b{font-size:14.5px;line-height:1.4}@media(max-width:720px){.mk3{grid-template-columns:1fr}}
+
+/* conformité */
+.auth-terms{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.4;margin:4px 0 12px;color:var(--ink)}
+.auth-terms input{margin-top:3px;flex:none}
+.auth-terms a,.auth-credit a,.hub-credit a,.hp-priv a{color:inherit;text-decoration:underline}
+.hp-priv{font-size:11px;line-height:1.35;color:var(--muted);margin:0;padding:6px 12px 0}
+.menu-pop .menu-link{display:block;padding:8px;border-radius:6px;color:var(--ink);font-size:13px;text-decoration:none}
+.menu-pop .menu-link:hover{background:var(--surface2)}
+.menu-pop button.danger{color:var(--crit,#b42318)}

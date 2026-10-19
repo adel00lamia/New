@@ -330,7 +330,7 @@ async function impGen(btn) {
     stEl.textContent = IMP.err ? '' : 'Prêt : vérifie l\'aperçu ci-dessous.';
     const pv = document.getElementById('impPrev'); if (pv) { pv.innerHTML = impPreview(); pv.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   } catch (e) {
-    stEl.textContent = { not_granted: 'Accès à Claude refusé pour cette page.', rate_limited: 'Trop de demandes : réessaie dans une minute.' }[e && e.code] || ('Génération impossible' + (e && e.message ? ' : ' + e.message : '.'));
+    stEl.textContent = { consent_refused: 'Envoi à l\'IA refusé : tu peux remplir cette partie sans l\'IA.', not_granted: 'Session expirée : reconnecte-toi pour utiliser l\'IA.', rate_limited: 'Trop de demandes : réessaie dans une minute.' }[e && e.code] || ('Génération impossible' + (e && e.message ? ' : ' + e.message : '.'));
   } finally { btn.disabled = false; }
 }
 document.addEventListener('click', e => {

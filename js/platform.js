@@ -61,11 +61,40 @@ window.PB = {
   userMenu() { return `<div class="umenu"><button class="avatar" data-pb="menu" title="${esc(demo ? 'Mode démo' : user ? user.email : 'Mode local')}">${esc(demo ? 'D' : user ? user.email[0].toUpperCase() : '•')}</button></div>`; },
   isDemo: () => demo, hasAccount: () => !!user, email: () => user ? user.email : '', currentName: () => current ? current.name : '',
   async startDemo() { await startDemo(); },
-  async token() { if (!sb) return ''; const { data } = await sb.auth.getSession(); return data.session ? data.session.access_token : ''; }
+  async token() { if (!sb) return ''; const { data } = await sb.auth.getSession(); return data.session ? data.session.access_token : ''; },
+  aiConsent
 };
+
+/* ---------- consentement IA (loi 09-08) ---------- */
+function hasAiConsent() {
+  if (user && user.user_metadata && user.user_metadata.ai_consent_at) return true;
+  try { return !!localStorage.getItem('planbiz.aiConsent.' + (user ? user.id : 'local')); } catch (e) { return false; }
+}
+function aiConsent() {
+  if (hasAiConsent()) return Promise.resolve(true);
+  return new Promise(resolve => {
+    const bg = document.createElement('div'); bg.className = 'modal-bg';
+    bg.innerHTML = `<div class="modal" role="dialog" aria-labelledby="aicT"><h2 id="aicT">Avant d'utiliser l'IA</h2>
+     <p style="margin:10px 0">Pour te répondre, PlanBiz envoie le texte concerné (ta question, ou les parties de ton business plan à analyser) au service d'IA <b>Claude</b> de la société Anthropic, situé aux <b>États-Unis</b>. Par défaut, Anthropic n'utilise pas ces données pour entraîner ses modèles.</p>
+     <p class="small muted" style="margin:0 0 6px">Tes questions à l'assistant sont aussi conservées sans ton nom ni ton e-mail, pour améliorer l'outil. N'y mets pas d'informations personnelles sensibles.</p>
+     <p class="small"><a href="/legal.html#confidentialite" target="_blank" rel="noopener">Lire la politique de confidentialité</a></p>
+     <div class="row" style="justify-content:flex-end;margin-top:16px"><button type="button" class="btn" data-x="no">Refuser</button><button type="button" class="btn pri" data-x="ok">J'accepte</button></div></div>`;
+    document.body.appendChild(bg);
+    bg.addEventListener('click', async e => {
+      const k = e.target.dataset && e.target.dataset.x; if (!k && e.target !== bg) return;
+      bg.remove();
+      if (k !== 'ok') { resolve(false); return; }
+      const at = new Date().toISOString();
+      try { localStorage.setItem('planbiz.aiConsent.' + (user ? user.id : 'local'), at); } catch (err) { }
+      try { if (sb && user) { const { data } = await sb.auth.updateUser({ data: { ai_consent_at: at } }); if (data && data.user) user = data.user; } } catch (err) { }
+      resolve(true);
+    });
+  });
+}
 
 /* ---------- AI through /api/ai ---------- */
 async function aiCall(prompt, opts = {}) {
+  if (!(await aiConsent())) throw { code: 'consent_refused', message: 'Tu as refusé l\'envoi au service d\'IA. Tu peux continuer sans l\'IA.' };
   const headers = { 'content-type': 'application/json' }; const t = await PB.token(); if (t) headers.authorization = 'Bearer ' + t;
   let r;
   try { r = await fetch(CFG.aiEndpoint || '/api/ai', { method: 'POST', headers, body: JSON.stringify({ prompt, tier: opts.modelTier || 'default' }), signal: opts.signal }); }
@@ -101,12 +130,13 @@ function renderAuth() {
      <div class="pv-kpis"><div><small>CA An 3</small><b>10,59 M</b><i class="up">+96 %</i></div><div><small>EBE An 3</small><b>1,81 M</b><i class="up">17,1 %</i></div><div><small>Tréso. min.</small><b>225 k</b><i>févr. 27</i></div></div>
      <div class="pv-chart">${[22,30,26,38,34,46,52,48,60,68,74,86].map((h,i)=>`<span style="height:${h}%" class="${i>8?'hi':''}"></span>`).join('')}</div>
      <div class="pv-foot"><span>An 1</span><span>An 2</span><span>An 3</span></div></div>
-    <ul class="auth-points"><li>Questionnaire guidé ou import depuis votre IA</li><li>Fiscalité, TVA, CNSS/AMO et IR intégrés</li><li>Export PDF et Excel</li></ul><p class="auth-credit">Conçu et développé par <b>Lamia Adel</b> · Contenu pédagogique : <b>Yassine Bakir</b></p></aside>
+    <ul class="auth-points"><li>Questionnaire guidé ou import depuis votre IA</li><li>Fiscalité, TVA, CNSS/AMO et IR intégrés</li><li>Export PDF et Excel</li></ul><p class="auth-credit">Conçu et développé par <b>Lamia Adel</b> · Contenu pédagogique : <b>Yassine Bakir</b> · <a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></p></aside>
    <main class="auth-main"><form class="auth-card" id="authForm" novalidate>
     <h2>${{ login: 'Connexion', signup: 'Créer un compte', reset: 'Mot de passe oublié' }[authMode]}</h2>
     <p class="muted small">${{ login: 'Retrouve tes business plans.', signup: 'Gratuit. Un compte pour tous tes projets.', reset: 'Reçois un lien pour choisir un nouveau mot de passe.' }[authMode]}</p>
     <div class="f"><label for="aEmail">E-mail</label><input class="in" id="aEmail" type="email" autocomplete="email" required></div>
     ${authMode !== 'reset' ? `<div class="f"><label for="aPass">Mot de passe</label><input class="in" id="aPass" type="password" autocomplete="${authMode === 'signup' ? 'new-password' : 'current-password'}" minlength="8" required>${authMode === 'signup' ? '<span class="help">8 caractères minimum.</span>' : ''}</div>` : ''}
+    ${authMode === 'signup' ? `<label class="auth-terms"><input type="checkbox" id="aTerms" required> <span>J'accepte les <a href="/legal.html#conditions" target="_blank" rel="noopener">conditions d'utilisation</a> et la <a href="/legal.html#confidentialite" target="_blank" rel="noopener">politique de confidentialité</a>.</span></label>` : ''}
     ${authMsg ? `<div class="al ${authMsg.startsWith('✓') ? 'good' : 'warn'}"><span>${esc(authMsg)}</span></div>` : ''}
     <button class="btn pri big" type="submit" id="aSubmit">${{ login: 'Se connecter', signup: 'Créer mon compte', reset: 'Envoyer le lien' }[authMode]}</button>
     <div class="auth-demo"><span>Pas encore prêt ?</span><button type="button" class="btn" data-pb="demo">Essayer la démo sans compte</button><button type="button" class="btn ghost" data-pb="video">▶ Voir la vidéo</button></div>
@@ -120,7 +150,7 @@ async function onAuthSubmit(e) {
   const btn = document.getElementById('aSubmit'); btn.disabled = true; authMsg = '';
   try {
     if (authMode === 'login') { const { error } = await sb.auth.signInWithPassword({ email, password: pass }); if (error) throw error; }
-    else if (authMode === 'signup') { const { data, error } = await sb.auth.signUp({ email, password: pass, options: { emailRedirectTo: location.origin } }); if (error) throw error; if (!data.session) { authMsg = '✓ Compte créé. Ouvre le lien reçu par e-mail pour l\'activer, puis connecte-toi.'; authMode = 'login'; renderAuth(); } }
+    else if (authMode === 'signup') { if (!document.getElementById('aTerms').checked) { authMsg = 'Coche la case pour accepter les conditions et la politique de confidentialité.'; renderAuth(); return; } const { data, error } = await sb.auth.signUp({ email, password: pass, options: { emailRedirectTo: location.origin, data: { terms_accepted_at: new Date().toISOString(), terms_version: '2026-10' } } }); if (error) throw error; if (!data.session) { authMsg = '✓ Compte créé. Ouvre le lien reçu par e-mail pour l\'activer, puis connecte-toi.'; authMode = 'login'; renderAuth(); } }
     else { const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/#reset' }); if (error) throw error; authMsg = '✓ Lien envoyé : vérifie ta boîte mail.'; authMode = 'login'; renderAuth(); }
   } catch (err) {
     const m = String(err.message || err);
@@ -160,7 +190,7 @@ function renderHub(loading) {
    <div class="row"><button class="btn pri big" data-pb="new">+ Nouveau business</button><label class="btn big" for="hubImport">Importer un fichier</label><input type="file" id="hubImport" accept=".json,.txt,application/json" hidden></div></section>
   ${demo ? '' : `<section class="discover"><div class="disc-t"><b>Découvrir PlanBiz</b><span>Regarde la vidéo d'une minute ou explore un business plan complet, sans toucher à tes données.</span></div><div class="row"><button class="btn" data-pb="video">▶ Voir la vidéo</button><button class="btn" data-pb="demo">Explorer la démo guidée</button></div></section>`}
   <section class="biz-grid">${loading ? '<div class="biz skel"></div><div class="biz skel"></div><div class="biz skel"></div>' : list.length ? list.map(bizCard).join('') : `<div class="empty"><span class="logo-lg">${LOGO}</span><h3>Aucun business pour l'instant</h3><p class="muted">Crée ton premier business plan : questionnaire guidé, import depuis ton IA, ou modèle d'exemple pour découvrir l'outil.</p><button class="btn pri" data-pb="new">Créer mon premier business</button></div>`}</section>
-  <footer class="hub-credit">Conçu et développé par <b>Lamia Adel</b> · Contenu pédagogique : <b>Yassine Bakir</b>, avec son autorisation</footer>`;
+  <footer class="hub-credit">Conçu et développé par <b>Lamia Adel</b> · Contenu pédagogique : <b>Yassine Bakir</b>, avec son autorisation · <a href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a></footer>`;
 }
 function newModal() {
   const bg = document.createElement('div'); bg.className = 'modal-bg';
@@ -218,6 +248,20 @@ document.addEventListener('click', async e => {
   else if (k === 'new') newModal();
   else if (k === 'open') openBiz(id);
   else if (k === 'logout') { await flush(); await sb.auth.signOut(); }
+  else if (k === 'delAccount') {
+    const m = document.querySelector('.menu-pop'); if (m) m.remove();
+    confirmBox('Supprimer ton compte ? Tous tes business plans seront effacés tout de suite, et ton compte sous 30 jours au plus. Cette action est définitive. Exporte d\'abord tes projets si tu veux les garder.', async () => {
+      try {
+        await flush(); current = null;
+        const rows = await store.list(); for (const b of rows) await store.remove(b.id);
+        const { error } = await sb.from('deletion_requests').upsert({ user_id: user.id }, { onConflict: 'user_id', ignoreDuplicates: true });
+        if (error) throw error;
+        try { Object.keys(localStorage).filter(x => x.startsWith('planbiz.')).forEach(x => localStorage.removeItem(x)); } catch (e2) { }
+        await sb.auth.signOut();
+        authMsg = '✓ Tes business plans sont effacés et ta demande de suppression du compte est enregistrée.'; authMode = 'login'; renderAuth();
+      } catch (err) { toast('Suppression impossible : ' + (err.message || err)); }
+    });
+  }
   else if (k === 'demo') { startDemo(); }
   else if (k === 'tour') { const m = document.querySelector('.menu-pop'); if (m) m.remove(); if (window.PBTour) PBTour.start(); }
   else if (k === 'leaveDemo') { leaveDemo('signup'); }
@@ -225,7 +269,7 @@ document.addEventListener('click', async e => {
   else if (k === 'menu') {
     const old = document.querySelector('.menu-pop'); if (old) { old.remove(); return; }
     const m = document.createElement('div'); m.className = 'menu-pop';
-    m.innerHTML = `<p class="small muted">${esc(demo ? 'Mode démo' : user ? user.email : 'Mode local')}</p><button data-pb="hub">Mes business</button><button data-pb="tour">Visite guidée</button><button data-pb="video">Vidéo de démonstration</button>${demo ? '<button data-pb="leaveDemo">Créer mon compte</button>' : sb ? '<button data-pb="logout">Se déconnecter</button>' : ''}`;
+    m.innerHTML = `<p class="small muted">${esc(demo ? 'Mode démo' : user ? user.email : 'Mode local')}</p><button data-pb="hub">Mes business</button><button data-pb="tour">Visite guidée</button><button data-pb="video">Vidéo de démonstration</button>${demo ? '<button data-pb="leaveDemo">Créer mon compte</button>' : sb ? '<button data-pb="logout">Se déconnecter</button><a class="menu-link" href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a><button data-pb="delAccount" class="danger">Supprimer mon compte</button>' : ''}`;
     t.parentElement.appendChild(m);
   }
   else if (k === 'dup') { try { const r = await store.get(id); const d = r.data; d.id = Object.assign({}, d.id, { nom: (d.id.nom || r.name) + ' (copie)' }); await store.create(r.name + ' (copie)', d); openHub(); toast('Business dupliqué.'); } catch (err) { toast('Duplication impossible.'); } }

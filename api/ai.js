@@ -31,6 +31,14 @@ module.exports = async function handler(req, res) {
   } catch (e) { res.status(502).send('Vérification du compte impossible.'); return; }
   if (!ok) { res.status(429).send(help ? `Limite de ${limit} messages d'aide par jour atteinte. Réessaie demain.` : `Limite de ${limit} demandes IA par jour atteinte. Réessaie demain.`); return; }
 
+  // 1 bis) question d'aide conservée sans identifiant (pour améliorer l'outil)
+  if (help && Array.isArray(body.messages) && body.messages.length) {
+    const last = body.messages[body.messages.length - 1];
+    if (last && last.role === 'user' && typeof last.content === 'string') {
+      fetch(`${SUPABASE_URL}/rest/v1/rpc/log_ai_question`, { method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_KEY, authorization: auth }, body: JSON.stringify({ p_section: String(body.section || '').slice(0, 40), p_question: last.content.slice(0, 500) }) }).catch(() => { });
+    }
+  }
+
   // 2) appel Claude en streaming
   let messages, system;
   if (help) {

@@ -200,7 +200,7 @@ async function runAI(kind, btn) {
       out.innerHTML = aiPreview('swot', d); window.__ai_swot = d;
     }
   } catch (e) {
-    const msg = { not_granted: 'Accès à Claude refusé pour cette page.', rate_limited: 'Trop de demandes : réessaie dans une minute.', invalid_json: 'Réponse illisible : relance la génération.', cancelled: 'Génération arrêtée.' }[e && e.code] || ('L\'IA n\'a pas pu répondre' + (e && e.message ? ' : ' + e.message : '.'));
+    const msg = { consent_refused: 'Envoi à l\'IA refusé : tu peux remplir cette partie sans l\'IA.', not_granted: 'Session expirée : reconnecte-toi pour utiliser l\'IA.', rate_limited: 'Trop de demandes : réessaie dans une minute.', invalid_json: 'Réponse illisible : relance la génération.', cancelled: 'Génération arrêtée.' }[e && e.code] || ('L\'IA n\'a pas pu répondre' + (e && e.message ? ' : ' + e.message : '.'));
     if (out) out.innerHTML = `<div class="al warn">${esc(msg)}</div>`; else toast(msg);
   } finally { btn.disabled = false; btn.textContent = old; }
 }
