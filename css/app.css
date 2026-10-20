@@ -543,3 +543,24 @@ abbr.gl{text-decoration:underline dotted var(--primary);text-underline-offset:3p
 @media (max-width:860px){.ld-hero-in{grid-template-columns:minmax(0,1fr)}.ld-shot{display:none}.ld-steps,.ld-grid,.ld-who{grid-template-columns:minmax(0,1fr)}.ld-nav{display:none}.ld-hero{padding-block:40px 48px}.ld-sec,.ld-final{padding-block:44px}}
 @media (min-width:861px) and (max-width:1060px){.ld-who{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:420px){.ld-top .btn.ghost{display:none}}
+
+/* radar des financements */
+.rd-prof{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-start;justify-content:space-between}
+.rd-prof>div:first-child{min-width:0;flex:1 1 280px}
+.rd-tg{display:flex;flex-direction:column;gap:6px;font-size:13px}
+.rd-tg .chk{display:flex;gap:8px;align-items:center}
+.rd-h{font-size:20px;margin:22px 0 12px}
+.rd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:14px}
+.rd-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.rd-card.on{border-color:color-mix(in srgb,var(--primary) 45%,var(--line))}
+.rd-card header{display:flex;gap:10px;justify-content:space-between;align-items:flex-start}
+.rd-card h3{font-size:15.5px;line-height:1.3}
+.rd-pills{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.rd-amt{font-weight:600;font-size:14px;line-height:1.45;margin:0;color:var(--ink)}
+.rd-cond{margin:0;padding-left:18px;font-size:13px;line-height:1.5;color:var(--ink)}
+.rd-warn{margin:0;font-size:12.5px;color:var(--warn);background:var(--warn-soft);padding:6px 8px;border-radius:6px}
+.rd-card footer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:auto;padding-top:6px;border-top:1px solid var(--line)}
+.rd-card footer .small{min-width:0;flex:1 1 180px}
+.rd-src,.rd-note{margin:0}
+.rd-more{margin-top:22px}.rd-more summary{cursor:pointer;font-weight:600;margin-bottom:12px}
+.rd-disc{margin-top:18px;max-width:80ch}

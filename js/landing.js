@@ -11,6 +11,7 @@ const PBLanding = (() => {
       ['Mon dossier sera-t-il accepté par une banque ?', 'PlanBiz produit les documents que demandent généralement les banques et les programmes : prévisions de résultat, plan de trésorerie, bilan prévisionnel, plan de financement et hypothèses détaillées. La décision reste celle de la banque, qui juge aussi le projet et l\'équipe. PlanBiz n\'a pas encore de partenariat officiel avec une banque.'],
       ['Et pour Intelaka, qui demande 5 ans ?', 'Aujourd\'hui PlanBiz projette sur 3 ans. Le passage à 5 ans est prévu, justement pour les dossiers Intelaka.'],
       ['Quels statuts sont pris en charge ?', 'Auto-entrepreneur, SARL, SARL à associé unique, SAS, SA et coopérative. Tu peux changer de statut d\'une année à l\'autre, par exemple démarrer en auto-entrepreneur puis passer en SARL. La page « Choisir son statut » compare les options.'],
+      ['Comment trouver un financement adapté ?', 'Le Radar des financements, dans les ressources de l\'application, liste les programmes marocains (prêts, garanties, primes, prêts d\'honneur, accompagnement) et met en avant ceux qui correspondent à ton profil et à ton besoin. Chaque fiche indique les conditions, la date de vérification et le lien officiel. Vérifie toujours auprès de l\'organisme avant de déposer.'],
       ['Que puis-je exporter ?', 'Un rapport PDF complet avec graphiques, un fichier Excel, un pitch deck en PowerPoint ou en PDF, et une sauvegarde de ton projet que tu peux réimporter.'],
       ['Puis-je tester différents scénarios ?', 'Oui. Chaque projet a trois scénarios (pessimiste, réaliste, optimiste) et un simulateur pour tester une baisse des prix, une hausse des coûts, un retard de démarrage ou une hausse de l\'euro.']
     ]],
@@ -38,8 +39,8 @@ const PBLanding = (() => {
   ];
   const FEATS = [
     ['Fiscalité marocaine à jour', 'IS, cotisation minimale, CSS, TVA à l\'encaissement, CNSS, AMO, IR et loi de finances 2026.'],
-    ['Trésorerie mois par mois', 'Le mois où ta trésorerie est la plus basse, et le montant à financer pour passer ce cap.'],
-    ['Scénarios et stress tests', 'Pessimiste, réaliste, optimiste, et l\'effet d\'une baisse des prix ou d\'un retard.'],
+    ['Trésorerie et scénarios', 'Le mois où ta trésorerie est la plus basse, le montant à financer, et l\'effet d\'un scénario pessimiste.'],
+    ['Radar des financements', 'Une trentaine de programmes marocains vérifiés, triés selon ton profil : Intelaka, garanties Tamwilcom, primes TPME, prêts d\'honneur.'],
     ['Analyse comme un financeur', 'Une lecture critique de chaque partie, avec les questions qu\'un banquier te posera.'],
     ['Conformité et statuts', 'Ce qui te concerne dans la loi de finances, ton calendrier fiscal et la comparaison des statuts.'],
     ['Guides et glossaire', 'L\'essentiel de chaque étape, des conseils concrets et 255 termes expliqués simplement.']
