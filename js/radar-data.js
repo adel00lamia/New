@@ -29,9 +29,20 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
 "note": "Plafond et garantie confirmés par le kit du CRI Casablanca-Settat d'août 2026. Les taux de 2 % et 1,75 % datent du lancement en 2020, confirme-les avec ta banque. Demande aussi à la banque la durée de prévisionnel attendue (souvent 5 ans).",
-"min_inv": null,
-"max_inv": 1200000,
-"ca_max": 10000000
+"crit": [
+[
+"ca_max",
+10000000.0
+],
+[
+"age_max",
+5
+],
+[
+"credit_max",
+1200000.0
+]
+]
 },
 {
 "id": "damane-express",
@@ -55,9 +66,12 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://www.tamwilcom.ma",
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
-"min_inv": null,
-"max_inv": 1000000,
-"ca_max": null
+"crit": [
+[
+"pret_unit_max",
+1000000.0
+]
+]
 },
 {
 "id": "damane-istitmar",
@@ -80,9 +94,12 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://www.tamwilcom.ma",
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
-"min_inv": 1000000,
-"max_inv": null,
-"ca_max": null
+"crit": [
+[
+"pret_unit_min",
+1000000.0
+]
+]
 },
 {
 "id": "damane-atayssir",
@@ -102,9 +119,12 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://www.tamwilcom.ma",
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
-"min_inv": 1000000,
-"max_inv": 15000000,
-"ca_max": null
+"crit": [
+[
+"pret_unit_min",
+1000000.0
+]
+]
 },
 {
 "id": "ilayki-invest",
@@ -126,9 +146,16 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
 "note": "La presse de juin 2026 confirme que l'offre Ilayki est maintenue dans le plan Jossour 2030 de Tamwilcom.",
-"min_inv": 1000000,
-"max_inv": 5000000,
-"ca_max": null
+"crit": [
+[
+"toggle",
+"femme"
+],
+[
+"inv_min",
+2500000.0
+]
+]
 },
 {
 "id": "mdm-invest",
@@ -149,9 +176,20 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://www.tamwilcom.ma",
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
-"min_inv": 1000000,
-"max_inv": null,
-"ca_max": null
+"crit": [
+[
+"toggle",
+"mre"
+],
+[
+"inv_min",
+1000000.0
+],
+[
+"apport_min",
+0.2
+]
+]
 },
 {
 "id": "charte-tpme",
@@ -177,9 +215,28 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://fr.le360.ma/economie/charte-de-linvestissement-le-dispositif-de-soutien-aux-tpme-desormais-operationnel_GDNGOTXTA5E5RLGHRYQJD3XFUI/",
 "verifie_le": "2026-10-20",
 "note": "La plateforme de dépôt dépend de la région (CRI-Accompagnement à Casablanca-Settat). La prime est versée après réalisation des engagements.",
-"min_inv": 1000000,
-"max_inv": 50000000,
-"ca_max": 200000000
+"crit": [
+[
+"inv_min",
+1000000.0
+],
+[
+"inv_max",
+50000000.0
+],
+[
+"apport_min",
+0.1
+],
+[
+"emplois_par_mdh",
+1.5
+],
+[
+"ca_max",
+200000000.0
+]
+]
 },
 {
 "id": "pact-maroc-pme",
@@ -202,9 +259,12 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
 "note": "Les anciens programmes Imtiaz et Istitmar n'apparaissent plus dans les offres de 2026.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": 200000000
+"crit": [
+[
+"ca_max",
+200000000.0
+]
+]
 },
 {
 "id": "tatwir-rd",
@@ -227,10 +287,16 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://www.maroc.ma/fr/actualites/appel-projets-2026-2028-fonds-de-soutien-de-linnovation-programmes-dappui-linnovation-industrielle",
 "verifie_le": "2026-10-20",
 "note": "La fenêtre 2026 est close. Prépare ton dossier pour la fenêtre 2027.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": 200000000,
-"secteur": "industrie"
+"crit": [
+[
+"ca_max",
+200000000.0
+],
+[
+"secteur",
+"industrie"
+]
+]
 },
 {
 "id": "green-invest",
@@ -252,10 +318,12 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
 "note": "Réservé aux projets verts : vérifie que ton activité entre dans le champ.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null,
-"secteur": "vert"
+"crit": [
+[
+"secteur",
+"vert"
+]
+]
 },
 {
 "id": "cap-access",
@@ -278,9 +346,16 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
 "note": "Le taux 2026 n'est pas publié, seul celui des dossiers 2025 est connu.",
-"min_inv": 3000000,
-"max_inv": null,
-"ca_max": 500000000
+"crit": [
+[
+"ca_min",
+10000000.0
+],
+[
+"age_min",
+3
+]
+]
 },
 {
 "id": "svb-bourses",
@@ -302,9 +377,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
 "note": "Il n'existe pas de plateforme de candidature centrale, il faut passer par un opérateur.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "svb-prets",
@@ -325,9 +398,12 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://www.technopark.ma",
 "source": "https://telquel.ma/sponsors/technopark-et-tamwilcom-la-mecanique-du-startup-venture-building_1982534",
 "verifie_le": "2026-10-20",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": [
+[
+"apport_min",
+0.1
+]
+]
 },
 {
 "id": "tech-start-boost",
@@ -348,9 +424,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://fnh.ma/article/actualite-economique/fonds-innov-invest-maroc-startups-590-mdh",
 "verifie_le": "2026-10-20",
 "note": "Tamwilcom a présenté le bilan final du Fonds Innov Invest le 17 septembre 2026. Les nouveaux financements startups passent désormais surtout par le Startup Venture Building.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "vc-digital-2030",
@@ -371,9 +445,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://fr.hespress.com/453855-maroc-digital-2030-13-mmdh-pour-developper-lecosysteme-startup-marocain.html",
 "verifie_le": "2026-10-20",
 "note": "Aucun nom de fonds ni procédure officielle trouvés à ce jour.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "forsa",
@@ -397,9 +469,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://www.leconomiste.com/report-du-remboursement-des-prets-forsa-deja-4-000-demandes/",
 "verifie_le": "2026-10-20",
 "note": "En 2026, la seule actualité concerne le report des remboursements. Aucun appel à candidatures 2024, 2025 ou 2026 n'a été trouvé.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "indh-jeunes",
@@ -422,11 +492,19 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://fr.hespress.com/468414-468414.html",
 "verifie_le": "2026-10-20",
 "note": "Les dates et critères varient selon la province. Renseigne-toi auprès de la division de l'action sociale ou de la plateforme des jeunes de ta province.",
-"min_inv": null,
-"max_inv": 120000,
-"ca_max": null,
-"requiert": [
+"crit": [
+[
+"toggle",
 "jeune"
+],
+[
+"inv_max",
+111000
+],
+[
+"apport_min",
+0.1
+]
 ]
 },
 {
@@ -448,9 +526,12 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://www.indh.ma",
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": [
+[
+"apport_min",
+0.1
+]
+]
 },
 {
 "id": "odco-cooperatives",
@@ -471,9 +552,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://fr.hespress.com/480028-480028.html",
 "verifie_le": "2026-10-20",
 "note": "Pour un financement, les coopératives passent plutôt par l'INDH.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "tahfiz",
@@ -498,9 +577,12 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
 "note": "Si tu crées ta société en 2027, vérifie si le dispositif a été prolongé ou remplacé par la nouvelle prime à l'embauche annoncée.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": [
+[
+"cree_avant",
+"2026-12-31"
+]
+]
 },
 {
 "id": "idmaj",
@@ -524,9 +606,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://www.anapec.org",
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "reseau-entreprendre",
@@ -551,9 +631,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://telquel.ma/instant-t/2026/01/30/le-reseau-entreprendre-maroc-fetera-ses-20-ans-le-6-fevrier-a-marrakech_1973271/",
 "verifie_le": "2026-10-20",
 "note": "Plus de 44 MDH octroyés à 450 lauréats depuis 2005.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "dar-al-moukawil",
@@ -576,9 +654,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://www.attijariwafabank.com",
 "source": "https://www.attijariwafabank.com/sites/default/files/publication/2025-11/CP%20VF%20-%20Inauguration%20DAM%20Dakhla%20VRevue%201611.pdf",
 "verifie_le": "2026-10-20",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "al-moukawil-chaabi",
@@ -601,9 +677,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://lematin.ma/economie/la-banque-populaire-ouvre-ses-premiers-centres-al-moukawil-chaabi/327197/amp",
 "verifie_le": "2026-10-20",
 "note": "Disponible pour l'instant dans les villes déjà équipées.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "boost-up-lab",
@@ -625,9 +699,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://menastartupdigest.com/?p=47814",
 "verifie_le": "2026-10-20",
 "note": "Source non officielle. Confirme les dates de ta région auprès de Technopark.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "ignite-morocco",
@@ -648,9 +720,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "lien": "https://flat6labs.com/program/ignite-morocco/",
 "source": "https://flat6labs.com/program/ignite-morocco/",
 "verifie_le": "2026-10-20",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "orange-corners",
@@ -671,9 +741,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://menastartupdigest.com/?p=24991",
 "verifie_le": "2026-10-20",
 "note": "Source non officielle. Aucun appel 2026 confirmé.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "um6p-launch-space",
@@ -694,9 +762,7 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://menastartupdigest.com/?p=51153",
 "verifie_le": "2026-10-20",
 "note": "La fenêtre 2026 est close. Surveille l'édition 2027.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null
+"crit": []
 },
 {
 "id": "go-siyaha",
@@ -719,10 +785,16 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://casainvest.ma/sites/default/files/Kit_ccompagnement_Entreprise_aout_2026.pdf",
 "verifie_le": "2026-10-20",
 "note": "Réservé aux projets touristiques.",
-"min_inv": null,
-"max_inv": 10000000,
-"ca_max": null,
-"secteur": "tourisme"
+"crit": [
+[
+"secteur",
+"tourisme"
+],
+[
+"inv_max",
+10000000.0
+]
+]
 },
 {
 "id": "generation-green-jeunes",
@@ -745,12 +817,15 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://medias24.com/2025/08/08/pres-de-12-000-jeunes-deja-accompagnes-dans-des-projets-agricoles/",
 "verifie_le": "2026-10-20",
 "note": "Les aides du FDA complètent ces montants selon la filière. Consulte la direction régionale de l'agriculture.",
-"min_inv": null,
-"max_inv": null,
-"ca_max": null,
-"requiert": [
-"jeune",
+"crit": [
+[
+"toggle",
+"jeune"
+],
+[
+"secteur",
 "agriculture"
+]
 ]
 },
 {
@@ -777,8 +852,6 @@ const RADAR_DATA = { maj: '2026-10-20', items: [
 "source": "https://www.ammc.ma/fr/crowdfunding/faq",
 "verifie_le": "2026-10-20",
 "note": "Consulte la liste officielle des plateformes agréées sur les sites de l'AMMC et de Bank Al-Maghrib avant de choisir.",
-"min_inv": null,
-"max_inv": 5000000,
-"ca_max": null
+"crit": []
 }
 ] };
