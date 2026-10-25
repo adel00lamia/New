@@ -62,7 +62,8 @@ window.PB = {
   isDemo: () => demo, hasAccount: () => !!user, email: () => user ? user.email : '', currentName: () => current ? current.name : '',
   async startDemo() { await startDemo(); },
   async token() { if (!sb) return ''; const { data } = await sb.auth.getSession(); return data.session ? data.session.access_token : ''; },
-  aiConsent
+  aiConsent,
+  client: () => sb, userId: () => (user ? user.id : null), currentId: () => (current ? current.id : null)
 };
 
 /* ---------- consentement IA (loi 09-08) ---------- */
@@ -275,7 +276,7 @@ document.addEventListener('click', async e => {
   else if (k === 'menu') {
     const old = document.querySelector('.menu-pop'); if (old) { old.remove(); return; }
     const m = document.createElement('div'); m.className = 'menu-pop';
-    m.innerHTML = `<p class="small muted">${esc(demo ? 'Mode démo' : user ? user.email : 'Mode local')}</p><button data-pb="hub">Mes business</button><button data-pb="tour">Visite guidée</button><button data-pb="video">Vidéo de démonstration</button>${demo ? '<button data-pb="leaveDemo">Créer mon compte</button>' : sb ? '<button data-pb="logout">Se déconnecter</button><a class="menu-link" href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a><button data-pb="delAccount" class="danger">Supprimer mon compte</button>' : ''}`;
+    m.innerHTML = `<p class="small muted">${esc(demo ? 'Mode démo' : user ? user.email : 'Mode local')}</p><button data-pb="hub">Mes business</button><button data-pb="tour">Visite guidée</button><button data-pb="video">Vidéo de démonstration</button>${demo ? '<button data-pb="leaveDemo">Créer mon compte</button>' : sb ? (window.PLANBIZ_CONFIG && PLANBIZ_CONFIG.payments && PLANBIZ_CONFIG.payments.enabled ? '<button data-pay="open">Offres et paiement</button>' : '') + '<button data-pb="logout">Se déconnecter</button><a class="menu-link" href="/legal.html" target="_blank" rel="noopener">Mentions légales et confidentialité</a><button data-pb="delAccount" class="danger">Supprimer mon compte</button>' : ''}`;
     t.parentElement.appendChild(m);
   }
   else if (k === 'dup') { try { const r = await store.get(id); const d = r.data; d.id = Object.assign({}, d.id, { nom: (d.id.nom || r.name) + ' (copie)' }); await store.create(r.name + ' (copie)', d); openHub(); toast('Business dupliqué.'); } catch (err) { toast('Duplication impossible.'); } }

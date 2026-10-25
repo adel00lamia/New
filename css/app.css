@@ -572,3 +572,18 @@ abbr.gl{text-decoration:underline dotted var(--primary);text-underline-offset:3p
 .rd-src,.rd-note{margin:0}
 .rd-more{margin-top:22px}.rd-more summary{cursor:pointer;font-weight:600;margin-bottom:12px}
 .rd-disc{margin-top:18px;max-width:80ch}
+
+/* offres et paiement */
+.modal.pay{max-width:760px;width:100%}
+.pay-plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 10px}
+.pay-plan{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;justify-content:space-between;min-width:0}
+.pay-plan.hi{border-color:var(--primary);box-shadow:0 0 0 1px var(--primary) inset}
+.pay-plan p{margin:2px 0 0}
+.pay-price{font-size:12.5px;color:var(--muted)}.pay-price span{font-family:var(--mono);font-size:22px;color:var(--ink)}
+.pay-vir{border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0;background:var(--surface2)}
+.pay-vir dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 14px;margin:10px 0;font-size:13.5px}.pay-vir dt{color:var(--muted)}.pay-vir dd{margin:0;overflow-wrap:anywhere}
+.pay-code{margin:12px 0 6px;display:flex;flex-direction:column;gap:6px}.pay-code .row .in{flex:1 1 200px;font-family:var(--mono)}
+.menu-pop button[data-pay]{border:0;background:none;text-align:left;padding:8px;border-radius:6px;color:var(--ink);font-size:13px}
+.menu-pop button[data-pay]:hover{background:var(--surface2)}
+.ld-price.hi{border-top-color:var(--accent)}.ld-pp{font-size:13px;color:var(--muted)!important;margin:2px 0 8px!important}.ld-pp b{font-family:var(--mono);font-size:24px;color:var(--ink)}
+@media (max-width:720px){.pay-plans{grid-template-columns:minmax(0,1fr)}}

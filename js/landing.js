@@ -22,7 +22,7 @@ const PBLanding = (() => {
       ['L\'assistant parle-t-il arabe ou anglais ?', 'L\'interface est en français, mais l\'assistant répond dans la langue de ta question.']
     ]],
     ['Compte, prix et données', [
-      ['PlanBiz est-il gratuit ?', 'Oui, pendant la phase de lancement. Des offres payantes viendront pour des besoins avancés. Tes projets resteront à toi et exportables.'],
+      ['PlanBiz est-il gratuit ?', (window.PLANBIZ_CONFIG && PLANBIZ_CONFIG.payments && PLANBIZ_CONFIG.payments.enabled) ? 'La version Découverte est gratuite : tous les calculs, les guides, le Radar et l\'aperçu du dossier à l\'écran. Les exports (rapport PDF, Excel, pitch deck) font partie du Pass Dossier, payé une fois pour un projet, ou de PlanBiz Pro pour les professionnels.' : 'Oui, pendant la phase de lancement. Des offres payantes viendront pour des besoins avancés. Tes projets resteront à toi et exportables.'],
       ['Où sont stockées mes données ?', 'Dans un centre de données à Paris. Toi seul accèdes à tes business plans depuis l\'application. Nous ne vendons aucune donnée et n\'affichons aucune publicité.'],
       ['Puis-je essayer sans créer de compte ?', 'Oui, avec la démo : un business plan d\'exemple complet, à explorer librement. Rien n\'y est enregistré.'],
       ['Comment supprimer mon compte ?', 'Depuis le menu de ton compte, « Supprimer mon compte ». Tes business plans sont effacés immédiatement, et le compte sous 30 jours au plus.'],
@@ -51,6 +51,16 @@ const PBLanding = (() => {
     ['Startup', 'Tu prépares une levée : pitch deck, table de capitalisation et valorisation.'],
     ['Coopérative et TPE', 'Tu veux chiffrer un nouveau projet ou convaincre un partenaire.']
   ];
+
+  function pricing() {
+    const P = window.PLANBIZ_CONFIG && PLANBIZ_CONFIG.payments;
+    if (!P || !P.enabled) return '';
+    const nf = new Intl.NumberFormat('fr-FR');
+    const card = (t, price, unit, d, hi) => `<div class="ld-card ld-price ${hi ? 'hi' : ''}"><h3>${esc(t)}</h3><p class="ld-pp"><b>${price}</b> ${esc(unit)}</p><p>${esc(d)}</p></div>`;
+    return `<section class="ld-sec" id="ld-tarifs"><div class="ld-wrap"><p class="eyebrow">Tarifs</p><h2>Commence gratuitement, paie quand ton dossier est prêt</h2>
+      <div class="ld-grid">${card('Découverte', '0', 'DH', 'Tous les calculs, les guides, le Radar des financements et l\'aperçu du dossier à l\'écran.')}${P.plans.pass ? card(P.plans.pass.label, nf.format(P.plans.pass.price), P.plans.pass.unit, P.plans.pass.detail + ' : rapport PDF, Excel et pitch deck.', true) : ''}${P.plans.pro ? card(P.plans.pro.label, nf.format(P.plans.pro.price), P.plans.pro.unit, P.plans.pro.detail + '.') : ''}</div>
+      <p class="small muted" style="margin-top:12px">Paiement par ${P.card ? 'carte bancaire ou ' : ''}virement. <a href="/legal.html#vente" target="_blank" rel="noopener">Conditions de vente</a></p></div></section>`;
+  }
 
   function render() {
     const el = document.getElementById('landing'); if (!el) return;
@@ -85,6 +95,7 @@ const PBLanding = (() => {
       <div class="ld-next"><div><b>Bientôt : PlanBiz Suivi</b><p>Une fois l'entreprise lancée, compare chaque mois ton réel à ton plan, reçois une alerte avant un trou de trésorerie et partage un suivi clair avec ta fiduciaire ou ta banque.</p></div></div>
     </div></section>
 
+    ${pricing()}
     <section class="ld-sec ld-alt" id="ld-faq"><div class="ld-wrap ld-faq">
       <p class="eyebrow">Questions fréquentes</p><h2>Tout ce que tu te demandes</h2>
       ${faqHTML({ openFirst: true })}
