@@ -12,8 +12,8 @@ const SITE = (process.env.SITE_URL || 'https://planbiz.vercel.app').replace(/\/$
 
 // Prix TTC en dirhams et durée d'accès. À garder identiques à js/config.js (affichage).
 const PLANS = {
-  pass: { label: 'Pass Dossier', amount: 490, days: 92 },
-  pro: { label: 'PlanBiz Pro (1 an)', amount: 3480, days: 366 }
+  pass: { label: 'Pass Dossier', amount: 49, days: 92 },
+  pro: { label: 'PlanBiz Pro (1 an)', amount: 199, days: 366 }
 };
 
 async function userFromToken(auth) {
