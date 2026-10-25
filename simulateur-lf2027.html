@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulateur PLF 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Simule l'effet du projet de loi de finances 2027 sur ton salaire net, ta masse salariale ou ta trésorerie d'importateur, année par année jusqu'en 2031.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : une colonne, onglets par profil, saisie à gauche et résultats à droite sur grand écran */
+:root{--bg:#F2F5F4;--surface:#FFFFFF;--surface2:#EAF0F0;--ink:#0F1F23;--muted:#56686D;--line:#D5DFE0;--primary:#0B5B57;--primary-ink:#FFFFFF;--primary-soft:#DDEEEB;--accent:#C27B2A;--accent-soft:#F7EAD6;--good:#23794A;--good-soft:#DFF1E6;--warn:#A86A12;--warn-soft:#FBEFD8;--bar0:#B9C6C8;
+--display:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0C1416;--surface:#132024;--surface2:#1A2B30;--ink:#E5EEEF;--muted:#94A7AB;--line:#26393E;--primary:#5BB8BF;--primary-ink:#06191C;--primary-soft:#173A3E;--accent:#E5A64E;--accent-soft:#3A2B16;--good:#4CC27E;--good-soft:#16301F;--warn:#E3A74A;--warn-soft:#2E2414;--bar0:#3A4C51;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0C1416;--surface:#132024;--surface2:#1A2B30;--ink:#E5EEEF;--muted:#94A7AB;--line:#26393E;--primary:#5BB8BF;--primary-ink:#06191C;--primary-soft:#173A3E;--accent:#E5A64E;--accent-soft:#3A2B16;--good:#4CC27E;--good-soft:#16301F;--warn:#E3A74A;--warn-soft:#2E2414;--bar0:#3A4C51;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.1;margin:6px 0 10px}
+h2{font-size:19px;margin-bottom:10px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0}
+.lead{max-width:68ch;color:var(--muted);margin:0 0 14px}
+.note{background:var(--warn-soft);color:var(--ink);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:10px;padding:10px 14px;font-size:13.5px;max-width:860px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:22px 0 14px}
+.tabs button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 16px;font:500 14px var(--body);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--primary);border-color:var(--primary);color:var(--primary-ink)}
+.tabs button:focus-visible,input:focus-visible,select:focus-visible,label.chk:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.f{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.f label{font-weight:600;font-size:13.5px}
+.f small{color:var(--muted);font-size:12.5px}
+input[type=number],select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:9px 10px;font:15px var(--mono)}
+select{font-family:var(--body)}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin-bottom:10px}
+.chk input{margin-top:3px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px}
+.tile small{display:block;color:var(--muted);font-size:12px}
+.tile b{display:block;font:500 20px var(--mono);font-variant-numeric:tabular-nums;margin-top:2px}
+.tile span{font-size:12px;color:var(--muted)}
+.tile.good b{color:var(--good)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+td.pos{color:var(--good);font-weight:600}
+tr.base td{color:var(--muted)}
+.chart{margin:6px 0 14px}
+.chart svg{width:100%;height:auto;display:block}
+.small{font-size:12.5px;color:var(--muted)}
+.measures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.measures .card h3{font-size:15px;margin-bottom:6px}
+.measures .card p{margin:0;font-size:13.5px;color:var(--muted)}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--primary-soft);color:var(--primary);margin-bottom:6px}
+.src{margin-top:26px;font-size:12.5px;color:var(--muted)}
+.src a{color:var(--primary)}
+[hidden]{display:none!important}
+@media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:minmax(0,1fr)}.measures{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">PlanBiz · projet de loi de finances 2027</p>
+  <h1>Ce que le PLF 2027 change pour toi</h1>
+  <p class="lead">Saisis ton salaire, ta masse salariale ou tes importations. Le simulateur compare 2026 avec chaque année de la réforme de l'IR, jusqu'au barème définitif de 2031.</p>
+  <p class="note"><b>Projet de loi, pas encore voté.</b> Les chiffres viennent du texte présenté le 23 octobre 2026 tel que rapporté par la presse. Le Parlement peut les modifier d'ici fin décembre. Ce simulateur donne un ordre de grandeur, pas un calcul de paie officiel.</p>
+
+  <div class="tabs" role="tablist" aria-label="Profil">
+    <button role="tab" id="t-sal" aria-selected="true" aria-controls="p-sal">Je suis salarié</button>
+    <button role="tab" id="t-emp" aria-selected="false" aria-controls="p-emp">J'emploie des salariés</button>
+    <button role="tab" id="t-imp" aria-selected="false" aria-controls="p-imp">J'importe pour revendre</button>
+  </div>
+
+  <!-- Salarié -->
+  <section id="p-sal" role="tabpanel" aria-labelledby="t-sal">
+    <div class="grid">
+      <div class="card">
+        <div class="f"><label for="s-brut">Salaire brut mensuel (DH)</label><input id="s-brut" type="number" min="0" step="100" value="10000"><small>Le brut figure en haut de ta fiche de paie.</small></div>
+        <div class="f"><label for="s-dep">Personnes à charge</label><select id="s-dep"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><small>Conjoint et enfants, 6 au maximum.</small></div>
+        <label class="chk"><input type="checkbox" id="s-cnss" checked> <span>Affilié à la CNSS</span></label>
+        <label class="chk"><input type="checkbox" id="s-fp27"> <span>Appliquer la déduction de frais professionnels à 45 % dès 2027<br><small class="small">Par défaut, elle s'applique à partir de 2031, avec le barème définitif.</small></span></label>
+      </div>
+      <div class="card" aria-live="polite">
+        <div class="tiles" id="s-tiles"></div>
+        <div class="chart" id="s-chart"></div>
+        <div class="tw"><table id="s-table"></table></div>
+        <p class="small" id="s-foot"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Employeur -->
+  <section id="p-emp" role="tabpanel" aria-labelledby="t-emp" hidden>
+    <div class="grid">
+      <div class="card">
+        <p class="small" style="margin:0 0 12px">Ajoute tes postes par niveau de salaire. Le coût employeur ne change pas : la baisse de l'IR augmente directement le net de tes salariés.</p>
+        <div id="e-rows"></div>
+        <button type="button" id="e-add" class="tabs-like" style="border:1px dashed var(--line);background:transparent;color:var(--primary);border-radius:8px;padding:8px 12px;font:500 13.5px var(--body);cursor:pointer">+ Ajouter un niveau de salaire</button>
+      </div>
+      <div class="card" aria-live="polite">
+        <div class="tiles" id="e-tiles"></div>
+        <div class="tw"><table id="e-table"></table></div>
+        <p class="small" id="e-foot"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Importateur -->
+  <section id="p-imp" role="tabpanel" aria-labelledby="t-imp" hidden>
+    <div class="grid">
+      <div class="card">
+        <div class="f"><label for="i-val">Importations annuelles de marchandises revendues en l'état (DH, valeur en douane)</label><input id="i-val" type="number" min="0" step="10000" value="2000000"></div>
+        <div class="f"><label for="i-tax">Impôt annuel dû sur ton activité (IS, ou IR professionnel) (DH)</label><input id="i-tax" type="number" min="0" step="1000" value="60000"><small>L'avance s'impute sur cet impôt. Ce qui dépasse est restituable, mais immobilise ta trésorerie en attendant.</small></div>
+        <label class="chk"><input type="checkbox" id="i-reg"> <span>J'ai une attestation de régularité fiscale<br><small class="small">Le texte prévoit une dispense possible au bout de 60 mois pour les importateurs en règle.</small></span></label>
+      </div>
+      <div class="card" aria-live="polite">
+        <div class="tiles" id="i-tiles"></div>
+        <div class="tw"><table id="i-table"></table></div>
+        <p class="small" id="i-foot"></p>
+      </div>
+    </div>
+  </section>
+
+  <h2 style="margin-top:34px">Les autres mesures du PLF 2027</h2>
+  <div class="measures">
+    <div class="card"><span class="tag">Toutes les entreprises</span><h3>Pas de changement annoncé pour l'IS des PME</h3><p>Aucune modification de l'IS à 20 % et 35 %, de la cotisation minimale ou de la CSS n'est rapportée. Seuls les importateurs et distributeurs d'hydrocarbures dont le bénéfice atteint 100 MDH passeraient à 40 %.</p></div>
+    <div class="card"><span class="tag">Secteur informel</span><h3>Régularisation sans pénalité en 2027</h3><p>Un exploitant informel qui s'inscrit à la taxe professionnelle en 2027 n'est imposé qu'à partir de son inscription, sans poursuites pour les années passées.</p></div>
+    <div class="card"><span class="tag">Fournisseurs</span><h3>Remboursement de la TVA retenue en trop</h3><p>Quand la TVA retenue à la source dépasse la TVA réellement due, l'excédent devient remboursable sur demande.</p></div>
+    <div class="card"><span class="tag">Salariés et employeurs</span><h3>Indemnités mieux encadrées</h3><p>Seules les indemnités qui remboursent des frais justifiés restent exonérées. Les indemnités permanentes deviennent imposables comme du salaire, avec le barème de 2031.</p></div>
+    <div class="card"><span class="tag">Particuliers</span><h3>Voitures de luxe et cigarettes électroniques</h3><p>Le droit de timbre sur les voitures de plus de 400 000 DH passe de 5–20 % à 6–24 %. La taxe sur les cigarettes électroniques double, de 50 à 100 DH par unité.</p></div>
+    <div class="card"><span class="tag">Immobilier</span><h3>TVA sur la marge pour les marchands de biens</h3><p>Les professionnels qui achètent des immeubles bâtis pour les revendre pourront opter pour une TVA calculée sur leur marge.</p></div>
+  </div>
+
+  <p class="src">Sources : <a href="https://fr.le360.ma/economie/reforme-de-lir-les-nouveaux-baremes-de-2027-a-2030-etape-par-etape-vers-un-taux-maximal-de-30_IV4K3SYWDRFLTKETNA4TORQQOY/" target="_blank" rel="noopener">Le360, barèmes 2027-2030</a>, <a href="https://auditcloud.ma/2026/10/23/projet-de-loi-de-finances-2027-les-principales-mesures-a-retenir/" target="_blank" rel="noopener">AuditCloud, barème 2031 et avance à l'import</a>, <a href="https://medias24.com/2026/10/23/plf2027-ir-is-tva-voici-les-principales-mesures-fiscales-proposes-par-le-gouvernement-mansouri-1783297/" target="_blank" rel="noopener">Médias24, mesures fiscales</a>, <a href="https://lematin.ma/economie/plf-2027-voici-les-principales-dispositions-fiscales-et-douanieres/371991" target="_blank" rel="noopener">Le Matin, dispositions fiscales et douanières</a>. Barème 2026 et cotisations : règles en vigueur (LF 2025 et LF 2026). Simulation mise à jour le 25 octobre 2026.</p>
+</div>
+
+<script>
+(() => {
+  // ---------- règles ----------
+  // Barèmes annuels sur le revenu net imposable : [plafond de tranche, taux]
+  const BAREME = {
+    2026: [[40000, 0], [60000, .10], [80000, .20], [100000, .30], [180000, .34], [Infinity, .37]],
+    2027: [[60000, 0], [80000, .10], [100000, .20], [180000, .34], [Infinity, .37]],
+    2028: [[60000, 0], [100000, .10], [200000, .25], [Infinity, .37]],
+    2029: [[60000, 0], [130000, .10], [200000, .20], [Infinity, .35]],
+    2030: [[60000, 0], [150000, .10], [200000, .20], [Infinity, .30]],
+    2031: [[60000, 0], [150000, .10], [500000, .20], [Infinity, .30]]
+  };
+  const YEARS = [2026, 2027, 2028, 2029, 2030, 2031];
+  const CNSS = { plafond: 6000, capRate: .0448 + .0019, allRate: .0226 }; // prestations sociales + IPE plafonnés, AMO déplafonnée
+  const FAM = { per: 500, max: 6 };
+
+  const irBareme = (t, y) => { let tax = 0, lo = 0; for (const [hi, r] of BAREME[y]) { if (t > lo) tax += (Math.min(t, hi) - lo) * r; lo = hi; } return tax; };
+  function salaire(brutM, dep, cnss, y, fp27) {
+    const cs = cnss ? Math.min(brutM, CNSS.plafond) * CNSS.capRate + brutM * CNSS.allRate : 0;
+    const fp45 = y >= 2031 || (fp27 && y >= 2027);
+    const fpRate = fp45 ? .45 : (brutM * 12 <= 78000 ? .35 : .25);
+    const fp = Math.min(brutM * fpRate, 35000 / 12);
+    const taxable = Math.max(0, brutM - cs - fp) * 12;
+    const ir = Math.max(0, irBareme(taxable, y) - Math.min(dep, FAM.max) * FAM.per) / 12;
+    return { cs, fp, taxable, ir, net: brutM - cs - ir };
+  }
+
+  // ---------- formats ----------
+  const nf0 = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+  const dh = v => nf0.format(Math.round(v)) + ' DH';
+  const sgn = v => (v > 0.5 ? '+' : '') + dh(v);
+  const $ = id => document.getElementById(id);
+  const num = id => Math.max(0, parseFloat($(id).value) || 0);
+  const store = { get(k) { try { return JSON.parse(localStorage.getItem('plf27.' + k)); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem('plf27.' + k, JSON.stringify(v)); } catch (e) { } } };
+
+  // ---------- graphique en barres (net mensuel par année) ----------
+  function bars(rows) {
+    const W = 640, H = 220, L = 8, B = 30, T = 26, max = Math.max(...rows.map(r => r.v)) || 1, min = Math.min(...rows.map(r => r.v));
+    const lo = Math.max(0, min - (max - min) * 1.5 - max * 0.02), bw = (W - L * 2) / rows.length;
+    const y = v => T + (H - T - B) * (1 - (v - lo) / (max - lo || 1));
+    return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Salaire net mensuel par année"><line x1="0" x2="${W}" y1="${H - B}" y2="${H - B}" stroke="var(--line)"/>${rows.map((r, i) => { const x = L + i * bw + bw * .18, w = bw * .64, yy = y(r.v); return `<rect x="${x}" y="${yy}" width="${w}" height="${H - B - yy}" rx="3" fill="${i === 0 ? 'var(--bar0)' : 'var(--primary)'}" fill-opacity="${i === 0 ? 1 : .45 + .55 * i / (rows.length - 1)}"><title>${r.l} : ${dh(r.v)} net par mois</title></rect><text x="${x + w / 2}" y="${yy - 7}" text-anchor="middle" font-size="12" font-family="var(--mono)" fill="var(--ink)">${nf0.format(Math.round(r.v))}</text><text x="${x + w / 2}" y="${H - 10}" text-anchor="middle" font-size="12" fill="var(--muted)">${r.l}</text>`; }).join('')}</svg>`;
+  }
+
+  // ---------- salarié ----------
+  function renderSal() {
+    const brut = num('s-brut'), dep = +$('s-dep').value, cnss = $('s-cnss').checked, fp27 = $('s-fp27').checked;
+    store.set('sal', { brut, dep, cnss, fp27 });
+    const r = YEARS.map(y => ({ y, ...salaire(brut, dep, cnss, y, fp27) }));
+    const base = r[0];
+    $('s-tiles').innerHTML = `<div class="tile"><small>Net mensuel en 2026</small><b>${dh(base.net)}</b><span>IR : ${dh(base.ir)} par mois</span></div>
+      <div class="tile good"><small>Gain mensuel en 2027</small><b>${sgn(r[1].net - base.net)}</b><span>soit ${sgn((r[1].net - base.net) * 12)} sur l'année</span></div>
+      <div class="tile good"><small>Gain mensuel en 2031</small><b>${sgn(r[5].net - base.net)}</b><span>soit ${sgn((r[5].net - base.net) * 12)} sur l'année</span></div>`;
+    $('s-chart').innerHTML = brut > 0 ? bars(r.map(x => ({ l: String(x.y), v: x.net }))) : '';
+    $('s-table').innerHTML = `<thead><tr><th>Année</th><th>IR mensuel</th><th>Net mensuel</th><th>Gain par mois</th><th>Gain par an</th></tr></thead><tbody>${r.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}"><td>${x.y}${i === 0 ? ' (actuel)' : x.y === 2031 ? ' (définitif)' : ''}</td><td>${dh(x.ir)}</td><td>${dh(x.net)}</td><td class="${i && x.net - base.net > 0.5 ? 'pos' : ''}">${i ? sgn(x.net - base.net) : '—'}</td><td class="${i && x.net - base.net > 0.5 ? 'pos' : ''}">${i ? sgn((x.net - base.net) * 12) : '—'}</td></tr>`).join('')}</tbody>`;
+    $('s-foot').textContent = `Revenu net imposable en 2026 : ${dh(base.taxable)} par an. Cotisations salariales CNSS et AMO : ${dh(base.cs)} par mois. Le ministre a aussi annoncé l'exonération des salaires nets de moins de 10 000 DH dès 2027, mais cette mesure n'apparaît pas dans le barème publié : elle n'est pas prise en compte ici.`;
+  }
+
+  // ---------- employeur ----------
+  let emp = store.get('emp') || [{ n: 4, b: 4500 }, { n: 3, b: 9000 }, { n: 1, b: 20000 }];
+  function empRows() {
+    $('e-rows').innerHTML = emp.map((e, i) => `<div style="display:grid;grid-template-columns:72px minmax(0,1fr) 32px;gap:8px;align-items:end;margin-bottom:10px">
+      <div class="f" style="margin:0"><label for="e-n${i}">Postes</label><input id="e-n${i}" type="number" min="0" step="1" value="${e.n}" data-e="n" data-i="${i}"></div>
+      <div class="f" style="margin:0"><label for="e-b${i}">Brut mensuel par poste (DH)</label><input id="e-b${i}" type="number" min="0" step="100" value="${e.b}" data-e="b" data-i="${i}"></div>
+      <button type="button" data-del="${i}" aria-label="Supprimer ce niveau" style="height:38px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;cursor:pointer">✕</button></div>`).join('');
+  }
+  function renderEmp() {
+    store.set('emp', emp);
+    const tot = YEARS.map(y => emp.reduce((a, e) => { const s = salaire(e.b, 2, true, y, false); return { net: a.net + s.net * e.n * 12, ir: a.ir + s.ir * e.n * 12 }; }, { net: 0, ir: 0 }));
+    const heads = emp.reduce((a, e) => a + e.n, 0), base = tot[0];
+    $('e-tiles').innerHTML = `<div class="tile"><small>Salariés</small><b>${nf0.format(heads)}</b><span>coût employeur inchangé</span></div>
+      <div class="tile good"><small>Net en plus pour l'équipe en 2027</small><b>${sgn(tot[1].net - base.net)}</b><span>par an, ${heads ? sgn((tot[1].net - base.net) / heads / 12) + ' par salarié et par mois' : ''}</span></div>
+      <div class="tile good"><small>Net en plus en 2031</small><b>${sgn(tot[5].net - base.net)}</b><span>par an</span></div>`;
+    $('e-table').innerHTML = `<thead><tr><th>Année</th><th>IR retenu sur l'année</th><th>Net versé sur l'année</th><th>Net en plus</th></tr></thead><tbody>${tot.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}"><td>${YEARS[i]}${i === 0 ? ' (actuel)' : ''}</td><td>${dh(x.ir)}</td><td>${dh(x.net)}</td><td class="${i ? 'pos' : ''}">${i ? sgn(x.net - base.net) : '—'}</td></tr>`).join('')}</tbody>`;
+    $('e-foot').textContent = 'Calcul fait avec 2 personnes à charge par salarié et affiliation à la CNSS. Tes charges patronales ne changent pas : la baisse d\'IR profite entièrement au net, ce qui peut remplacer une partie d\'une augmentation négociée.';
+  }
+
+  // ---------- importateur ----------
+  function renderImp() {
+    const val = num('i-val'), tax = num('i-tax'), reg = $('i-reg').checked;
+    store.set('imp', { val, tax, reg });
+    const rows = [['2027 (dès le 1er juillet)', val * .05 / 2], ['2028', val * .05], ['2029', val * .05]].map(([l, adv]) => ({ l, adv, imput: Math.min(adv, tax * (l.startsWith('2027') ? .5 : 1)), }));
+    rows.forEach(r => { r.excess = Math.max(0, r.adv - r.imput); });
+    const m = val * .05 / 12;
+    $('i-tiles').innerHTML = `<div class="tile"><small>Avance payée chaque mois</small><b>${dh(m)}</b><span>5 % des importations, à chaque dédouanement</span></div>
+      <div class="tile"><small>Avance sur une année pleine</small><b>${dh(val * .05)}</b><span>imputable sur ton impôt</span></div>
+      <div class="tile ${rows[1].excess > 0 ? '' : 'good'}"><small>Trésorerie immobilisée en 2028</small><b>${dh(rows[1].excess)}</b><span>${rows[1].excess > 0 ? 'à récupérer par restitution' : 'l\'avance est couverte par ton impôt'}</span></div>`;
+    $('i-table').innerHTML = `<thead><tr><th>Période</th><th>Avance versée</th><th>Imputée sur l'impôt</th><th>Excédent à récupérer</th></tr></thead><tbody>${rows.map(r => `<tr><td>${r.l}</td><td>${dh(r.adv)}</td><td>${dh(r.imput)}</td><td>${dh(r.excess)}</td></tr>`).join('')}</tbody>`;
+    $('i-foot').textContent = `L'avance s'applique pendant 60 mois à partir de la première importation, soit jusqu'à mi-2032 environ si le décompte part du 1er juillet 2027. ${reg ? 'Avec une attestation de régularité fiscale, tu pourras demander une dispense à l\'issue de cette période.' : 'Sans attestation de régularité fiscale, l\'avance continue après ces 60 mois.'} Les biens d'investissement et les régimes douaniers économiques sont exclus. Prévois ce décaissement dans ton plan de trésorerie dès juillet 2027.`;
+  }
+
+  // ---------- événements ----------
+  const tabs = [['t-sal', 'p-sal'], ['t-emp', 'p-emp'], ['t-imp', 'p-imp']];
+  function selectTab(id) { tabs.forEach(([t, p]) => { const on = t === id; $(t).setAttribute('aria-selected', on); $(p).hidden = !on; }); store.set('tab', id); }
+  tabs.forEach(([t]) => $(t).addEventListener('click', () => selectTab(t)));
+  document.querySelector('.tabs').addEventListener('keydown', e => { const i = tabs.findIndex(([t]) => $(t).getAttribute('aria-selected') === 'true'); if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length][0]; selectTab(n); $(n).focus(); } });
+  ['s-brut', 's-dep', 's-cnss', 's-fp27'].forEach(id => $(id).addEventListener('input', renderSal));
+  ['i-val', 'i-tax', 'i-reg'].forEach(id => $(id).addEventListener('input', renderImp));
+  $('e-rows').addEventListener('input', e => { const t = e.target; if (!t.dataset.e) return; emp[+t.dataset.i][t.dataset.e] = Math.max(0, parseFloat(t.value) || 0); renderEmp(); });
+  $('e-rows').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b) return; emp.splice(+b.dataset.del, 1); empRows(); renderEmp(); });
+  $('e-add').addEventListener('click', () => { emp.push({ n: 1, b: 6000 }); empRows(); renderEmp(); });
+
+  const s = store.get('sal'); if (s) { $('s-brut').value = s.brut; $('s-dep').value = s.dep; $('s-cnss').checked = s.cnss; $('s-fp27').checked = s.fp27; }
+  const im = store.get('imp'); if (im) { $('i-val').value = im.val; $('i-tax').value = im.tax; $('i-reg').checked = im.reg; }
+  empRows(); renderSal(); renderEmp(); renderImp();
+  const t0 = store.get('tab'); if (t0 && $(t0)) selectTab(t0);
+  window.PLF27 = { salaire, irBareme };
+})();
+</script>
+</body>
+</html>
