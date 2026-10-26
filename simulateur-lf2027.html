@@ -33,6 +33,13 @@ h2{font-size:19px;margin-bottom:10px}
 .f label{font-weight:600;font-size:13.5px}
 .f small{color:var(--muted);font-size:12.5px}
 fieldset.ind{border:1px solid var(--line);border-radius:10px;padding:10px 12px 12px;margin:0 0 14px}fieldset.ind legend{font-weight:600;font-size:13.5px;padding:0 4px}fieldset.ind .f{margin-bottom:10px}
+.imp{border:1px solid color-mix(in srgb,var(--primary) 35%,var(--line));background:var(--primary-soft);border-radius:10px;padding:12px;margin:0 0 16px}
+.impbtn{width:100%;border:0;background:var(--primary);color:var(--primary-ink);border-radius:8px;padding:10px 12px;font:600 14px var(--body);cursor:pointer;margin-bottom:10px}
+.impbtn[disabled]{opacity:.6;cursor:wait}
+.imp .chk{margin:0}
+.impmsg{margin:8px 0 0;font-size:13px}.impmsg:empty{display:none}.impmsg.err{color:var(--warn)}
+.refbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 14px;font-size:13.5px;background:var(--bg)}
+.refbox b{font-family:var(--mono);font-weight:500}
 .addbtn{border:1px dashed var(--line);background:transparent;color:var(--primary);border-radius:8px;padding:8px 12px;font:500 13.5px var(--body);cursor:pointer;width:100%}
 .rub{border-bottom:1px dashed var(--line);padding:8px 0 10px;display:grid;gap:6px}
 .rub .r1{display:grid;grid-template-columns:minmax(0,1fr) 32px;gap:6px}
@@ -98,6 +105,12 @@ tr.base td{color:var(--muted)}
   <section id="p-sal" role="tabpanel" aria-labelledby="t-sal">
     <div class="grid">
       <div class="card">
+        <div class="imp" id="s-imp" hidden>
+          <button type="button" id="s-imp-btn" class="impbtn">Importer mon dernier bulletin de paie</button>
+          <input type="file" id="s-imp-file" accept="application/pdf,image/jpeg,image/png,image/webp,image/*" hidden>
+          <label class="chk"><input type="checkbox" id="s-imp-ok"> <span>J'accepte que mon bulletin soit lu par l'IA Claude (Anthropic, États-Unis) pour en relever les montants.<br><small class="small">PDF ou photo. Rien n'est conservé, ni le fichier ni son contenu, et ton nom, ton CIN et ton numéro CNSS ne sont pas relevés. Tu peux aussi les masquer avant l'envoi.</small></span></label>
+          <p class="impmsg" id="s-imp-msg" role="status"></p>
+        </div>
         <div class="f"><label for="s-brut">Salaire de base mensuel (DH)</label><input id="s-brut" type="number" min="0" step="100" value="10000"><small>Sans la prime d'ancienneté ni les primes, que tu ajoutes plus bas.</small></div>
         <div class="f"><label for="s-entree">Date d'entrée dans l'entreprise</label><input id="s-entree" type="date" value=""><small>Sert à calculer la prime d'ancienneté chaque année (Code du travail, art. 350).</small></div>
         <div class="f"><label for="s-dep">Personnes à charge</label><select id="s-dep"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><small>Conjoint et enfants, 6 au maximum.</small></div>
@@ -112,6 +125,7 @@ tr.base td{color:var(--muted)}
       </div>
       <div class="card" aria-live="polite">
         <div class="tiles" id="s-tiles"></div>
+        <div class="refbox" id="s-ref" hidden></div>
         <div class="chart" id="s-chart"></div>
         <div class="tw"><table id="s-table"></table></div>
         <p class="small" id="s-foot"></p>
@@ -288,7 +302,7 @@ tr.base td{color:var(--muted)}
         : r.t === 'autre' ? `<input type="number" min="0" step="50" data-k="p" data-i="${i}" value="${r.p || 0}" aria-label="Plafond d'exonération mensuel">` : '';
       return `<div class="rub"><div class="r1"><select data-k="t" data-i="${i}" aria-label="Type de rubrique">${Object.entries(CAT).map(([k, v]) => `<option value="${k}"${k === r.t ? ' selected' : ''}>${esc(v.l)}</option>`).join('')}</select><button type="button" class="del" data-del="${i}" aria-label="Supprimer cette rubrique">✕</button></div>
         <div class="r2"><input type="number" min="0" step="50" data-k="m" data-i="${i}" value="${r.m || 0}" aria-label="Montant mensuel en DH">${extra}</div>
-        <span class="hint">${esc(hintOf(c, r))}${r.t === 'autre' ? ' (champ de droite)' : ''}</span>
+        <span class="hint">${r.l ? `<b style="font-weight:600;color:var(--ink)">${esc(r.l)}</b> · ` : ''}${esc(hintOf(c, r))}${r.t === 'autre' ? ' (champ de droite)' : ''}</span>
         ${c.tax || c.always ? '' : `<label class="chk"><input type="checkbox" data-k="just" data-i="${i}"${r.just ? ' checked' : ''}> <span>sur justificatifs</span></label>`}</div>`; }).join('');
   }
   function state() { return { base: num('s-brut'), entree: $('s-entree').value, dep: +$('s-dep').value, cnss: $('s-cnss').checked, fp27: $('s-fp27').checked, ret: num('s-ret'), rub }; }
@@ -298,7 +312,7 @@ tr.base td{color:var(--muted)}
     let h = `<thead><tr><th>Rubrique</th><th>Base</th><th>Taux</th><th>Gains</th><th>Retenues</th></tr></thead><tbody>`;
     h += row('Salaire de base', '', '', b.base, '');
     if (b.anc > 0) h += row(`Prime d'ancienneté<small>${nf0.format(Math.floor(ancYears($('s-entree').value, y)))} ans de service</small>`, b.base, pct(b.anc), b.pa, '');
-    b.lines.forEach(l => { if (!l.m) return; const note = l.c.tax ? 'imposable' : l.impIR > 0.005 ? `dont ${d2(l.impIR)} imposable${l.cnssSub > 0.005 ? ' et soumis CNSS' : ''}${b.reform && l.exNow > l.exIR ? ' (forfait imposé avec la réforme)' : ''}` : 'exonérée'; h += row(`${esc(l.c.l)}<small>${note}</small>`, '', '', l.m, ''); });
+    b.lines.forEach(l => { if (!l.m) return; const note = l.c.tax ? 'imposable' : l.impIR > 0.005 ? `dont ${d2(l.impIR)} imposable${l.cnssSub > 0.005 ? ' et soumis CNSS' : ''}${b.reform && l.exNow > l.exIR ? ' (forfait imposé avec la réforme)' : ''}` : 'exonérée'; h += row(`${esc(l.r.l || l.c.l)}<small>${l.r.l ? esc(l.c.l) + ' · ' : ''}${note}</small>`, '', '', l.m, ''); });
     h += row('Salaire brut global', '', '', b.brut, '', 'sub');
     h += row('Salaire brut imposable', '', '', b.sbi, '', 'sub');
     h += `<tr class="sec"><td colspan="5">Cotisations salariales</td></tr>`;
@@ -318,6 +332,51 @@ tr.base td{color:var(--muted)}
     h += row('Coût total employeur', '', '', b.cost, '', 'sub');
     return h + '</tbody>';
   }
+  // ---------- import d'un bulletin ----------
+  let ref = null;
+  const API = location.hostname === 'planbiz.vercel.app' ? '/api/paie-lire' : 'https://planbiz.vercel.app/api/paie-lire';
+  const canImport = location.protocol === 'file:' || /^(planbiz|simulateur[a-z0-9-]*|plf[a-z0-9-]*)\.vercel\.app$/.test(location.hostname) || location.hostname === 'localhost';
+  const impMsg = (t, err) => { const m = $('s-imp-msg'); m.textContent = t; m.className = 'impmsg' + (err ? ' err' : ''); };
+  function readB64(file) { return new Promise((ok, ko) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = ko; fr.readAsDataURL(file); }); }
+  async function shrink(file) {
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await new Promise((ok, ko) => { const im = new Image(); im.onload = () => ok(im); im.onerror = ko; im.src = url; });
+      const k = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight));
+      const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      return { mime: 'image/jpeg', data: c.toDataURL('image/jpeg', .85).split(',')[1] };
+    } finally { URL.revokeObjectURL(url); }
+  }
+  function applySlip(d) {
+    if (!d.lisible || !d.base) { impMsg("Ce document ne ressemble pas à un bulletin de paie lisible. Essaie avec un PDF ou une photo plus nette.", true); return; }
+    $('s-brut').value = d.base;
+    if (d.dep >= 0) $('s-dep').value = String(d.dep);
+    $('s-cnss').checked = d.cnss !== false;
+    $('s-ret').value = d.ret || 0;
+    rub = d.rub.map(r => { const o = { t: r.t, m: r.m, l: r.l }; if (r.t === 'transport') o.z = r.hv ? 750 : 500; if (r.t === 'panier') o.j = JOURS; if (r.t === 'autre') o.p = 0; return o; });
+    let ancNote = '';
+    if (d.date_entree) $('s-entree').value = d.date_entree;
+    else { $('s-entree').value = ''; if (d.anc) { rub.unshift({ t: 'prime', m: d.anc, l: "Prime d'ancienneté" }); ancNote = " La date d'entrée n'apparaît pas : la prime d'ancienneté est gardée telle quelle, sans évoluer d'une année à l'autre. Ajoute ta date d'entrée pour la faire progresser."; } }
+    ref = d.net ? { net: d.net, ir: d.ir, mois: d.mois } : null;
+    rubRows(); renderSal();
+    impMsg(`Bulletin lu${d.mois ? ' (' + d.mois + ')' : ''} : ${d.rub.length} rubrique${d.rub.length > 1 ? 's' : ''} reprise${d.rub.length > 1 ? 's' : ''}. Vérifie surtout le type de chaque indemnité et le nombre de personnes à charge.${ancNote}`);
+  }
+  async function importSlip(file) {
+    if (!file) return;
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+    if (isPdf && file.size > 3e6) { impMsg('Ce PDF dépasse 3 Mo. Envoie plutôt une photo de la page du bulletin.', true); return; }
+    $('s-imp-btn').disabled = true; impMsg('Lecture du bulletin en cours, cela prend quelques secondes…');
+    try {
+      const payload = isPdf ? { mime: 'application/pdf', data: await readB64(file) } : await shrink(file);
+      const r = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...payload, consent: true }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { impMsg(d.error || 'La lecture a échoué. Tu peux saisir tes rubriques à la main.', true); return; }
+      applySlip(d);
+    } catch (e) { impMsg("Impossible de lire ce fichier. Essaie un PDF ou une photo JPEG, ou saisis tes rubriques à la main.", true); }
+    finally { $('s-imp-btn').disabled = false; $('s-imp-file').value = ''; }
+  }
+
   function renderSal() {
     const st = state(); store.set('sal2', st);
     const fp27 = st.fp27, indTot = rub.reduce((a, r) => a + (CAT[r.t] && !CAT[r.t].tax && !CAT[r.t].always && !r.just ? Math.max(0, +r.m || 0) : 0), 0);
@@ -334,11 +393,15 @@ tr.base td{color:var(--muted)}
     const indTxt = indTot > 0 ? `Tes indemnités forfaitaires (${dh(indTot)} par mois) deviennent imposables en ${fp27 ? '2027' : '2031'}. La partie aujourd'hui exonérée te coûte alors ${dh(cost)} d'IR par mois en 2031. Pour la garder exonérée, ton employeur devra la transformer en remboursements de frais justifiés. ` : '';
     const ancTxt = withAnc ? `La prime d'ancienneté est calculée au 1er juillet de chaque année. Le gain dû à la réforme compare, pour le même bulletin, les règles de l'année à celles de 2026 : il ne compte pas la hausse liée à l'ancienneté. ` : '';
     $('s-foot').textContent = `${indTxt}${ancTxt}Le ministre a aussi annoncé l'exonération des salaires nets de moins de 10 000 DH dès 2027, mais cette mesure n'apparaît pas dans le barème publié : elle n'est pas prise en compte ici.`;
+    if (ref) { const gap = base.net - ref.net, pc = ref.net ? Math.abs(gap) / ref.net : 0;
+      $('s-ref').hidden = false;
+      $('s-ref').innerHTML = `<b style="font-family:var(--body);font-weight:600">Ton bulletin${ref.mois ? ' de ' + esc(ref.mois) : ''}</b> : net à payer <b>${d2(ref.net)}</b> DH${ref.ir ? `, IR <b>${d2(ref.ir)}</b> DH` : ''}. Le calcul du simulateur avec les règles de 2026 donne <b>${d2(base.net)}</b> DH${ref.ir ? ` et un IR de <b>${d2(base.ir)}</b> DH` : ''}. ` + (pc <= .02 ? 'Les deux concordent, la projection part donc d\'une base fiable.' : `L'écart de ${d2(Math.abs(gap))} DH vient souvent d'une rubrique mal classée, du nombre de personnes à charge ou d'une régularisation du mois. Vérifie les rubriques à gauche.`);
+    } else $('s-ref').hidden = true;
     const ys = +$('s-year').value; $('s-slip').innerHTML = slipHTML(bulletin(st, ys), ys);
   }
   function syncRub(e) {
     const t = e.target, i = +t.dataset.i, k = t.dataset.k; if (!k || isNaN(i)) return;
-    if (k === 'just') rub[i].just = t.checked; else if (k === 't') { rub[i] = { t: t.value, m: rub[i].m || 0 }; if (t.value === 'transport') rub[i].z = 500; rubRows(); } else rub[i][k] = t.value === '' ? '' : +t.value;
+    if (k === 'just') rub[i].just = t.checked; else if (k === 't') { rub[i] = { t: t.value, m: rub[i].m || 0, ...(rub[i].l ? { l: rub[i].l } : {}) }; if (t.value === 'transport') rub[i].z = 500; rubRows(); } else rub[i][k] = t.value === '' ? '' : +t.value;
     if (k === 'z') rubRows();
     renderSal();
   }
@@ -384,6 +447,9 @@ tr.base td{color:var(--muted)}
   document.querySelector('.tabs').addEventListener('keydown', e => { const i = tabs.findIndex(([t]) => $(t).getAttribute('aria-selected') === 'true'); if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length][0]; selectTab(n); $(n).focus(); } });
   ['s-brut', 's-entree', 's-dep', 's-cnss', 's-fp27', 's-ret', 's-year'].forEach(id => $(id).addEventListener('input', renderSal));
   $('s-rub').addEventListener('input', syncRub);
+  if (canImport) $('s-imp').hidden = false;
+  $('s-imp-btn').addEventListener('click', () => { if (!$('s-imp-ok').checked) { impMsg("Coche d'abord la case d'accord ci-dessous.", true); $('s-imp-ok').focus(); return; } $('s-imp-file').click(); });
+  $('s-imp-file').addEventListener('change', e => importSlip(e.target.files[0]));
   $('s-rub').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b) return; rub.splice(+b.dataset.del, 1); rubRows(); renderSal(); });
   $('s-add').addEventListener('click', () => { rub.push({ t: 'prime', m: 0 }); rubRows(); renderSal(); const sel = $('s-rub').querySelectorAll('select[data-k="t"]'); sel[sel.length - 1].focus(); });
   ['i-val', 'i-tax', 'i-reg'].forEach(id => $(id).addEventListener('input', renderImp));
@@ -396,7 +462,7 @@ tr.base td{color:var(--muted)}
   const im = store.get('imp'); if (im) { $('i-val').value = im.val; $('i-tax').value = im.tax; $('i-reg').checked = im.reg; }
   empRows(); renderSal(); renderEmp(); renderImp();
   const t0 = store.get('tab'); if (t0 && $(t0)) selectTab(t0);
-  window.PLF27 = { salaire, irBareme, bulletin };
+  window.PLF27 = { salaire, irBareme, bulletin, applySlip };
 })();
 </script>
 </body>
