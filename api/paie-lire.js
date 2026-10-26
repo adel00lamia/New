@@ -94,13 +94,17 @@ module.exports = async function handler(req, res) {
         + "Tu ne recopies jamais le nom, le CIN, le numéro CNSS, le matricule, l'adresse, le RIB ni le nom de l'employeur, même dans un libellé. "
         + "Les montants sont en dirhams, avec la virgule comme séparateur décimal sur le bulletin. Si une valeur manque, mets 0.",
       tools: [{ name: 'bulletin', description: 'Contenu chiffré du bulletin de paie', input_schema: SCHEMA }],
-      tool_choice: { type: 'tool', name: 'bulletin' },
-      messages: [{ role: 'user', content: [block, { type: 'text', text: 'Relève le contenu de ce bulletin de paie.' }] }]
+      tool_choice: { type: 'auto' },
+      messages: [{ role: 'user', content: [block, { type: 'text', text: "Relève le contenu de ce bulletin de paie en appelant l'outil bulletin, sans autre texte. Si ce n'est pas un bulletin de paie, appelle l'outil avec lisible = false." }] }]
     })
   }).catch(() => null);
   if (!up || !up.ok) { const t = up ? (await up.text().catch(() => '')).slice(0, 300) : 'réseau'; console.error('paie-lire', up && up.status, t); res.status(502).json({ error: 'La lecture a échoué. Essaie avec une image plus nette ou saisis tes rubriques à la main.', detail: (up ? up.status + ' ' : '') + t.replace(/sk-[A-Za-z0-9_-]+/g, '') }); return; }
   const out = await up.json().catch(() => null);
-  const t = out && Array.isArray(out.content) && out.content.find(c => c.type === 'tool_use');
+  let t = out && Array.isArray(out.content) && out.content.find(c => c.type === 'tool_use');
+  if (!t && out && Array.isArray(out.content)) {   // repli : JSON écrit en texte
+    const txt = out.content.filter(c => c.type === 'text').map(c => c.text).join('');
+    const m = txt.match(/\{[\s\S]*\}/); if (m) { try { t = { input: JSON.parse(m[0]) }; } catch (e) { } }
+  }
   if (!t || !t.input) { res.status(502).json({ error: 'La lecture a échoué.' }); return; }
 
   // nettoyage : nombres positifs, libellés courts, types connus
