@@ -91,7 +91,8 @@ table.xt td{min-width:120px}table.xt td:first-child{min-width:150px}
 .src{margin-top:26px;font-size:12.5px;color:var(--muted)}
 .src a{color:var(--primary)}
 [hidden]{display:none!important}
-@media (max-width:600px){table.stack thead{display:none}table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:8px}table.stack td{display:block;border:0;padding:3px 0;min-width:0}table.stack td:first-child{font-size:14.5px;padding-bottom:6px}table.stack td:not(:first-child)::before{content:attr(data-l) " : ";color:var(--muted);font-size:12px;font-weight:600}}
+table.compact th{white-space:normal;vertical-align:bottom}table.compact th,table.compact td{padding:8px 6px}
+@media (max-width:600px){table.stack thead{display:none}table.stack tr{display:block;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:8px}table.stack td{display:block;border:0;padding:3px 0;min-width:0}table.stack td:first-child{font-size:14.5px;padding-bottom:6px;font-weight:600}table.stack td{text-align:left}table.stack td:not(:first-child)::before{content:attr(data-l) " : ";color:var(--muted);font-size:12px;font-weight:600}}
 @media (max-width:600px){table.slip th:nth-child(2),table.slip th:nth-child(3),table.slip td:nth-child(2),table.slip td:nth-child(3){display:none}table.slip td:first-child{min-width:0}table.slip th,table.slip td{padding:7px 6px}}
 @media (max-width:820px){.grid{grid-template-columns:minmax(0,1fr)}.tiles{grid-template-columns:minmax(0,1fr)}.measures{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -148,13 +149,20 @@ table.xt td{min-width:120px}table.xt td:first-child{min-width:150px}
   <section id="p-emp" role="tabpanel" aria-labelledby="t-emp" hidden>
     <div class="grid">
       <div class="card">
-        <p class="small" style="margin:0 0 12px">Ajoute tes postes par niveau de salaire. Le coût employeur ne change pas : la baisse de l'IR augmente directement le net de tes salariés.</p>
+        <p class="small" style="margin:0 0 12px">Décris ton équipe par poste. Le simulateur calcule le bulletin de chaque poste, les charges patronales et le budget annuel jusqu'en 2031.</p>
         <div id="e-rows"></div>
-        <button type="button" id="e-add" class="tabs-like" style="border:1px dashed var(--line);background:transparent;color:var(--primary);border-radius:8px;padding:8px 12px;font:500 13.5px var(--body);cursor:pointer">+ Ajouter un niveau de salaire</button>
+        <button type="button" id="e-add" class="addbtn" style="margin-bottom:16px">+ Ajouter un poste</button>
+        <div class="f"><label for="e-aug">Augmentation annuelle des salaires (%)</label><input id="e-aug" type="number" min="0" max="30" step="0.5" value="3"><small>Appliquée chaque année à partir de 2027 sur le salaire de base et les primes.</small></div>
+        <div class="f"><label for="e-cimr">Retraite complémentaire CIMR, taux salarial (%)</label><input id="e-cimr" type="number" min="0" max="12" step="0.5" value="0"><small>La part patronale est comptée à 1,3 fois ce taux. Laisse 0 si tu n'as pas de CIMR.</small></div>
+        <div class="f"><label for="e-dep">Personnes à charge en moyenne par salarié</label><select id="e-dep"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select><small>Ne change pas ton coût, seulement l'IR et le net de tes salariés.</small></div>
+        <label class="chk"><input type="checkbox" id="e-13"> <span>Je verse un 13e mois<br><small class="small">Il est réparti sur l'année dans le calcul.</small></span></label>
       </div>
       <div class="card" aria-live="polite">
         <div class="tiles" id="e-tiles"></div>
-        <div class="tw"><table id="e-table"></table></div>
+        <h2 style="font-size:16px;margin:4px 0 6px">Budget 2026 par poste</h2>
+        <div class="tw"><table id="e-detail" class="compact stack"></table></div>
+        <h2 style="font-size:16px;margin:20px 0 6px">Projection du budget</h2>
+        <div class="tw"><table id="e-table" class="compact stack"></table></div>
         <p class="small" id="e-foot"></p>
       </div>
     </div>
@@ -197,6 +205,17 @@ table.xt td{min-width:120px}table.xt td:first-child{min-width:150px}
         <li><b>Net à payer.</b> Le brut global moins les avantages en nature, les cotisations, les retenues et l'IR.</li>
         <li><b>Coût employeur.</b> Le brut global plus les charges patronales : prestations sociales 8,98 % et perte d'emploi 0,38 % sur 6 000 DH au plus, allocations familiales 6,40 %, formation professionnelle 1,60 % et AMO 4,11 % sur tout le salaire soumis.</li>
       </ol>
+    </details>
+    <details>
+      <summary>Comment le budget de masse salariale est calculé</summary>
+      <ol>
+        <li><b>Un bulletin par poste.</b> Pour chaque poste, le simulateur calcule le bulletin du mois avec le salaire de base, les primes, les indemnités et, si tu le coches, un 13e mois réparti sur l'année.</li>
+        <li><b>Les charges patronales.</b> Prestations sociales 8,98 % et perte d'emploi 0,38 % sur 6 000 DH au plus, allocations familiales 6,40 %, formation professionnelle 1,60 % et AMO 4,11 % sur tout le salaire soumis. La part patronale de la CIMR s'ajoute à 1,3 fois le taux salarial. Les indemnités exonérées ne portent pas de charges.</li>
+        <li><b>Le coût d'un poste.</b> Salaire brut plus charges patronales, multiplié par 12 mois et par l'effectif.</li>
+        <li><b>Le budget total.</b> La somme de tous les postes. Le tableau donne aussi la masse salariale brute, les charges, l'IR retenu et le net versé.</li>
+        <li><b>La projection.</b> Chaque année, le salaire de base et les primes augmentent du taux choisi. La réforme de l'IR ne touche pas au coût employeur : elle change seulement l'IR retenu et donc le net de tes salariés, montré dans la dernière colonne.</li>
+      </ol>
+      <p>Ce budget ne compte pas les heures supplémentaires, les congés non pris, les indemnités de départ ni les avantages en nature. Ajoute-les à part s'ils pèsent dans ton entreprise.</p>
     </details>
     <details>
       <summary>Les barèmes de l'IR de 2026 à 2031</summary>
@@ -459,23 +478,40 @@ table.xt td{min-width:120px}table.xt td:first-child{min-width:150px}
   }
 
   // ---------- employeur ----------
-  let emp = store.get('emp') || [{ n: 4, b: 4500, i: 0 }, { n: 3, b: 9000, i: 500 }, { n: 1, b: 20000, i: 1500 }];
+  let emp = store.get('emp2') || (store.get('emp') || [{ n: 4, b: 4500, i: 0 }, { n: 3, b: 9000, i: 500 }, { n: 1, b: 20000, i: 1500 }]).map((e, k) => ({ l: ['Ouvriers', 'Techniciens', 'Cadre'][k] || '', n: e.n, b: e.b, p: 0, i: e.i || 0 }));
+  const eSaved = store.get('empopt');
   function empRows() {
-    $('e-rows').innerHTML = emp.map((e, i) => `<div style="display:grid;grid-template-columns:64px minmax(0,1fr) minmax(0,1fr) 32px;gap:8px;align-items:end;margin-bottom:10px">
-      <div class="f" style="margin:0"><label for="e-n${i}">Postes</label><input id="e-n${i}" type="number" min="0" step="1" value="${e.n}" data-e="n" data-i="${i}"></div>
-      <div class="f" style="margin:0"><label for="e-b${i}">Brut mensuel (DH)</label><input id="e-b${i}" type="number" min="0" step="100" value="${e.b}" data-e="b" data-i="${i}"></div>
-      <div class="f" style="margin:0"><label for="e-i${i}">Indemnités forfaitaires (DH)</label><input id="e-i${i}" type="number" min="0" step="50" value="${e.i || 0}" data-e="i" data-i="${i}"></div>
-      <button type="button" data-del="${i}" aria-label="Supprimer ce niveau" style="height:38px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;cursor:pointer">✕</button></div>`).join('');
+    $('e-rows').innerHTML = emp.map((e, i) => `<div class="rub">
+      <div class="r1"><input type="text" data-e="l" data-i="${i}" value="${esc(e.l || '')}" placeholder="Nom du poste" aria-label="Nom du poste"><button type="button" class="del" data-del="${i}" aria-label="Supprimer ce poste">✕</button></div>
+      <div class="r2"><div class="f" style="margin:0"><label for="e-n${i}">Effectif</label><input id="e-n${i}" type="number" min="0" step="1" value="${e.n}" data-e="n" data-i="${i}"></div>
+        <div class="f" style="margin:0"><label for="e-b${i}">Salaire de base (DH)</label><input id="e-b${i}" type="number" min="0" step="100" value="${e.b}" data-e="b" data-i="${i}"></div></div>
+      <div class="r2"><div class="f" style="margin:0"><label for="e-p${i}">Primes imposables (DH)</label><input id="e-p${i}" type="number" min="0" step="50" value="${e.p || 0}" data-e="p" data-i="${i}"></div>
+        <div class="f" style="margin:0"><label for="e-i${i}">Indemnités exonérées (DH)</label><input id="e-i${i}" type="number" min="0" step="50" value="${e.i || 0}" data-e="i" data-i="${i}"></div></div>
+    </div>`).join('');
+  }
+  // Bulletin d'un poste pour l'année y (k années d'augmentation), avec la CIMR calculée sur le brut imposable
+  function posteSlip(e, y, k, opt, rules = y) {
+    const f = Math.pow(1 + opt.g, k), base = e.b * f, prime = (e.p || 0) * f + (opt.m13 ? base / 12 : 0), ind = e.i || 0;
+    const st = { base, dep: opt.dep, cnss: true, fp27: false, ret: 0, entree: '', rub: [{ t: 'prime', m: prime }, { t: 'autre', m: ind, p: ind }] };
+    const first = bulletin(st, y, rules); st.ret = first.sbi * opt.cimr;
+    const sl = bulletin(st, y, rules), cimrPat = sl.sbi * opt.cimr * 1.3;
+    return { ...sl, cimrPat, patAll: sl.patTot + cimrPat, costAll: sl.cost + cimrPat };
   }
   function renderEmp() {
-    store.set('emp', emp);
-    const tot = YEARS.map(y => emp.reduce((a, e) => { const s = salaire(e.b, 2, true, y, false, e.i || 0, false); return { net: a.net + s.net * e.n * 12, ir: a.ir + s.ir * e.n * 12, ind: a.ind + (e.i || 0) * e.n * 12 }; }, { net: 0, ir: 0, ind: 0 }));
-    const heads = emp.reduce((a, e) => a + e.n, 0), base = tot[0];
-    $('e-tiles').innerHTML = `<div class="tile"><small>Salariés</small><b>${nf0.format(heads)}</b><span>coût employeur inchangé</span></div>
-      <div class="tile good"><small>Net en plus pour l'équipe en 2027</small><b>${sgn(tot[1].net - base.net)}</b><span>par an, ${heads ? sgn((tot[1].net - base.net) / heads / 12) + ' par salarié et par mois' : ''}</span></div>
-      <div class="tile good"><small>Net en plus en 2031</small><b>${sgn(tot[5].net - base.net)}</b><span>par an</span></div>`;
-    $('e-table').innerHTML = `<thead><tr><th>Année</th><th>IR retenu sur l'année</th><th>Net versé sur l'année</th><th>Net en plus</th></tr></thead><tbody>${tot.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}"><td>${YEARS[i]}${i === 0 ? ' (actuel)' : ''}</td><td>${dh(x.ir)}</td><td>${dh(x.net)}</td><td class="${i ? 'pos' : ''}">${i ? sgn(x.net - base.net) : '—'}</td></tr>`).join('')}</tbody>`;
-    $('e-foot').textContent = `Calcul fait avec 2 personnes à charge par salarié et affiliation à la CNSS. Tes charges patronales ne changent pas : la baisse d'IR profite au net, ce qui peut remplacer une partie d'une augmentation négociée.${base.ind > 0 ? ` Attention : tu verses ${dh(base.ind)} d'indemnités forfaitaires par an. À partir de 2031, elles seront imposées comme du salaire, sauf si tu les transformes en remboursements de frais justifiés (notes de frais, factures). Le simulateur les traite ici comme forfaitaires et dans les plafonds d'exonération actuels.` : ''}`;
+    const opt = { g: num('e-aug') / 100, cimr: num('e-cimr') / 100, dep: +$('e-dep').value, m13: $('e-13').checked };
+    store.set('emp2', emp); store.set('empopt', { aug: num('e-aug'), cimr: num('e-cimr'), dep: opt.dep, m13: opt.m13 });
+    const heads = emp.reduce((a, e) => a + (+e.n || 0), 0);
+    const years = YEARS.map((y, k) => emp.reduce((a, e) => { const n = (+e.n || 0) * 12, s = posteSlip(e, y, k, opt), o = posteSlip(e, y, k, opt, 2026);
+      return { brut: a.brut + s.brut * n, pat: a.pat + s.patAll * n, cost: a.cost + s.costAll * n, ir: a.ir + s.ir * n, net: a.net + s.net * n, gain: a.gain + (s.net - o.net) * n, ind: a.ind + (e.i || 0) * n }; }, { brut: 0, pat: 0, cost: 0, ir: 0, net: 0, gain: 0, ind: 0 }));
+    const y0 = years[0];
+    $('e-tiles').innerHTML = `<div class="tile"><small>Budget de masse salariale 2026</small><b>${dh(y0.cost)}</b><span>${dh(y0.cost / 12)} par mois</span></div>
+      <div class="tile"><small>Coût moyen par salarié</small><b>${heads ? dh(y0.cost / heads / 12) : '—'}</b><span>par mois, charges comprises</span></div>
+      <div class="tile"><small>Charges patronales</small><b>${y0.brut ? nf0.format(y0.pat / y0.brut * 100) + ' %' : '—'}</b><span>du salaire brut, soit ${dh(y0.pat)} par an</span></div>`;
+    const lines = emp.map(e => ({ e, s: posteSlip(e, 2026, 0, opt) }));
+    const td = (l, v, cls = '') => `<td data-l="${l}"${cls ? ` class="${cls}"` : ''}>${v}</td>`;
+    $('e-detail').innerHTML = `<thead><tr><th>Poste</th><th>Effectif</th><th>Brut mensuel</th><th>Charges patronales</th><th>Coût mensuel</th><th>Coût annuel</th></tr></thead><tbody>${lines.map(({ e, s }) => `<tr>${td('Poste', esc(e.l || 'Poste'))}${td('Effectif', nf0.format(+e.n || 0))}${td('Brut mensuel', dh(s.brut))}${td('Charges patronales', dh(s.patAll))}${td('Coût mensuel', dh(s.costAll))}${td('Coût annuel', dh(s.costAll * 12 * (+e.n || 0)))}</tr>`).join('')}<tr class="sub">${td('Poste', '<b>Total</b>')}${td('Effectif', `<b>${nf0.format(heads)}</b>`)}${td('Brut mensuel', dh(y0.brut / 12))}${td('Charges patronales', dh(y0.pat / 12))}${td('Coût mensuel', dh(y0.cost / 12))}${td('Coût annuel', `<b>${dh(y0.cost)}</b>`)}</tr></tbody>`;
+    $('e-table').innerHTML = `<thead><tr><th>Année</th><th>Masse salariale brute</th><th>Charges patronales</th><th>Budget total</th><th>Net versé</th><th>Net en plus (réforme)</th></tr></thead><tbody>${years.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}">${td('Année', YEARS[i] + (i === 0 ? ' (actuel)' : ''))}${td('Masse salariale brute', dh(x.brut))}${td('Charges patronales', dh(x.pat))}${td('Budget total', `<b>${dh(x.cost)}</b>`)}${td('Net versé', dh(x.net))}${td('Net en plus (réforme)', i ? sgn(x.gain) : '—', i && x.gain > 0.5 ? 'pos' : '')}</tr>`).join('')}</tbody>`;
+    $('e-foot').textContent = `Le budget comprend le salaire brut, les charges patronales CNSS, AMO, allocations familiales et formation professionnelle${opt.cimr ? ', et la part patronale de la CIMR' : ''}. Il augmente seulement avec les hausses de salaire : la réforme de l'IR ne change pas tes charges, elle augmente le net de tes salariés. Les indemnités exonérées sont supposées dans leurs plafonds et ne supportent pas de charges.${y0.ind > 0 ? ` Tu verses ${dh(y0.ind)} d'indemnités forfaitaires par an. À partir de 2031, elles seront imposées à l'IR comme du salaire, sauf si tu les transformes en remboursements de frais justifiés. Ton coût ne change pas, mais le net de tes salariés baisse d'autant, ce que la colonne « net en plus » intègre déjà.` : ''} Le calcul ne compte pas les heures supplémentaires, les congés non pris ni les indemnités de départ.`;
   }
 
   // ---------- importateur ----------
@@ -505,16 +541,18 @@ table.xt td{min-width:120px}table.xt td:first-child{min-width:150px}
   $('s-rub').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b) return; rub.splice(+b.dataset.del, 1); rubRows(); renderSal(); });
   $('s-add').addEventListener('click', () => { rub.push({ t: 'prime', m: 0 }); rubRows(); renderSal(); const sel = $('s-rub').querySelectorAll('select[data-k="t"]'); sel[sel.length - 1].focus(); });
   ['i-val', 'i-tax', 'i-reg'].forEach(id => $(id).addEventListener('input', renderImp));
-  $('e-rows').addEventListener('input', e => { const t = e.target; if (!t.dataset.e) return; emp[+t.dataset.i][t.dataset.e] = Math.max(0, parseFloat(t.value) || 0); renderEmp(); });
+  $('e-rows').addEventListener('input', e => { const t = e.target; if (!t.dataset.e) return; emp[+t.dataset.i][t.dataset.e] = t.dataset.e === 'l' ? t.value.slice(0, 40) : Math.max(0, parseFloat(t.value) || 0); renderEmp(); });
+  ['e-aug', 'e-cimr', 'e-dep', 'e-13'].forEach(id => $(id).addEventListener('input', renderEmp));
+  if (eSaved) { $('e-aug').value = eSaved.aug ?? 3; $('e-cimr').value = eSaved.cimr || 0; $('e-dep').value = String(eSaved.dep ?? 2); $('e-13').checked = !!eSaved.m13; }
   $('e-rows').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b) return; emp.splice(+b.dataset.del, 1); empRows(); renderEmp(); });
-  $('e-add').addEventListener('click', () => { emp.push({ n: 1, b: 6000 }); empRows(); renderEmp(); });
+  $('e-add').addEventListener('click', () => { emp.push({ l: '', n: 1, b: 6000, p: 0, i: 0 }); empRows(); renderEmp(); });
 
   if (saved) { $('s-brut').value = saved.base; $('s-dep').value = saved.dep; $('s-cnss').checked = saved.cnss; $('s-fp27').checked = saved.fp27; $('s-ret').value = saved.ret || 0; if (saved.entree) $('s-entree').value = saved.entree; }
   rubRows();
   const im = store.get('imp'); if (im) { $('i-val').value = im.val; $('i-tax').value = im.tax; $('i-reg').checked = im.reg; }
   empRows(); renderSal(); renderEmp(); renderImp();
   const t0 = store.get('tab'); if (t0 && $(t0)) selectTab(t0);
-  window.PLF27 = { salaire, irBareme, bulletin, applySlip };
+  window.PLF27 = { salaire, irBareme, bulletin, applySlip, posteSlip };
 })();
 </script>
 </body>
