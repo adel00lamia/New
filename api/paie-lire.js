@@ -11,7 +11,7 @@ const crypto = require('crypto');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://jecydmxekdorycgfwtwy.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sb_publishable_a-ccau1Xus1RmybrNV6xBg_P59YAdfS';
-const TYPES = ['prime', 'transport', 'representation', 'panier', 'outillage', 'salissure', 'usure', 'lait', 'caisse', 'tournee', 'frais', 'autre'];
+const TYPES = ['prime', 'transport', 'km', 'voiture', 'deplacement', 'tournee', 'representation', 'panier', 'caisse', 'salissure', 'outillage', 'frais', 'avantage', 'autre'];
 const MIMES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
 
 function allowed(origin) {
@@ -36,8 +36,9 @@ const SCHEMA = {
         properties: {
           libelle: { type: 'string', description: 'libellé tel qu’écrit sur le bulletin' },
           montant: { type: 'number' },
-          type: { type: 'string', enum: TYPES, description: 'prime = toute prime ou gain imposable (rendement, heures sup., 13e mois, avantage en nature, congés payés) ; transport ; representation ; panier ; outillage ; salissure ; usure (vêtements) ; lait ; caisse ; tournee ; frais = remboursement de frais, déplacement, kilométrage, mission ; autre = autre indemnité exonérée' },
-          hors_ville: { type: 'boolean', description: 'pour le transport : vrai si le libellé indique hors périmètre urbain' }
+          type: { type: 'string', enum: TYPES, description: "prime = toute prime ou gain imposable versé (rendement, heures sup., 13e mois, congés payés, prime d'assurance voiture) ; transport = transport domicile-travail ; km = indemnité kilométrique calculée sur des kilomètres ; voiture = indemnité de voiture ou de carburant forfaitaire sans kilométrage ; deplacement = indemnité forfaitaire de déplacement ; tournee ; representation ; panier ; caisse ; salissure (ou usure de vêtements) ; outillage ; frais = remboursement de frais sur justificatifs (missions, hôtel) ; avantage = avantage en nature non versé (voiture de fonction, logement) ; autre = autre indemnité exonérée" },
+          hors_ville: { type: 'boolean', description: 'pour le transport : vrai si le libellé indique hors périmètre urbain' },
+          km: { type: 'number', description: 'pour une indemnité kilométrique : nombre de km indiqué en base, sinon 0' }
         },
         required: ['libelle', 'montant', 'type']
       }
@@ -111,7 +112,7 @@ module.exports = async function handler(req, res) {
   const n = v => { const x = Number(v); return isFinite(x) && x > 0 ? Math.round(x * 100) / 100 : 0; };
   const i = t.input;
   const rub = (Array.isArray(i.rubriques) ? i.rubriques : []).slice(0, 25).map(r => ({
-    l: String(r.libelle || '').replace(/\s+/g, ' ').slice(0, 60), m: n(r.montant), t: TYPES.includes(r.type) ? r.type : 'prime', hv: !!r.hors_ville
+    l: String(r.libelle || '').replace(/\s+/g, ' ').slice(0, 60), m: n(r.montant), t: TYPES.includes(r.type) ? r.type : 'prime', hv: !!r.hors_ville, km: n(r.km)
   })).filter(r => r.m > 0);
   const d = /^\d{4}-\d{2}-\d{2}$/.test(String(i.date_entree || '')) ? i.date_entree : '';
   res.status(200).json({
