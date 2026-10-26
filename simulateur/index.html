@@ -393,7 +393,7 @@ table.xt td{min-width:120px}table.xt td:first-child{min-width:150px}
   // ---------- import d'un bulletin ----------
   let ref = null;
   const API = location.hostname === 'planbiz.vercel.app' ? '/api/paie-lire' : 'https://planbiz.vercel.app/api/paie-lire';
-  const canImport = location.protocol === 'file:' || /^(planbiz|simulateur[a-z0-9-]*|plf[a-z0-9-]*)\.vercel\.app$/.test(location.hostname) || location.hostname === 'localhost';
+  const canImport = location.protocol === 'file:' || /^(planbiz|[a-z0-9-]*simulateur[a-z0-9-]*|[a-z0-9-]*plf[a-z0-9-]*|[a-z0-9-]+-la-s-projects3)\.vercel\.app$/.test(location.hostname) || location.hostname === 'localhost';
   const impMsg = (t, err) => { const m = $('s-imp-msg'); m.textContent = t; m.className = 'impmsg' + (err ? ' err' : ''); };
   function readB64(file) { return new Promise((ok, ko) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = ko; fr.readAsDataURL(file); }); }
   async function shrink(file) {

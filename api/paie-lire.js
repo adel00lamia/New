@@ -17,7 +17,7 @@ const MIMES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
 function allowed(origin) {
   if (!origin) return false;
   const extra = (process.env.PAIE_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
-  return extra.includes(origin) || /^https:\/\/(planbiz|simulateur[a-z0-9-]*|plf[a-z0-9-]*)\.vercel\.app$/.test(origin);
+  return extra.includes(origin) || /^https:\/\/(planbiz|[a-z0-9-]*simulateur[a-z0-9-]*|[a-z0-9-]*plf[a-z0-9-]*|[a-z0-9-]+-la-s-projects3)\.vercel\.app$/.test(origin);
 }
 
 const SCHEMA = {
