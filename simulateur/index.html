@@ -177,12 +177,12 @@ tr.base td{color:var(--muted)}
     <div class="card"><span class="tag">Toutes les entreprises</span><h3>Pas de changement annoncé pour l'IS des PME</h3><p>Aucune modification de l'IS à 20 % et 35 %, de la cotisation minimale ou de la CSS n'est rapportée. Seuls les importateurs et distributeurs d'hydrocarbures dont le bénéfice atteint 100 MDH passeraient à 40 %.</p></div>
     <div class="card"><span class="tag">Secteur informel</span><h3>Régularisation sans pénalité en 2027</h3><p>Un exploitant informel qui s'inscrit à la taxe professionnelle en 2027 n'est imposé qu'à partir de son inscription, sans poursuites pour les années passées.</p></div>
     <div class="card"><span class="tag">Fournisseurs</span><h3>Remboursement de la TVA retenue en trop</h3><p>Quand la TVA retenue à la source dépasse la TVA réellement due, l'excédent devient remboursable sur demande.</p></div>
-    <div class="card"><span class="tag">Salariés et employeurs</span><h3>Indemnités : seules les dépenses justifiées restent exonérées</h3><p>Les indemnités forfaitaires versées chaque mois (transport, représentation, panier) deviennent imposables comme du salaire avec le barème de 2031. Seuls les remboursements de frais justifiés restent exonérés. Le bulletin de paie de l'onglet salarié le montre rubrique par rubrique.</p></div>
+    <div class="card"><span class="tag">Salariés et employeurs</span><h3>Indemnités : seules les dépenses justifiées restent exonérées</h3><p>Les indemnités forfaitaires versées chaque mois (transport, représentation, panier, déplacement) deviennent imposables comme du salaire avec le barème de 2031. Seuls les remboursements de frais justifiés restent exonérés. Le bulletin de paie de l'onglet salarié le montre rubrique par rubrique.</p></div>
     <div class="card"><span class="tag">Particuliers</span><h3>Voitures de luxe et cigarettes électroniques</h3><p>Le droit de timbre sur les voitures de plus de 400 000 DH passe de 5–20 % à 6–24 %. La taxe sur les cigarettes électroniques double, de 50 à 100 DH par unité.</p></div>
     <div class="card"><span class="tag">Immobilier</span><h3>TVA sur la marge pour les marchands de biens</h3><p>Les professionnels qui achètent des immeubles bâtis pour les revendre pourront opter pour une TVA calculée sur leur marge.</p></div>
   </div>
 
-  <p class="src">Sources : <a href="https://fr.le360.ma/economie/reforme-de-lir-les-nouveaux-baremes-de-2027-a-2030-etape-par-etape-vers-un-taux-maximal-de-30_IV4K3SYWDRFLTKETNA4TORQQOY/" target="_blank" rel="noopener">Le360, barèmes 2027-2030</a>, <a href="https://auditcloud.ma/2026/10/23/projet-de-loi-de-finances-2027-les-principales-mesures-a-retenir/" target="_blank" rel="noopener">AuditCloud, barème 2031 et avance à l'import</a>, <a href="https://medias24.com/2026/10/23/plf2027-ir-is-tva-voici-les-principales-mesures-fiscales-proposes-par-le-gouvernement-mansouri-1783297/" target="_blank" rel="noopener">Médias24, mesures fiscales</a>, <a href="https://lematin.ma/economie/plf-2027-voici-les-principales-dispositions-fiscales-et-douanieres/371991" target="_blank" rel="noopener">Le Matin, dispositions fiscales et douanières</a>. Barème 2026 et cotisations : règles en vigueur (LF 2025 et LF 2026). Simulation mise à jour le 26 octobre 2026.</p>
+  <p class="src">Sources : <a href="https://fr.le360.ma/economie/reforme-de-lir-les-nouveaux-baremes-de-2027-a-2030-etape-par-etape-vers-un-taux-maximal-de-30_IV4K3SYWDRFLTKETNA4TORQQOY/" target="_blank" rel="noopener">Le360, barèmes 2027-2030</a>, <a href="https://auditcloud.ma/2026/10/23/projet-de-loi-de-finances-2027-les-principales-mesures-a-retenir/" target="_blank" rel="noopener">AuditCloud, barème 2031 et avance à l'import</a>, <a href="https://medias24.com/2026/10/23/plf2027-ir-is-tva-voici-les-principales-mesures-fiscales-proposes-par-le-gouvernement-mansouri-1783297/" target="_blank" rel="noopener">Médias24, mesures fiscales</a>, <a href="https://lematin.ma/economie/plf-2027-voici-les-principales-dispositions-fiscales-et-douanieres/371991" target="_blank" rel="noopener">Le Matin, dispositions fiscales et douanières</a>. Barème 2026 et cotisations : règles en vigueur (LF 2025 et LF 2026). Plafonds des indemnités : note de la DGI sur l'article 57 du CGI (2017, présentée par <a href="https://forvismazars.com/ma/fr/content/download/903328/file/01%20MAZARS_Clarification%20R%C3%A9gles%20fiscales%20IR.pdf" target="_blank" rel="noopener">Forvis Mazars</a>) et arrêté CNSS publié au BO n° 7443 du 29 septembre 2025 (<a href="https://fr.le360.ma/economie/nouvelles-regles-de-la-securite-sociale-le-detail-des-indemnites-exonerees_DHSK2LSVTVAERKAETHYJDBIZOQ/" target="_blank" rel="noopener">Le360</a>). Simulation mise à jour le 26 octobre 2026.</p>
   <p class="src">Un outil gratuit proposé par <a href="https://planbiz.vercel.app" target="_blank" rel="noopener">PlanBiz</a>, le business plan chiffré pour les projets au Maroc.</p>
 </div>
 
@@ -236,22 +236,26 @@ tr.base td{color:var(--muted)}
   }
 
   // ---------- bulletin de paie ----------
-  // Plafonds d'exonération actuels (IR et CNSS). Valeurs du barème de référence CNSS, à confirmer avec la dernière circulaire.
+  // Plafonds d'exonération actuels. IR : note de la DGI d'avril 2017 (art. 57 du CGI). CNSS : arrêté publié au BO n° 7443 du 29 septembre 2025.
+  // plaf(r, base, pa) renvoie un plafond commun ou { ir, cnss } quand les deux régimes diffèrent.
   const CAT = {
     prime: { l: 'Prime imposable (rendement, heures sup., 13e mois…)', tax: true },
-    transport: { l: 'Indemnité de transport', plaf: r => +r.z || 500, h: r => `exonérée jusqu'à ${+r.z || 500} DH` },
-    representation: { l: 'Indemnité de représentation', plaf: (r, base) => .10 * base, h: () => "cadres dirigeants, exonérée jusqu'à 10 % du salaire de base" },
-    panier: { l: 'Prime de panier', plaf: r => 2 * SMIG_H * (r.j === undefined || r.j === '' ? JOURS : +r.j), h: r => `exonérée jusqu'à 2 SMIG horaires par jour, ${nf2.format(2 * SMIG_H)} DH × jours` },
+    transport: { l: 'Indemnité de transport domicile-travail', plaf: r => +r.z || 500, h: r => `exonérée jusqu'à ${+r.z || 500} DH, sauf si l'employeur assure le transport` },
+    km: { l: 'Indemnité kilométrique (voiture personnelle)', plaf: r => 3 * (+r.k || 0), h: () => "exonérée jusqu'à 3 DH par km parcouru en mission avec ta voiture (carburant, entretien et assurance compris), sur ordres de mission", defJust: true },
+    voiture: { l: 'Indemnité de voiture forfaitaire', tax: true, h: () => "forfait versé sans relevé de kilomètres : imposable et soumis CNSS. Pour l'exonérer, il faut le transformer en indemnité kilométrique sur ordres de mission" },
+    deplacement: { l: 'Indemnité forfaitaire de déplacement (poste itinérant)', plaf: (r, base) => Math.min(5000, base), h: () => "exonérée jusqu'à 100 % du salaire de base et 5 000 DH par mois, pour un poste itinérant sans voiture de service" },
+    tournee: { l: 'Prime de tournée', plaf: () => 1500, h: () => "agents commerciaux et itinérants, exonérée jusqu'à 1 500 DH" },
+    representation: { l: 'Indemnité de représentation', plaf: (r, base) => .10 * base, h: () => "dirigeants et cadres de direction, exonérée jusqu'à 10 % du salaire de base" },
+    panier: { l: 'Prime de panier', plaf: (r, base, pa) => { const j = r.j === undefined || r.j === '' ? JOURS : +r.j; return { ir: Math.min(20 * j, .2 * (base + pa)), cnss: 2 * SMIG_H * j }; }, h: () => `IR : exonérée jusqu'à 20 DH par jour et 20 % du brut. CNSS : jusqu'à ${nf2.format(2 * SMIG_H)} DH par jour` },
+    caisse: { l: 'Indemnité de caisse', plaf: () => 190 },
+    salissure: { l: 'Prime de salissure ou d\'usure de vêtements', plaf: () => 210 },
     outillage: { l: "Prime d'outillage", plaf: () => 100 },
-    salissure: { l: 'Prime de salissure', plaf: () => 200 },
-    usure: { l: 'Indemnité d\'usure de vêtements', plaf: () => 100 },
-    lait: { l: 'Prime de lait', plaf: () => 150 },
-    caisse: { l: 'Indemnité de caisse', plaf: () => 150 },
-    tournee: { l: 'Indemnité de tournée', plaf: () => 1500 },
-    frais: { l: 'Remboursement de frais justifiés', always: true, h: () => 'déplacements, kilométrage, missions sur factures : exonéré' },
+    frais: { l: 'Remboursement de frais justifiés', always: true, h: () => 'missions, hôtel, repas, péages sur factures : exonéré' },
+    avantage: { l: 'Avantage en nature (voiture de fonction, logement…)', tax: true, nature: true, h: () => "imposable et soumis CNSS, mais non versé : il ne s'ajoute pas au net à payer" },
     autre: { l: 'Autre indemnité exonérée', plaf: r => +r.p || 0, h: () => 'indique son plafond mensuel' }
   };
-  const hintOf = (c, r) => c.h ? c.h(r) : c.plaf ? `exonérée jusqu'à ${nf0.format(c.plaf(r, 0))} DH` : 'soumise à l\'IR et à la CNSS';
+  const ALIAS = { usure: 'salissure', lait: 'autre' };
+  const hintOf = (c, r) => c.h ? c.h(r) : c.plaf ? `exonérée jusqu'à ${nf0.format(c.plaf(r, 0, 0))} DH` : 'soumise à l\'IR et à la CNSS';
   const PAT = { ps: .0898, ipe: .0038, af: .064, tfp: .016, amo: .0411 };
   // st : { base, entree, dep, cnss, fp27, ret, rub:[{t, m, z, j, p, just}] }
   // y : année (prime d'ancienneté), rules : année des règles fiscales, allJust : toutes les indemnités traitées comme justifiées
@@ -260,10 +264,11 @@ tr.base td{color:var(--muted)}
     const reform = rules >= 2031 || (st.fp27 && rules >= 2027);
     const lines = (st.rub || []).map(r => {
       const c = CAT[r.t] || CAT.autre, m = Math.max(0, +r.m || 0);
-      const exNow = c.tax ? 0 : c.always ? m : Math.min(m, Math.max(0, c.plaf(r, base)));
+      const pl = c.tax || c.always ? null : c.plaf(r, base, pa), plIR = pl == null ? 0 : typeof pl === 'object' ? pl.ir : pl, plCn = pl == null ? 0 : typeof pl === 'object' ? pl.cnss : pl;
+      const exNow = c.tax ? 0 : c.always ? m : Math.min(m, Math.max(0, plIR)), exCn = c.tax ? 0 : c.always ? m : Math.min(m, Math.max(0, plCn));
       const just = c.always || !!r.just || allJust;
       const exIR = c.tax ? 0 : (reform && !just ? 0 : exNow);
-      return { r, c, m, exNow, exIR, impIR: m - exIR, cnssSub: m - exNow };
+      return { r, c, m, exNow, exIR, impIR: m - exIR, cnssSub: m - exCn };
     });
     const sum = k => lines.reduce((a, l) => a + l[k], 0);
     const brut = base + pa + sum('m'), sbi = base + pa + sum('impIR'), bc = base + pa + sum('cnssSub');
@@ -276,7 +281,7 @@ tr.base td{color:var(--muted)}
     const ir = Math.max(0, irBrut - fam);
     const pat = Object.fromEntries(Object.entries(PAT).map(([k, t]) => [k, (k === 'ps' || k === 'ipe' ? cap : bc) * t * on]));
     const patTot = Object.values(pat).reduce((a, v) => a + v, 0);
-    return { base, anc, pa, lines, brut, sbi, bc, cap, cot, cs, ret, fpRate, fp, sni, irBrut, fam, ir, net: brut - cs - ret - ir, pat, patTot, cost: brut + patTot, reform, rules };
+    return { base, anc, pa, lines, brut, sbi, bc, cap, cot, cs, ret, fpRate, fp, sni, irBrut, fam, ir, net: brut - lines.filter(l => l.c.nature).reduce((a, l) => a + l.m, 0) - cs - ret - ir, pat, patTot, cost: brut + patTot, reform, rules };
   }
 
   // ---------- formats ----------
@@ -299,12 +304,13 @@ tr.base td{color:var(--muted)}
 
   // ---------- salarié ----------
   const saved = store.get('sal2');
-  let rub = (saved && Array.isArray(saved.rub)) ? saved.rub : [{ t: 'transport', m: 500, z: 500 }];
+  let rub = ((saved && Array.isArray(saved.rub)) ? saved.rub : [{ t: 'transport', m: 500, z: 500 }]).map(r => ALIAS[r.t] ? { ...r, t: ALIAS[r.t] } : r);
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   function rubRows() {
     $('s-rub').innerHTML = rub.map((r, i) => { const c = CAT[r.t] || CAT.autre;
       const extra = r.t === 'transport' ? `<select data-k="z" data-i="${i}" aria-label="Lieu de travail"><option value="500"${+r.z !== 750 ? ' selected' : ''}>en ville (500)</option><option value="750"${+r.z === 750 ? ' selected' : ''}>hors ville (750)</option></select>`
         : r.t === 'panier' ? `<input type="number" min="0" max="31" step="1" data-k="j" data-i="${i}" value="${r.j ?? JOURS}" aria-label="Jours travaillés"><span class="hint" style="grid-column:2">jours travaillés</span>`
+        : r.t === 'km' ? `<input type="number" min="0" step="10" data-k="k" data-i="${i}" value="${r.k || 0}" aria-label="Kilomètres parcourus en mission dans le mois"><span class="hint" style="grid-column:2">km en mission ce mois</span>`
         : r.t === 'autre' ? `<input type="number" min="0" step="50" data-k="p" data-i="${i}" value="${r.p || 0}" aria-label="Plafond d'exonération mensuel">` : '';
       return `<div class="rub"><div class="r1"><select data-k="t" data-i="${i}" aria-label="Type de rubrique">${Object.entries(CAT).map(([k, v]) => `<option value="${k}"${k === r.t ? ' selected' : ''}>${esc(v.l)}</option>`).join('')}</select><button type="button" class="del" data-del="${i}" aria-label="Supprimer cette rubrique">✕</button></div>
         <div class="r2"><input type="number" min="0" step="50" data-k="m" data-i="${i}" value="${r.m || 0}" aria-label="Montant mensuel en DH">${extra}</div>
@@ -318,7 +324,7 @@ tr.base td{color:var(--muted)}
     let h = `<thead><tr><th>Rubrique</th><th>Base</th><th>Taux</th><th>Gains</th><th>Retenues</th></tr></thead><tbody>`;
     h += row('Salaire de base', '', '', b.base, '');
     if (b.anc > 0) h += row(`Prime d'ancienneté<small>${nf0.format(Math.floor(ancYears($('s-entree').value, y)))} ans de service</small>`, b.base, pct(b.anc), b.pa, '');
-    b.lines.forEach(l => { if (!l.m) return; const note = l.c.tax ? 'imposable' : l.impIR > 0.005 ? `dont ${d2(l.impIR)} imposable${l.cnssSub > 0.005 ? ' et soumis CNSS' : ''}${b.reform && l.exNow > l.exIR ? ' (forfait imposé avec la réforme)' : ''}` : 'exonérée'; h += row(`${esc(l.r.l || l.c.l)}<small>${l.r.l ? esc(l.c.l) + ' · ' : ''}${note}</small>`, '', '', l.m, ''); });
+    b.lines.forEach(l => { if (!l.m) return; const note = l.c.nature ? 'imposable, non versé' : l.c.tax ? 'imposable' : l.impIR > 0.005 ? `dont ${d2(l.impIR)} imposable${l.cnssSub > 0.005 ? ' et soumis CNSS' : ''}${b.reform && l.exNow > l.exIR ? ' (forfait imposé avec la réforme)' : ''}` : 'exonérée'; h += row(`${esc(l.r.l || l.c.l)}<small>${l.r.l ? esc(l.c.l) + ' · ' : ''}${note}</small>`, '', '', l.m, ''); });
     h += row('Salaire brut global', '', '', b.brut, '', 'sub');
     h += row('Salaire brut imposable', '', '', b.sbi, '', 'sub');
     h += `<tr class="sec"><td colspan="5">Cotisations salariales</td></tr>`;
@@ -360,7 +366,7 @@ tr.base td{color:var(--muted)}
     if (d.dep >= 0) $('s-dep').value = String(d.dep);
     $('s-cnss').checked = d.cnss !== false;
     $('s-ret').value = d.ret || 0;
-    rub = d.rub.map(r => { const o = { t: r.t, m: r.m, l: r.l }; if (r.t === 'transport') o.z = r.hv ? 750 : 500; if (r.t === 'panier') o.j = JOURS; if (r.t === 'autre') o.p = 0; return o; });
+    rub = d.rub.map(r => { const o = { t: r.t, m: r.m, l: r.l }; if (r.t === 'transport') o.z = r.hv ? 750 : 500; if (r.t === 'panier') o.j = JOURS; if (r.t === 'autre') o.p = 0; if (r.t === 'km') { o.k = r.km || 0; o.just = true; } return o; });
     let ancNote = '';
     if (d.date_entree) $('s-entree').value = d.date_entree;
     else { $('s-entree').value = ''; if (d.anc) { rub.unshift({ t: 'prime', m: d.anc, l: "Prime d'ancienneté" }); ancNote = " La date d'entrée n'apparaît pas : la prime d'ancienneté est gardée telle quelle, sans évoluer d'une année à l'autre. Ajoute ta date d'entrée pour la faire progresser."; } }
@@ -407,8 +413,8 @@ tr.base td{color:var(--muted)}
   }
   function syncRub(e) {
     const t = e.target, i = +t.dataset.i, k = t.dataset.k; if (!k || isNaN(i)) return;
-    if (k === 'just') rub[i].just = t.checked; else if (k === 't') { rub[i] = { t: t.value, m: rub[i].m || 0, ...(rub[i].l ? { l: rub[i].l } : {}) }; if (t.value === 'transport') rub[i].z = 500; rubRows(); } else rub[i][k] = t.value === '' ? '' : +t.value;
-    if (k === 'z') rubRows();
+    if (k === 'just') rub[i].just = t.checked; else if (k === 't') { rub[i] = { t: t.value, m: rub[i].m || 0, ...(rub[i].l ? { l: rub[i].l } : {}), ...(CAT[t.value] && CAT[t.value].defJust ? { just: true } : {}) }; if (t.value === 'transport') rub[i].z = 500; rubRows(); } else rub[i][k] = t.value === '' ? '' : +t.value;
+    if (k === 'z' || k === 'k') rubRows();
     renderSal();
   }
 
