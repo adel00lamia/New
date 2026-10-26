@@ -136,7 +136,7 @@ table.compact th{white-space:normal;vertical-align:bottom}table.compact th,table
         </fieldset>
         <div class="f"><label for="s-ret">Autres retenues déductibles (DH par mois)</label><input id="s-ret" type="number" min="0" step="50" value="0"><small>Retraite complémentaire (CIMR) et mutuelle, part salariale.</small></div>
         <label class="chk"><input type="checkbox" id="s-cnss" checked> <span>Affilié à la CNSS</span></label>
-        <label class="chk"><input type="checkbox" id="s-fp27"> <span>Appliquer dès 2027 la déduction de 45 % et l'imposition des indemnités forfaitaires<br><small class="small">Par défaut, ces deux mesures s'appliquent à partir de 2031, avec le barème définitif.</small></span></label>
+        <label class="chk"><input type="checkbox" id="s-fp27"> <span>Imposer les indemnités forfaitaires dès 2027<br><small class="small">Par défaut, le simulateur les impose à partir de 2031, avec le barème définitif. La déduction de 45 % pour frais professionnels s'applique, elle, dès janvier 2027.</small></span></label>
       </div>
       <div class="card" aria-live="polite">
         <div class="tiles" id="s-tiles"></div>
@@ -204,7 +204,7 @@ table.compact th{white-space:normal;vertical-align:bottom}table.compact th,table
         <li><b>Salaire brut global.</b> Salaire de base, prime d'ancienneté et toutes les rubriques du mois.</li>
         <li><b>Salaire brut imposable.</b> Le brut global moins les parts exonérées des indemnités.</li>
         <li><b>Cotisations salariales.</b> CNSS 4,48 % et indemnité pour perte d'emploi 0,19 %, calculées sur 6 000 DH au plus. AMO 2,26 % sur tout le salaire soumis, sans plafond.</li>
-        <li><b>Frais professionnels.</b> 35 % du brut imposable si celui-ci ne dépasse pas 78 000 DH par an, 25 % au-delà, avec un maximum de 35 000 DH par an (2 916,67 DH par mois). Avec la réforme, le taux passe à 45 %, toujours plafonné.</li>
+        <li><b>Frais professionnels.</b> 35 % du brut imposable si celui-ci ne dépasse pas 78 000 DH par an, 25 % au-delà, avec un maximum de 35 000 DH par an (2 916,67 DH par mois). À partir de janvier 2027, le taux passe à 45 % pour tous, toujours plafonné à 35 000 DH par an : ce plafond est atteint dès 77 778 DH de brut imposable annuel.</li>
         <li><b>Salaire net imposable.</b> Le brut imposable moins les cotisations, les frais professionnels et les retenues de retraite complémentaire et de mutuelle.</li>
         <li><b>IR.</b> Le barème s'applique au net imposable de l'année, puis on retire 500 DH par personne à charge (6 au plus) et on divise par 12.</li>
         <li><b>Net à payer.</b> Le brut global moins les avantages en nature, les cotisations, les retenues et l'IR.</li>
@@ -247,7 +247,7 @@ table.compact th{white-space:normal;vertical-align:bottom}table.compact th,table
     <div class="card"><span class="tag">Immobilier</span><h3>TVA sur la marge pour les marchands de biens</h3><p>Les professionnels qui achètent des immeubles bâtis pour les revendre pourront opter pour une TVA calculée sur leur marge.</p></div>
   </div>
 
-  <p class="src">Sources : <a href="https://fr.le360.ma/economie/reforme-de-lir-les-nouveaux-baremes-de-2027-a-2030-etape-par-etape-vers-un-taux-maximal-de-30_IV4K3SYWDRFLTKETNA4TORQQOY/" target="_blank" rel="noopener">Le360, barèmes 2027-2030</a>, <a href="https://auditcloud.ma/2026/10/23/projet-de-loi-de-finances-2027-les-principales-mesures-a-retenir/" target="_blank" rel="noopener">AuditCloud, barème 2031 et avance à l'import</a>, <a href="https://medias24.com/2026/10/23/plf2027-ir-is-tva-voici-les-principales-mesures-fiscales-proposes-par-le-gouvernement-mansouri-1783297/" target="_blank" rel="noopener">Médias24, mesures fiscales</a>, <a href="https://lematin.ma/economie/plf-2027-voici-les-principales-dispositions-fiscales-et-douanieres/371991" target="_blank" rel="noopener">Le Matin, dispositions fiscales et douanières</a>. Barème 2026 et cotisations : règles en vigueur (LF 2025 et LF 2026). Plafonds des indemnités : note de la DGI sur l'article 57 du CGI (2017, présentée par <a href="https://forvismazars.com/ma/fr/content/download/903328/file/01%20MAZARS_Clarification%20R%C3%A9gles%20fiscales%20IR.pdf" target="_blank" rel="noopener">Forvis Mazars</a>) et arrêté CNSS publié au BO n° 7443 du 29 septembre 2025 (<a href="https://fr.le360.ma/economie/nouvelles-regles-de-la-securite-sociale-le-detail-des-indemnites-exonerees_DHSK2LSVTVAERKAETHYJDBIZOQ/" target="_blank" rel="noopener">Le360</a>). Simulation mise à jour le 26 octobre 2026.</p>
+  <p class="src">Sources : <a href="https://fr.le360.ma/economie/reforme-de-lir-les-nouveaux-baremes-de-2027-a-2030-etape-par-etape-vers-un-taux-maximal-de-30_IV4K3SYWDRFLTKETNA4TORQQOY/" target="_blank" rel="noopener">Le360, barèmes 2027-2030</a>, <a href="https://auditcloud.ma/2026/10/23/projet-de-loi-de-finances-2027-les-principales-mesures-a-retenir/" target="_blank" rel="noopener">AuditCloud, barème 2031 et avance à l'import</a>, <a href="https://medias24.com/2026/10/23/plf2027-ir-is-tva-voici-les-principales-mesures-fiscales-proposes-par-le-gouvernement-mansouri-1783297/" target="_blank" rel="noopener">Médias24, mesures fiscales</a>, <a href="https://lematin.ma/economie/plf-2027-voici-les-principales-dispositions-fiscales-et-douanieres/371991" target="_blank" rel="noopener">Le Matin, dispositions fiscales et douanières</a>. Barème 2026 et cotisations : règles en vigueur (LF 2025 et LF 2026). Plafonds des indemnités : note de la DGI sur l'article 57 du CGI (2017, présentée par <a href="https://forvismazars.com/ma/fr/content/download/903328/file/01%20MAZARS_Clarification%20R%C3%A9gles%20fiscales%20IR.pdf" target="_blank" rel="noopener">Forvis Mazars</a>) et arrêté CNSS publié au BO n° 7443 du 29 septembre 2025 (<a href="https://fr.le360.ma/economie/nouvelles-regles-de-la-securite-sociale-le-detail-des-indemnites-exonerees_DHSK2LSVTVAERKAETHYJDBIZOQ/" target="_blank" rel="noopener">Le360</a>). Déduction de 45 % dès 2027 : <a href="https://fr.le360.ma/politique/exclusif-une-reforme-historique-de-limpot-sur-le-revenu-ce-qui-va-changer-pour-les-salaries-des-2027_UBLXPQPXLNEUZLLXYXQQXJ3GE4/" target="_blank" rel="noopener">Le360</a> et <a href="https://actionfinance.ma/bareme-ir-2027/" target="_blank" rel="noopener">Action Finance</a>. Simulation mise à jour le 27 octobre 2026.</p>
   <p class="src">Un outil gratuit proposé par <a href="https://planbiz.vercel.app" target="_blank" rel="noopener">PlanBiz</a>, le business plan chiffré pour les projets au Maroc.</p>
 </div>
 
@@ -293,7 +293,7 @@ table.compact th{white-space:normal;vertical-align:bottom}table.compact th,table
     const reform = rules >= 2031 || (fp27 && rules >= 2027);
     const indTax = reform && !just ? indM : excess;  // après la réforme, tout le forfait entre dans la base de l'IR
     const gross = brutM + indTax;
-    const fpRate = reform ? .45 : (gross * 12 <= 78000 ? .35 : .25);
+    const fpRate = rules >= 2027 ? .45 : (gross * 12 <= 78000 ? .35 : .25);
     const fp = Math.min(gross * fpRate, 35000 / 12);
     const taxable = Math.max(0, gross - cs - fp) * 12;
     const ir = Math.max(0, irBareme(taxable, rules) - Math.min(dep, FAM.max) * FAM.per) / 12;
@@ -340,7 +340,7 @@ table.compact th{white-space:normal;vertical-align:bottom}table.compact th,table
     const cap = Math.min(bc, CNSS.plafond), on = st.cnss ? 1 : 0;
     const cot = { ps: cap * .0448 * on, ipe: cap * .0019 * on, amo: bc * CNSS.allRate * on };
     const cs = cot.ps + cot.ipe + cot.amo, ret = Math.max(0, +st.ret || 0);
-    const fpRate = reform ? .45 : (sbi * 12 <= 78000 ? .35 : .25), fp = Math.min(sbi * fpRate, 35000 / 12);
+    const fpRate = rules >= 2027 ? .45 : (sbi * 12 <= 78000 ? .35 : .25), fp = Math.min(sbi * fpRate, 35000 / 12);
     const sni = Math.max(0, sbi - cs - fp - ret);
     const irBrut = irBareme(sni * 12, rules) / 12, fam = Math.min(+st.dep || 0, FAM.max) * FAM.per / 12;
     const ir = Math.max(0, irBrut - fam);
