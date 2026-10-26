@@ -98,7 +98,7 @@ module.exports = async function handler(req, res) {
       messages: [{ role: 'user', content: [block, { type: 'text', text: 'Relève le contenu de ce bulletin de paie.' }] }]
     })
   }).catch(() => null);
-  if (!up || !up.ok) { res.status(502).json({ error: 'La lecture a échoué. Essaie avec une image plus nette ou saisis tes rubriques à la main.' }); return; }
+  if (!up || !up.ok) { const t = up ? (await up.text().catch(() => '')).slice(0, 300) : 'réseau'; console.error('paie-lire', up && up.status, t); res.status(502).json({ error: 'La lecture a échoué. Essaie avec une image plus nette ou saisis tes rubriques à la main.', detail: (up ? up.status + ' ' : '') + t.replace(/sk-[A-Za-z0-9_-]+/g, '') }); return; }
   const out = await up.json().catch(() => null);
   const t = out && Array.isArray(out.content) && out.content.find(c => c.type === 'tool_use');
   if (!t || !t.input) { res.status(502).json({ error: 'La lecture a échoué.' }); return; }
