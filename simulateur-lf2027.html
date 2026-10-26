@@ -32,6 +32,8 @@ h2{font-size:19px;margin-bottom:10px}
 .f{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
 .f label{font-weight:600;font-size:13.5px}
 .f small{color:var(--muted);font-size:12.5px}
+fieldset.ind{border:1px solid var(--line);border-radius:10px;padding:10px 12px 12px;margin:0 0 14px}fieldset.ind legend{font-weight:600;font-size:13.5px;padding:0 4px}fieldset.ind .f{margin-bottom:10px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:6px}
 input[type=number],select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;padding:9px 10px;font:15px var(--mono)}
 select{font-family:var(--body)}
 .chk{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;margin-bottom:10px}
@@ -83,7 +85,12 @@ tr.base td{color:var(--muted)}
         <div class="f"><label for="s-brut">Salaire brut mensuel, hors prime d'ancienneté (DH)</label><input id="s-brut" type="number" min="0" step="100" value="10000"><small>Salaire de base et primes imposables, sans la prime d'ancienneté.</small></div>
         <div class="f"><label for="s-entree">Date d'entrée dans l'entreprise</label><input id="s-entree" type="date" value=""><small>Sert à calculer la prime d'ancienneté chaque année (Code du travail, art. 350). Laisse vide si ton brut l'inclut déjà.</small></div>
         <div class="f"><label for="s-dep">Personnes à charge</label><select id="s-dep"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select><small>Conjoint et enfants, 6 au maximum.</small></div>
-        <div class="f"><label for="s-ind">Indemnités forfaitaires non imposables aujourd'hui (DH par mois)</label><input id="s-ind" type="number" min="0" step="50" value="0"><small>Transport, représentation, panier… versées chaque mois sans justificatif. Elles figurent à part sur ta fiche de paie.</small></div>
+        <fieldset class="ind"><legend>Indemnités versées chaque mois (DH)</legend>
+          <div class="f"><label for="s-tr">Transport</label><div class="row2"><input id="s-tr" type="number" min="0" step="50" value="0"><select id="s-zone" aria-label="Lieu de travail"><option value="500">en ville (500 DH)</option><option value="750">hors ville (750 DH)</option></select></div></div>
+          <div class="f"><label for="s-rep">Représentation</label><input id="s-rep" type="number" min="0" step="50" value="0"><small>Cadres dirigeants. Exonérée jusqu'à 10 % du salaire de base.</small></div>
+          <div class="f"><label for="s-pan">Panier</label><input id="s-pan" type="number" min="0" step="50" value="0"><small>Exonérée jusqu'à 2 fois le SMIG horaire par jour travaillé, soit 35,84 DH par jour ou environ 930 DH par mois sur 26 jours (SMIG 2026).</small></div>
+          <small class="small">La part au-dessus des plafonds est déjà soumise à l'IR et à la CNSS aujourd'hui.</small>
+        </fieldset>
         <label class="chk"><input type="checkbox" id="s-just"> <span>Mes indemnités remboursent des frais justifiés (factures, notes de frais)<br><small class="small">Dans ce cas, elles restent exonérées après la réforme.</small></span></label>
         <label class="chk"><input type="checkbox" id="s-cnss" checked> <span>Affilié à la CNSS</span></label>
         <label class="chk"><input type="checkbox" id="s-fp27"> <span>Appliquer dès 2027 la déduction de 45 % et l'imposition des indemnités forfaitaires<br><small class="small">Par défaut, ces deux mesures s'appliquent à partir de 2031, avec le barème définitif.</small></span></label>
@@ -157,6 +164,9 @@ tr.base td{color:var(--muted)}
   const YEARS = [2026, 2027, 2028, 2029, 2030, 2031];
   const CNSS = { plafond: 6000, capRate: .0448 + .0019, allRate: .0226 }; // prestations sociales + IPE plafonnés, AMO déplafonnée
   const FAM = { per: 500, max: 6 };
+  // Plafonds d'exonération actuels des indemnités (IR et CNSS)
+  const SMIG_H = 3422.72 / 191, JOURS = 26;
+  const PLAF = { pan: 2 * SMIG_H * JOURS };
   // Prime d'ancienneté (Code du travail, art. 350) : années de service → taux sur le salaire
   const ANC = [[25, .25], [20, .20], [12, .15], [5, .10], [2, .05]];
   const ancRate = (entree, y) => { if (!entree) return 0; const d = new Date(entree + 'T00:00:00'); if (isNaN(d)) return 0; const yrs = (new Date(y, 6, 1) - d) / (365.25 * 864e5); for (const [a, r] of ANC) if (yrs >= a) return r; return 0; };
@@ -166,10 +176,20 @@ tr.base td{color:var(--muted)}
   // indM : indemnités forfaitaires exonérées aujourd'hui. Avec la réforme, elles deviennent imposables comme du salaire,
   // sauf si elles remboursent des frais justifiés (just = true). La CNSS n'est pas modifiée par le PLF.
   // rules : année dont on applique les règles (barème, frais pro, indemnités). Par défaut, l'année y elle-même.
-  function salaire(brutM, dep, cnss, y, fp27, indM = 0, just = false, rules = y) {
-    const cs = cnss ? Math.min(brutM, CNSS.plafond) * CNSS.capRate + brutM * CNSS.allRate : 0;
+  // ind : nombre (indemnité forfaitaire entièrement exonérée aujourd'hui) ou objet { tr, zone, rep, pan } avec les plafonds actuels.
+  function indParts(ind, brutM) {
+    if (typeof ind === 'number') return { total: ind, exempt: ind };
+    const tr = ind.tr || 0, rep = ind.rep || 0, pan = ind.pan || 0;
+    const exempt = Math.min(tr, ind.zone || 500) + Math.min(rep, .10 * brutM) + Math.min(pan, PLAF.pan);
+    return { total: tr + rep + pan, exempt };
+  }
+  function salaire(brutM, dep, cnss, y, fp27, ind = 0, just = false, rules = y) {
+    const { total: indM, exempt } = indParts(ind, brutM);
+    const excess = indM - exempt;                 // déjà imposable et soumis à la CNSS aujourd'hui
+    const cnssBase = brutM + excess;
+    const cs = cnss ? Math.min(cnssBase, CNSS.plafond) * CNSS.capRate + cnssBase * CNSS.allRate : 0;
     const reform = rules >= 2031 || (fp27 && rules >= 2027);
-    const indTax = reform && !just ? indM : 0;
+    const indTax = reform && !just ? indM : excess;  // après la réforme, tout le forfait entre dans la base de l'IR
     const gross = brutM + indTax;
     const fpRate = reform ? .45 : (gross * 12 <= 78000 ? .35 : .25);
     const fp = Math.min(gross * fpRate, 35000 / 12);
@@ -196,12 +216,13 @@ tr.base td{color:var(--muted)}
 
   // ---------- salarié ----------
   function renderSal() {
-    const base0 = num('s-brut'), dep = +$('s-dep').value, cnss = $('s-cnss').checked, fp27 = $('s-fp27').checked, ind = num('s-ind'), just = $('s-just').checked, entree = $('s-entree').value;
+    const base0 = num('s-brut'), dep = +$('s-dep').value, cnss = $('s-cnss').checked, fp27 = $('s-fp27').checked, just = $('s-just').checked, entree = $('s-entree').value;
+    const ind = { tr: num('s-tr'), zone: +$('s-zone').value, rep: num('s-rep'), pan: num('s-pan') }; const indTot = ind.tr + ind.rep + ind.pan;
     store.set('sal', { brut: base0, dep, cnss, fp27, ind, just, entree });
     // chaque année : brut avec la prime d'ancienneté de l'année, calculé avec les nouvelles règles puis avec celles de 2026
     const r = YEARS.map(y => { const anc = ancRate(entree, y), brut = base0 * (1 + anc); const now = salaire(brut, dep, cnss, y, fp27, ind, just); const old = salaire(brut, dep, cnss, y, fp27, ind, just, 2026); return { y, anc, brut, ...now, old: old.net, effet: now.net - old.net }; });
     const brut = base0;
-    const noInd = ind > 0 && !just ? YEARS.map((y, i) => salaire(r[i].brut, dep, cnss, y, fp27, 0, false)) : null;
+    const noInd = indTot > 0 && !just ? YEARS.map((y, i) => salaire(r[i].brut, dep, cnss, y, fp27, ind, true)) : null;
     const base = r[0];
     $('s-tiles').innerHTML = `<div class="tile"><small>Net mensuel en 2026</small><b>${dh(base.net)}</b><span>IR : ${dh(base.ir)} par mois</span></div>
       <div class="tile good"><small>Gain dû à la réforme en 2027</small><b>${sgn(r[1].effet)}</b><span>par mois, soit ${sgn(r[1].effet * 12)} sur l'année</span></div>
@@ -209,7 +230,7 @@ tr.base td{color:var(--muted)}
     $('s-chart').innerHTML = base0 > 0 ? bars(r.map(x => ({ l: String(x.y), v: x.net }))) : '';
     const withAnc = !!entree;
     $('s-table').innerHTML = `<thead><tr><th>Année</th>${withAnc ? '<th>Ancienneté</th><th>Brut</th>' : ''}<th>IR mensuel</th><th>Net mensuel</th><th>Gain réforme / mois</th><th>Gain réforme / an</th></tr></thead><tbody>${r.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}"><td>${x.y}${i === 0 ? ' (actuel)' : x.y === 2031 ? ' (définitif)' : ''}</td>${withAnc ? `<td>${nf0.format(Math.floor(ancYears(entree, x.y)))} ans · ${Math.round(x.anc * 100)} %</td><td>${dh(x.brut)}</td>` : ''}<td>${dh(x.ir)}</td><td>${dh(x.net)}</td><td class="${i && x.effet > 0.5 ? 'pos' : ''}">${i ? sgn(x.effet) : '—'}</td><td class="${i && x.effet > 0.5 ? 'pos' : ''}">${i ? sgn(x.effet * 12) : '—'}</td></tr>`).join('')}</tbody>`;
-    const indTxt = ind > 0 ? (just ? `Tes ${dh(ind)} d'indemnités par mois restent exonérées, puisqu'elles remboursent des frais justifiés. ` : `Tes ${dh(ind)} d'indemnités forfaitaires deviennent imposables en ${fp27 ? '2027' : '2031'} : elles te coûtent alors ${dh((r[5].ir - noInd[5].ir))} d'IR par mois en 2031. Pour les garder exonérées, ton employeur devra les transformer en remboursements de frais justifiés. `) : '';
+    const indTxt = indTot > 0 ? (just ? `Tes ${dh(indTot)} d'indemnités par mois restent exonérées dans leurs plafonds, puisqu'elles remboursent des frais justifiés. ` : `Tes ${dh(indTot)} d'indemnités forfaitaires deviennent imposables en ${fp27 ? '2027' : '2031'} : la partie aujourd'hui exonérée te coûte alors ${dh((r[5].ir - noInd[5].ir))} d'IR par mois en 2031. Pour les garder exonérées, ton employeur devra les transformer en remboursements de frais justifiés. `) : '';
     const ancTxt = withAnc ? `La prime d'ancienneté est calculée au 1er juillet de chaque année et s'ajoute au brut. Le gain dû à la réforme compare, pour le même brut, les règles de l'année aux règles de 2026 : il ne compte pas la hausse liée à l'ancienneté. ` : '';
     $('s-foot').textContent = `${indTxt}${ancTxt}Net mensuel indemnités comprises. Revenu net imposable en 2026 : ${dh(base.taxable)} par an. Cotisations salariales CNSS et AMO : ${dh(base.cs)} par mois. Le ministre a aussi annoncé l'exonération des salaires nets de moins de 10 000 DH dès 2027, mais cette mesure n'apparaît pas dans le barème publié : elle n'est pas prise en compte ici.`;
   }
@@ -231,7 +252,7 @@ tr.base td{color:var(--muted)}
       <div class="tile good"><small>Net en plus pour l'équipe en 2027</small><b>${sgn(tot[1].net - base.net)}</b><span>par an, ${heads ? sgn((tot[1].net - base.net) / heads / 12) + ' par salarié et par mois' : ''}</span></div>
       <div class="tile good"><small>Net en plus en 2031</small><b>${sgn(tot[5].net - base.net)}</b><span>par an</span></div>`;
     $('e-table').innerHTML = `<thead><tr><th>Année</th><th>IR retenu sur l'année</th><th>Net versé sur l'année</th><th>Net en plus</th></tr></thead><tbody>${tot.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}"><td>${YEARS[i]}${i === 0 ? ' (actuel)' : ''}</td><td>${dh(x.ir)}</td><td>${dh(x.net)}</td><td class="${i ? 'pos' : ''}">${i ? sgn(x.net - base.net) : '—'}</td></tr>`).join('')}</tbody>`;
-    $('e-foot').textContent = `Calcul fait avec 2 personnes à charge par salarié et affiliation à la CNSS. Tes charges patronales ne changent pas : la baisse d'IR profite au net, ce qui peut remplacer une partie d'une augmentation négociée.${base.ind > 0 ? ` Attention : tu verses ${dh(base.ind)} d'indemnités forfaitaires par an. À partir de 2031, elles seront imposées comme du salaire, sauf si tu les transformes en remboursements de frais justifiés (notes de frais, factures). Le simulateur les traite ici comme forfaitaires.` : ''}`;
+    $('e-foot').textContent = `Calcul fait avec 2 personnes à charge par salarié et affiliation à la CNSS. Tes charges patronales ne changent pas : la baisse d'IR profite au net, ce qui peut remplacer une partie d'une augmentation négociée.${base.ind > 0 ? ` Attention : tu verses ${dh(base.ind)} d'indemnités forfaitaires par an. À partir de 2031, elles seront imposées comme du salaire, sauf si tu les transformes en remboursements de frais justifiés (notes de frais, factures). Le simulateur les traite ici comme forfaitaires et dans les plafonds d'exonération actuels.` : ''}`;
   }
 
   // ---------- importateur ----------
@@ -253,13 +274,13 @@ tr.base td{color:var(--muted)}
   function selectTab(id) { tabs.forEach(([t, p]) => { const on = t === id; $(t).setAttribute('aria-selected', on); $(p).hidden = !on; }); store.set('tab', id); }
   tabs.forEach(([t]) => $(t).addEventListener('click', () => selectTab(t)));
   document.querySelector('.tabs').addEventListener('keydown', e => { const i = tabs.findIndex(([t]) => $(t).getAttribute('aria-selected') === 'true'); if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length][0]; selectTab(n); $(n).focus(); } });
-  ['s-brut', 's-entree', 's-dep', 's-cnss', 's-fp27', 's-ind', 's-just'].forEach(id => $(id).addEventListener('input', renderSal));
+  ['s-brut', 's-entree', 's-dep', 's-cnss', 's-fp27', 's-tr', 's-zone', 's-rep', 's-pan', 's-just'].forEach(id => $(id).addEventListener('input', renderSal));
   ['i-val', 'i-tax', 'i-reg'].forEach(id => $(id).addEventListener('input', renderImp));
   $('e-rows').addEventListener('input', e => { const t = e.target; if (!t.dataset.e) return; emp[+t.dataset.i][t.dataset.e] = Math.max(0, parseFloat(t.value) || 0); renderEmp(); });
   $('e-rows').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b) return; emp.splice(+b.dataset.del, 1); empRows(); renderEmp(); });
   $('e-add').addEventListener('click', () => { emp.push({ n: 1, b: 6000 }); empRows(); renderEmp(); });
 
-  const s = store.get('sal'); if (s) { $('s-brut').value = s.brut; $('s-dep').value = s.dep; $('s-cnss').checked = s.cnss; $('s-fp27').checked = s.fp27; if (s.ind !== undefined) $('s-ind').value = s.ind; $('s-just').checked = !!s.just; if (s.entree) $('s-entree').value = s.entree; }
+  const s = store.get('sal'); if (s) { $('s-brut').value = s.brut; $('s-dep').value = s.dep; $('s-cnss').checked = s.cnss; $('s-fp27').checked = s.fp27; if (s.ind && typeof s.ind === 'object') { $('s-tr').value = s.ind.tr || 0; $('s-zone').value = String(s.ind.zone || 500); $('s-rep').value = s.ind.rep || 0; $('s-pan').value = s.ind.pan || 0; } $('s-just').checked = !!s.just; if (s.entree) $('s-entree').value = s.entree; }
   const im = store.get('imp'); if (im) { $('i-val').value = im.val; $('i-tax').value = im.tax; $('i-reg').checked = im.reg; }
   empRows(); renderSal(); renderEmp(); renderImp();
   const t0 = store.get('tab'); if (t0 && $(t0)) selectTab(t0);
