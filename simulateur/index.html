@@ -248,6 +248,16 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 .c-leg li i{width:12px;height:12px;border-radius:3px}
 .c-leg b{font-weight:600}
 .c-note{margin:0;font-size:13.5px;color:var(--muted);max-width:60ch}
+.bd{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px clamp(18px,5vw,28px);margin:0 0 18px}
+.bd:empty{display:none}
+.bd h3{margin:0 0 10px;font:600 15px var(--display);color:var(--muted)}
+.bd-l{list-style:none;margin:0;padding:0}
+.bd-l li{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.bd-l li b{white-space:nowrap;font-weight:600}
+.bd-l li b.pos{color:var(--good)}.bd-l li b.neg{color:#C4321C}
+.bd-l li.tot{border-bottom:0;font-weight:600}.bd-l li.tot b{font-size:17px}
+.bd-tip{margin:12px 0 0;padding:10px 12px;border-radius:var(--r-sm);background:var(--good-soft);font-size:14px}
+.bd-note{margin:10px 0 0;font-size:13px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.ticket.in{animation:none}}
 @media (max-width:480px){.nav .btn{flex:1}.nav span{display:none}.actions .btn{flex:1}}
 </style>
@@ -296,6 +306,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       <label class="chk"><input type="checkbox" id="s-cnss" checked> <span>Je suis affilié à la CNSS</span></label>
       <details class="more"><summary>Plus d'options</summary>
         <div class="f"><label for="s-ret">Retraite complémentaire et mutuelle (DH par mois)</label><input id="s-ret" type="number" inputmode="decimal" min="0" step="50" value="0"><small>Ta part salariale de la CIMR et de la mutuelle.</small></div>
+        <div class="f"><label for="s-nc">En 2031, déduction de 45 % et indemnités exonérées</label><select id="s-nc"><option value="reduce" selected>Les indemnités exonérées réduisent la déduction (lecture retenue)</option><option value="total">Toute indemnité exonérée supprime la déduction (lecture stricte)</option><option value="none">Pas de non-cumul (comme aujourd'hui)</option></select><small>Le projet de loi interdit de cumuler les deux à partir de 2031, sans préciser comment. Choisis la lecture à simuler.</small></div>
         <label class="chk"><input type="checkbox" id="s-fp27"> <span>Imposer les indemnités forfaitaires dès 2027<br><small class="small">Par défaut, elles deviennent imposables en 2031.</small></span></label>
       </details>
       <div class="nav"><button type="button" class="btn ghost" data-go="sal/1">Retour</button><button type="button" class="btn pri" data-go="sal/3">Continuer</button></div>
@@ -316,6 +327,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 
     <div class="result" data-step="res" hidden>
       <div id="s-tiles"></div>
+      <div class="bd" id="s-bd"></div>
       <div class="cost" id="s-cost"></div>
       <div class="refbox" id="s-ref" hidden></div>
       <p class="sum" id="s-foot"></p>
@@ -351,12 +363,14 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       <details class="more"><summary>Plus d'options</summary>
         <div class="f"><label for="e-cimr">Retraite complémentaire CIMR, taux salarial (%)</label><input id="e-cimr" type="number" inputmode="decimal" min="0" max="12" step="0.5" value="0"><small>La part patronale est comptée à 1,3 fois ce taux.</small></div>
         <div class="f"><label for="e-dep">Personnes à charge en moyenne par salarié</label><select id="e-dep"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select><small>Change le net de tes salariés, pas ton coût.</small></div>
+        <div class="f"><label for="e-nc">En 2031, déduction de 45 % et indemnités exonérées</label><select id="e-nc"><option value="reduce" selected>Les indemnités exonérées réduisent la déduction (lecture retenue)</option><option value="total">Toute indemnité exonérée supprime la déduction (lecture stricte)</option><option value="none">Pas de non-cumul (comme aujourd'hui)</option></select><small>Le projet de loi interdit de cumuler les deux à partir de 2031, sans préciser comment.</small></div>
       </details>
       <div class="nav"><button type="button" class="btn ghost" data-go="emp/1">Retour</button><button type="button" class="btn pri" data-go="emp/res">Voir mon résultat</button></div>
     </div>
     <p class="live" aria-live="polite"><span id="e-live"></span></p>
     <div class="result" data-step="res" hidden>
       <div id="e-tiles"></div>
+      <div class="bd" id="e-bd"></div>
       <p class="sum" id="e-foot"></p>
       <div class="actions"><button type="button" class="btn ghost" data-go="emp/1">Modifier mes réponses</button><button type="button" class="btn ghost" data-share>Partager le simulateur</button></div>
       <details class="fold"><summary>Budget 2026 par poste</summary><div class="tw"><table id="e-detail" class="compact stack"></table></div></details>
@@ -406,7 +420,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
         <li><b>Salaire brut global.</b> Salaire de base, prime d'ancienneté et toutes les rubriques du mois.</li>
         <li><b>Salaire brut imposable.</b> Le brut global moins les parts exonérées des indemnités.</li>
         <li><b>Cotisations salariales.</b> CNSS 4,48 % et indemnité pour perte d'emploi 0,19 %, calculées sur 6 000 DH au plus. AMO 2,26 % sur tout le salaire soumis, sans plafond.</li>
-        <li><b>Frais professionnels.</b> 35 % du brut imposable si celui-ci ne dépasse pas 78 000 DH par an, 25 % au-delà, avec un maximum de 35 000 DH par an (2 916,67 DH par mois). À partir de janvier 2027, le taux passe à 45 % pour tous, toujours plafonné à 35 000 DH par an : ce plafond est atteint dès 77 778 DH de brut imposable annuel.</li>
+        <li><b>Frais professionnels.</b> 35 % du brut imposable si celui-ci ne dépasse pas 78 000 DH par an, 25 % au-delà, avec un maximum de 35 000 DH par an (2 916,67 DH par mois). À partir de janvier 2027, le taux passe à 45 % pour tous, toujours plafonné à 35 000 DH par an : ce plafond est atteint dès 77 778 DH de brut imposable annuel. À partir de 2031, cette déduction ne se cumule plus avec les indemnités exonérées. Le texte ne dit pas encore comment : par défaut, le simulateur retire les indemnités exonérées de la déduction, et les options permettent de tester la lecture stricte.</li>
         <li><b>Salaire net imposable.</b> Le brut imposable moins les cotisations, les frais professionnels et les retenues de retraite complémentaire et de mutuelle.</li>
         <li><b>IR.</b> Le barème s'applique au net imposable de l'année, puis on retire 500 DH par personne à charge (6 au plus) et on divise par 12.</li>
         <li><b>Net à payer.</b> Le brut global moins les avantages en nature, les cotisations, les retenues et l'IR.</li>
@@ -543,13 +557,17 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     const cap = Math.min(bc, CNSS.plafond), on = st.cnss ? 1 : 0;
     const cot = { ps: cap * .0448 * on, ipe: cap * .0019 * on, amo: bc * CNSS.allRate * on };
     const cs = cot.ps + cot.ipe + cot.amo, ret = Math.max(0, +st.ret || 0);
-    const fpRate = rules >= 2027 ? .45 : (sbi * 12 <= 78000 ? .35 : .25), fp = Math.min(sbi * fpRate, 35000 / 12);
+    const fpRate = rules >= 2027 ? .45 : (sbi * 12 <= 78000 ? .35 : .25), fp0 = Math.min(sbi * fpRate, 35000 / 12);
+    // À partir de 2031, la déduction forfaitaire ne se cumule plus avec les indemnités exonérées (art. 57-1°).
+    // Le texte ne précise pas les modalités : « reduce » retire les indemnités exonérées de la déduction, « total » la supprime.
+    const exIRsum = lines.reduce((a, l) => a + l.exIR, 0), nc = st.nc || 'reduce';
+    const fp = rules >= 2031 && exIRsum > 0.005 ? (nc === 'total' ? 0 : nc === 'reduce' ? Math.max(0, fp0 - exIRsum) : fp0) : fp0;
     const sni = Math.max(0, sbi - cs - fp - ret);
     const irBrut = irBareme(sni * 12, rules) / 12, fam = Math.min(+st.dep || 0, FAM.max) * FAM.per / 12;
     const ir = Math.max(0, irBrut - fam);
     const pat = Object.fromEntries(Object.entries(PAT).map(([k, t]) => [k, (k === 'ps' || k === 'ipe' ? cap : bc) * t * on]));
     const patTot = Object.values(pat).reduce((a, v) => a + v, 0);
-    return { base, anc, pa, lines, brut, sbi, bc, cap, cot, cs, ret, fpRate, fp, sni, irBrut, fam, ir, net: brut - lines.filter(l => l.c.nature).reduce((a, l) => a + l.m, 0) - cs - ret - ir, pat, patTot, cost: brut + patTot, reform, rules };
+    return { base, anc, pa, lines, brut, sbi, bc, cap, cot, cs, ret, fpRate, fp, fp0, exIRsum, sni, irBrut, fam, ir, net: brut - lines.filter(l => l.c.nature).reduce((a, l) => a + l.m, 0) - cs - ret - ir, pat, patTot, cost: brut + patTot, reform, rules };
   }
 
   // ---------- formats ----------
@@ -599,7 +617,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     list[i][k] = t.value === '' ? '' : +t.value;
     return k === 'z' || k === 'k';
   }
-  function state() { return { base: num('s-brut'), entree: $('s-entree').value, dep: +$('s-dep').value, cnss: $('s-cnss').checked, fp27: $('s-fp27').checked, ret: num('s-ret'), rub }; }
+  function state() { return { base: num('s-brut'), entree: $('s-entree').value, dep: +$('s-dep').value, cnss: $('s-cnss').checked, fp27: $('s-fp27').checked, nc: $('s-nc').value, ret: num('s-ret'), rub }; }
   function slipHTML(b, y) {
     const row = (l, base, taux, g, rt, cls = '') => `<tr class="${cls}"><td>${l}</td><td>${base === '' ? '' : d2(base)}</td><td>${taux}</td><td>${g === '' ? '' : d2(g)}</td><td>${rt === '' ? '' : d2(rt)}</td></tr>`;
     const pct = t => nf2.format(t * 100).replace(/,00$/, '') + ' %';
@@ -691,6 +709,15 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       const cotS = c.cs + c.ret, other = Math.max(0, c.cost - cash - cotS - c.ir - pat - nat);
       const part = c.cost > 0 ? cash / c.cost * 100 : 0;
       const seg = [['Ton net', cash, 'k-net'], ['Ton IR', c.ir, 'k-ir'], ['Tes cotisations', cotS, 'k-cot'], ['Charges patronales', pat, 'k-pat']].concat(nat > 0.5 ? [['Avantages en nature', nat, 'k-nat']] : []).filter(x => x[1] > 0.5);
+      // Bilan : d'où vient le gain de 2031, mesure par mesure (même bulletin, ancienneté de 2031)
+      const A = bulletin(st, 2031, 2026), B = bulletin({ ...st, nc: 'none' }, 2031, 2031, true), C = bulletin({ ...st, nc: 'none' }, 2031, 2031), D = bulletin(st, 2031);
+      const J = bulletin(st, 2031, 2031, true);
+      const eff = [['Nouveau barème et déduction de 45 %', B.net - A.net], ['Indemnités forfaitaires imposées', C.net - B.net], ['Non-cumul de la déduction avec les indemnités exonérées', D.net - C.net]].filter((x, k) => k === 0 || Math.abs(x[1]) > 0.5);
+      const conv = J.net - D.net;
+      $('s-bd').innerHTML = `<h3>Ce que chaque mesure change pour toi en 2031</h3>
+        <ul class="bd-l">${eff.map(([l, v]) => `<li><span>${l}</span><b class="${v > 0.5 ? 'pos' : v < -0.5 ? 'neg' : ''}">${sgn(v)}</b></li>`).join('')}<li class="tot"><span>Effet total par mois</span><b class="${D.net - A.net > 0.5 ? 'pos' : 'neg'}">${sgn(D.net - A.net)}</b></li></ul>
+        ${conv > 0.5 ? `<p class="bd-tip">Si ton employeur remplace tes indemnités forfaitaires par des remboursements de frais justifiés, ton net de 2031 gagne encore ${dh(conv)} par mois, sans coût de plus pour lui.</p>` : ''}
+        ${D.exIRsum > 0.5 && st.nc !== 'none' ? `<p class="bd-note">Non-cumul : ${st.nc === 'total' ? 'la déduction forfaitaire est supprimée dès qu’une indemnité reste exonérée' : `tes ${dh(D.exIRsum)} d'indemnités exonérées réduisent ta déduction forfaitaire, de ${dh(D.fp0)} à ${dh(D.fp)} par mois`}. Le texte ne précise pas encore les modalités : c'est une lecture à confirmer.</p>` : ''}`;
       $('s-cost').innerHTML = c.cost > 0 ? `<h3>Ce que ton poste coûte à l'entreprise</h3>
         <div class="c-top"><b>${dh(c.cost)}</b><span>par mois, soit ${dh(c.cost * 12)} par an</span></div>
         <div class="c-bar" role="img" aria-label="Répartition du coût employeur">${seg.map(x => `<i class="${x[2]}" style="flex:${x[1].toFixed(2)}" title="${x[0]} : ${dh(x[1])}"></i>`).join('')}</div>
@@ -736,15 +763,15 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   // Les primes suivent l'augmentation, les indemnités restent à leur montant.
   function posteSlip(e, y, k, opt, rules = y) {
     const f = Math.pow(1 + opt.g, k), base = e.b * f, prime = (e.p || 0) * f + (opt.m13 ? base / 12 : 0);
-    const st = { base, dep: opt.dep, cnss: true, fp27: false, ret: 0, entree: '', rub: [{ t: 'prime', m: prime }, ...(e.rub || []).map(r => ({ ...r }))] };
+    const st = { base, dep: opt.dep, cnss: true, fp27: false, nc: opt.nc, ret: 0, entree: '', rub: [{ t: 'prime', m: prime }, ...(e.rub || []).map(r => ({ ...r }))] };
     const first = bulletin(st, y, rules); st.ret = first.sbi * opt.cimr;
     const sl = bulletin(st, y, rules), cimrPat = sl.sbi * opt.cimr * 1.3;
     const ind = sl.lines.slice(1).reduce((a, l) => ({ tot: a.tot + l.m, exCn: a.exCn + (l.m - l.cnssSub), forf: a.forf + (!l.c.tax && !l.c.always && !l.r.just ? l.m : 0) }), { tot: 0, exCn: 0, forf: 0 });
     return { ...sl, cimrPat, patAll: sl.patTot + cimrPat, costAll: sl.cost + cimrPat, ind };
   }
   function renderEmp() {
-    const opt = { g: num('e-aug') / 100, cimr: num('e-cimr') / 100, dep: +$('e-dep').value, m13: $('e-13').checked };
-    store.set('emp2', emp); store.set('empopt', { aug: num('e-aug'), cimr: num('e-cimr'), dep: opt.dep, m13: opt.m13 });
+    const opt = { g: num('e-aug') / 100, cimr: num('e-cimr') / 100, dep: +$('e-dep').value, m13: $('e-13').checked, nc: $('e-nc').value };
+    store.set('emp2', emp); store.set('empopt', { aug: num('e-aug'), cimr: num('e-cimr'), dep: opt.dep, m13: opt.m13, nc: opt.nc });
     const heads = emp.reduce((a, e) => a + (+e.n || 0), 0);
     const years = YEARS.map((y, k) => emp.reduce((a, e) => { const n = (+e.n || 0) * 12, s = posteSlip(e, y, k, opt), o = posteSlip(e, y, k, opt, 2026);
       return { brut: a.brut + s.brut * n, pat: a.pat + s.patAll * n, cost: a.cost + s.costAll * n, ir: a.ir + s.ir * n, net: a.net + s.net * n, gain: a.gain + (s.net - o.net) * n, ind: a.ind + s.ind.tot * n, exCn: a.exCn + s.ind.exCn * n, forf: a.forf + s.ind.forf * n }; }, { brut: 0, pat: 0, cost: 0, ir: 0, net: 0, gain: 0, ind: 0, exCn: 0, forf: 0 }));
@@ -757,6 +784,18 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       <p class="t-next">${heads ? `${nf0.format(heads)} salarié${heads > 1 ? 's' : ''}, ${dh(y0.cost / heads / 12)} par mois en moyenne. ` : ''}Les charges patronales représentent ${y0.brut ? nf0.format(y0.pat / y0.brut * 100) : 0} % du salaire brut.</p>
     </div>`;
     $('e-live').textContent = `Estimation en direct : ${dh(y0.cost)} de budget en 2026`;
+    {
+      const agg = f => emp.reduce((a, e) => a + f(e) * (+e.n || 0) * 12, 0);
+      const opt0 = { ...opt, nc: 'none' };
+      const A = agg(e => posteSlip(e, 2031, 5, opt, 2026).net), B = agg(e => { const x = { ...e, rub: e.rub.map(r => ({ ...r, just: true })) }; return posteSlip(x, 2031, 5, opt0).net; });
+      const C = agg(e => posteSlip(e, 2031, 5, opt0).net), D = agg(e => posteSlip(e, 2031, 5, opt).net);
+      const J = agg(e => posteSlip({ ...e, rub: e.rub.map(r => ({ ...r, just: true })) }, 2031, 5, opt).net);
+      const eff = [['Nouveau barème et déduction de 45 %', B - A], ['Indemnités forfaitaires imposées', C - B], ['Non-cumul de la déduction avec les indemnités exonérées', D - C]].filter((x, k) => k === 0 || Math.abs(x[1]) > 0.5);
+      $('e-bd').innerHTML = `<h3>Coûts et avantages pour ton équipe en 2031</h3>
+        <ul class="bd-l"><li><span>Ton coût employeur</span><b>Inchangé par la réforme</b></li>${eff.map(([l, v]) => `<li><span>${l}</span><b class="${v > 0.5 ? 'pos' : v < -0.5 ? 'neg' : ''}">${sgn(v)} par an</b></li>`).join('')}<li class="tot"><span>Net en plus pour l'équipe</span><b class="${D - A > 0.5 ? 'pos' : 'neg'}">${sgn(D - A)} par an</b></li></ul>
+        ${J - D > 0.5 ? `<p class="bd-tip">En remplaçant les indemnités forfaitaires par des remboursements de frais justifiés, ton équipe gagne encore ${dh(J - D)} net par an en 2031, sans coût de plus pour toi.</p>` : ''}
+        <p class="bd-note">Le non-cumul de 2031 est simulé selon la lecture choisie dans les options. Le texte ne précise pas encore ses modalités.</p>`;
+    }
     const lines = emp.map(e => ({ e, s: posteSlip(e, 2026, 0, opt) }));
     const td = (l, v, cls = '') => `<td data-l="${l}"${cls ? ` class="${cls}"` : ''}>${v}</td>`;
     $('e-detail').innerHTML = `<thead><tr><th>Poste</th><th>Effectif</th><th>Brut mensuel</th><th>dont indemnités sans charges</th><th>Charges patronales</th><th>Coût mensuel</th><th>Coût annuel</th></tr></thead><tbody>${lines.map(({ e, s }) => `<tr>${td('Poste', esc(e.l || 'Poste'))}${td('Effectif', nf0.format(+e.n || 0))}${td('Brut mensuel', dh(s.brut))}${td('dont indemnités sans charges', s.ind.exCn > 0.5 ? dh(s.ind.exCn) : '—')}${td('Charges patronales', dh(s.patAll))}${td('Coût mensuel', dh(s.costAll))}${td('Coût annuel', dh(s.costAll * 12 * (+e.n || 0)))}</tr>`).join('')}<tr class="sub">${td('Poste', '<b>Total</b>')}${td('Effectif', `<b>${nf0.format(heads)}</b>`)}${td('Brut mensuel', dh(y0.brut / 12))}${td('dont indemnités sans charges', y0.exCn > 0.5 ? dh(y0.exCn / 12) : '—')}${td('Charges patronales', dh(y0.pat / 12))}${td('Coût mensuel', dh(y0.cost / 12))}${td('Coût annuel', `<b>${dh(y0.cost)}</b>`)}</tr></tbody>`;
@@ -784,7 +823,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   }
 
   // ---------- événements ----------
-  ['s-brut', 's-entree', 's-dep', 's-cnss', 's-fp27', 's-ret', 's-year'].forEach(id => $(id).addEventListener('input', renderSal));
+  ['s-brut', 's-entree', 's-dep', 's-cnss', 's-fp27', 's-nc', 's-ret', 's-year'].forEach(id => $(id).addEventListener('input', renderSal));
   $('s-rub').addEventListener('input', syncRub);
   if (canImport) $('s-imp').hidden = false;
   $('s-imp-btn').addEventListener('click', () => { if (!$('s-imp-ok').checked) { impMsg("Coche d'abord la case d'accord ci-dessous.", true); $('s-imp-ok').focus(); return; } $('s-imp-file').click(); });
@@ -793,8 +832,8 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   $('s-add').addEventListener('click', () => { rub.push({ t: 'prime', m: 0 }); rubRows(); renderSal(); const sel = $('s-rub').querySelectorAll('select[data-k="t"]'); sel[sel.length - 1].focus(); });
   ['i-val', 'i-tax', 'i-reg'].forEach(id => $(id).addEventListener('input', renderImp));
   $('e-rows').addEventListener('input', e => { const t = e.target; if (t.dataset.pi !== undefined && t.dataset.k) { if (editRub(emp[+t.dataset.pi].rub, t)) empRows(); renderEmp(); return; } if (!t.dataset.e) return; emp[+t.dataset.i][t.dataset.e] = t.dataset.e === 'l' ? t.value.slice(0, 40) : Math.max(0, parseFloat(t.value) || 0); renderEmp(); });
-  ['e-aug', 'e-cimr', 'e-dep', 'e-13'].forEach(id => $(id).addEventListener('input', renderEmp));
-  if (eSaved) { $('e-aug').value = eSaved.aug ?? 3; $('e-cimr').value = eSaved.cimr || 0; $('e-dep').value = String(eSaved.dep ?? 2); $('e-13').checked = !!eSaved.m13; }
+  ['e-aug', 'e-cimr', 'e-dep', 'e-13', 'e-nc'].forEach(id => $(id).addEventListener('input', renderEmp));
+  if (eSaved) { $('e-aug').value = eSaved.aug ?? 3; $('e-cimr').value = eSaved.cimr || 0; $('e-dep').value = String(eSaved.dep ?? 2); $('e-13').checked = !!eSaved.m13; if (eSaved.nc) $('e-nc').value = eSaved.nc; }
   $('e-rows').addEventListener('click', e => {
     const q = e.target.closest('[data-eadd]'); if (q) { const pi = +q.dataset.pi; emp[pi].rub.push(newRub(q.dataset.eadd)); empRows(); renderEmp(); const ins = $('e-rows').querySelectorAll(`.poste:nth-child(${pi + 1}) input[data-k="m"]`); if (ins.length) ins[ins.length - 1].focus(); return; }
     const rd = e.target.closest('[data-rdel]'); if (rd && rd.dataset.pi !== undefined) { emp[+rd.dataset.pi].rub.splice(+rd.dataset.rdel, 1); empRows(); renderEmp(); return; }
@@ -802,7 +841,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   $('e-rows').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b) return; emp.splice(+b.dataset.del, 1); empRows(); renderEmp(); });
   $('e-add').addEventListener('click', () => { emp.push({ l: '', n: 1, b: 6000, p: 0, rub: [] }); empRows(); renderEmp(); });
 
-  if (saved) { $('s-brut').value = saved.base; $('s-dep').value = saved.dep; $('s-cnss').checked = saved.cnss; $('s-fp27').checked = saved.fp27; $('s-ret').value = saved.ret || 0; if (saved.entree) $('s-entree').value = saved.entree; }
+  if (saved) { $('s-brut').value = saved.base; $('s-dep').value = saved.dep; $('s-cnss').checked = saved.cnss; $('s-fp27').checked = saved.fp27; $('s-ret').value = saved.ret || 0; if (saved.nc) $('s-nc').value = saved.nc; if (saved.entree) $('s-entree').value = saved.entree; }
   rubRows();
   const im = store.get('imp'); if (im) { $('i-val').value = im.val; $('i-tax').value = im.tax; $('i-reg').checked = im.reg; }
   empRows(); renderSal(); renderEmp(); renderImp();
