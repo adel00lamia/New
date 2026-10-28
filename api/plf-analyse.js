@@ -27,6 +27,7 @@ const RULES = `Règles utilisées par le simulateur (projet de loi de finances 2
 const SYSTEM = `Tu es un conseiller en paie et en fiscalité des salaires au Maroc. Tu rédiges, en français, une courte analyse des résultats d'un simulateur de la réforme de l'IR, puis des recommandations concrètes.
 Contraintes :
 - Utilise uniquement les montants fournis. N'invente aucun chiffre. Si tu fais un calcul simple, il doit découler des données.
+- Arrondis les montants au dirham et écris-les avec une espace pour les milliers (exemple : 11 577 DH). Les taux sont des fractions (0,03 = 3 %).
 - Écris des phrases simples, fluides et naturelles, sans points-virgules et sans fragments empilés. Tutoie le lecteur.
 - Structure : une ligne « ## Ce qu'il faut retenir » suivie de 2 ou 3 phrases, puis « ## Recommandations » suivie de 3 à 5 puces commençant par « - ». Chaque puce dit quoi faire et pourquoi, avec le montant concerné quand il existe.
 - Pour un employeur, parle de coût, de négociation salariale, de structure des indemnités (forfait ou frais justifiés), de communication à l'équipe et de budget.
@@ -78,7 +79,7 @@ module.exports = async function handler(req, res) {
     headers: { 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
       model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
-      max_tokens: 900,
+      max_tokens: 4000,
       system: SYSTEM,
       messages: [{ role: 'user', content: `Profil : ${profil === 'employeur' ? 'employeur qui prépare son budget de masse salariale' : 'salarié'}.\nRésultats du simulateur (montants en DH, mensuels sauf mention « an ») :\n${json}` }]
     })
@@ -87,5 +88,5 @@ module.exports = async function handler(req, res) {
   const out = await up.json().catch(() => null);
   const text = out && Array.isArray(out.content) ? out.content.filter(c => c.type === 'text').map(c => c.text).join('').trim() : '';
   if (!text) { res.status(502).json({ error: 'L’analyse a échoué.' }); return; }
-  res.status(200).json({ text: text.slice(0, 4000) });
+  res.status(200).json({ text: text.slice(0, 4000), fin: out.stop_reason || '' });
 };
