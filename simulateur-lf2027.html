@@ -223,6 +223,21 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 .explain summary::-webkit-details-marker{display:none}
 .explain summary::before{content:"+";display:inline-block;width:18px;font-weight:700;color:var(--primary)}
 .explain details[open] summary::before{content:"−"}
+.cost{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px clamp(18px,5vw,28px);margin:0 0 18px}
+.cost h3{margin:0 0 10px;font:600 15px var(--display);color:var(--muted)}
+.c-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:14px}
+.c-top b{font:700 clamp(28px,7vw,36px)/1.1 var(--display);letter-spacing:-.02em}
+.c-top span{color:var(--muted);font-size:14.5px}
+.c-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;gap:2px;margin-bottom:12px}
+.c-bar i{display:block;min-width:3px}
+.k-net{background:var(--good)}.k-ir{background:#C4321C}.k-cot{background:#7C8BA1}.k-pat{background:var(--navy)}.k-nat{background:#B9A16B}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .k-pat{background:#5B8CFF}:root:not([data-theme="light"]) .k-ir{background:#F27A68}}
+:root[data-theme="dark"] .k-pat{background:#5B8CFF}:root[data-theme="dark"] .k-ir{background:#F27A68}
+.c-leg{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:6px}
+.c-leg li{display:grid;grid-template-columns:12px minmax(0,1fr) auto;align-items:center;gap:10px;font-size:14.5px}
+.c-leg li i{width:12px;height:12px;border-radius:3px}
+.c-leg b{font-weight:600}
+.c-note{margin:0;font-size:13.5px;color:var(--muted);max-width:60ch}
 @media (prefers-reduced-motion:reduce){.ticket.in{animation:none}}
 @media (max-width:480px){.nav .btn{flex:1}.nav span{display:none}.actions .btn{flex:1}}
 </style>
@@ -291,6 +306,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 
     <div class="result" data-step="res" hidden>
       <div id="s-tiles"></div>
+      <div class="cost" id="s-cost"></div>
       <div class="refbox" id="s-ref" hidden></div>
       <p class="sum" id="s-foot"></p>
       <div class="actions"><button type="button" class="btn ghost" data-go="sal/1">Modifier mes réponses</button><button type="button" class="btn ghost" data-share>Partager le simulateur</button></div>
@@ -526,8 +542,9 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   }
 
   // ---------- formats ----------
-  const nf0 = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
-  const nf2 = new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fx = f => ({ format: v => f.format(v).replace(/\u202f/g, '\u00a0') });
+  const nf0 = fx(new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }));
+  const nf2 = fx(new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
   const d2 = v => nf2.format(v);
   const dh = v => nf0.format(Math.round(v)) + ' DH';
   const sgn = v => (v > 0.5 ? '+' : '') + dh(v);
@@ -645,6 +662,17 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       <p class="t-next">${g31 > 0.5 ? `Avec le barème définitif de 2031, la réforme te rapporte ${sgn(g31)} par mois.` : 'Le barème définitif de 2031 ne change pas ton IR.'}</p>
     </div>`;
     $('s-live').textContent = st.base > 0 ? `Estimation en direct : ${g27 > 0.5 ? sgn(g27) + ' par mois en 2027' : 'pas de changement en 2027'}` : '';
+    {
+      const c = base, pat = c.patTot, nat = c.lines.filter(l => l.c.nature).reduce((a, l) => a + l.m, 0), cash = c.net;
+      const cotS = c.cs + c.ret, other = Math.max(0, c.cost - cash - cotS - c.ir - pat - nat);
+      const part = c.cost > 0 ? cash / c.cost * 100 : 0;
+      const seg = [['Ton net', cash, 'k-net'], ['Ton IR', c.ir, 'k-ir'], ['Tes cotisations', cotS, 'k-cot'], ['Charges patronales', pat, 'k-pat']].concat(nat > 0.5 ? [['Avantages en nature', nat, 'k-nat']] : []).filter(x => x[1] > 0.5);
+      $('s-cost').innerHTML = c.cost > 0 ? `<h3>Ce que ton poste coûte à l'entreprise</h3>
+        <div class="c-top"><b>${dh(c.cost)}</b><span>par mois, soit ${dh(c.cost * 12)} par an</span></div>
+        <div class="c-bar" role="img" aria-label="Répartition du coût employeur">${seg.map(x => `<i class="${x[2]}" style="flex:${x[1].toFixed(2)}" title="${x[0]} : ${dh(x[1])}"></i>`).join('')}</div>
+        <ul class="c-leg">${seg.map(x => `<li><i class="${x[2]}"></i><span>${x[0]}</span><b>${dh(x[1])}</b></li>`).join('')}</ul>
+        <p class="c-note">Sur 100 DH dépensés par ton employeur, ${nf0.format(part)} DH arrivent sur ton compte en 2026${r[1].net > cash + 0.5 ? `, et ${nf0.format(r[1].net / r[1].cost * 100)} DH en 2027 avec la réforme. Son coût ne change pas : c'est l'IR qui baisse` : ''}. Les charges patronales comprennent la CNSS, la perte d'emploi, les allocations familiales, la formation professionnelle et l'AMO${st.cnss ? '' : ', ici à zéro faute d’affiliation à la CNSS'}.</p>` : '';
+    }
     $('s-chart').innerHTML = st.base > 0 ? bars(r.map(x => ({ l: String(x.y), v: x.net }))) : '';
     const withAnc = !!st.entree;
     const tdl = (l, v, c = '') => `<td data-l="${l}"${c ? ` class="${c}"` : ''}>${v}</td>`;
