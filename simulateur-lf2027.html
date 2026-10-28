@@ -96,7 +96,11 @@ table.xt td{min-width:120px}table.xt td:first-child{min-width:150px}
 :root[data-theme="dark"] .brand .logo{background:var(--primary);color:var(--primary-ink)}
 .cta{font:600 13.5px var(--body);color:var(--primary);text-decoration:none;border:1px solid var(--primary);border-radius:8px;padding:7px 12px}
 .cta:hover{background:var(--primary);color:var(--primary-ink)}
-.impinfo{font-size:12.5px;color:var(--muted);margin-top:6px}.impinfo summary{cursor:pointer;color:var(--primary);font-weight:500}.impinfo p{margin:6px 0 0}
+.cndp{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.staff{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:var(--bg);border:1px dashed color-mix(in srgb,var(--primary) 40%,var(--line));border-radius:var(--r-sm);padding:14px;margin:0 0 16px}
+.staff .cndp,.staff .impmsg{flex-basis:100%;margin:0}
+.lnk-btn{border:0;background:none;color:var(--primary);font:600 14px var(--body);text-decoration:underline;cursor:pointer;padding:0}
+.poste.big p{margin:0 0 8px}
 .src{margin-top:26px;font-size:12.5px;color:var(--muted)}
 .src a{color:var(--primary)}
 [hidden]{display:none!important}
@@ -299,8 +303,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       <div class="imp" id="s-imp" hidden>
           <button type="button" id="s-imp-btn" class="impbtn">Importer mon dernier bulletin de paie</button>
           <input type="file" id="s-imp-file" accept="application/pdf,image/jpeg,image/png,image/webp,image/*" hidden>
-          <label class="chk"><input type="checkbox" id="s-imp-ok"> <span>J'accepte que mon bulletin soit lu par l'IA Claude pour en relever les montants.</span></label>
-          <details class="impinfo"><summary>Ce qui est envoyé et conservé</summary><p>PDF ou photo, lu par Claude (Anthropic, États-Unis). Rien n'est conservé, ni le fichier ni son contenu. Ton nom, ton CIN et ton numéro CNSS ne sont pas relevés. Tu peux aussi les masquer avant l'envoi.</p></details>
+          <p class="cndp" data-cndp></p>
           <p class="impmsg" id="s-imp-msg" role="status"></p>
         </div>
       <div class="nav"><button type="button" class="btn ghost" data-go="intro">Retour</button><button type="button" class="btn pri" data-go="sal/2">Continuer</button></div>
@@ -362,6 +365,13 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       <p class="stepn">Étape 1 sur 2</p>
       <h2>Qui compose ton équipe&nbsp;?</h2>
       <p class="hint">Un poste par niveau de salaire, avec son effectif et ses indemnités. Les montants sont mensuels. <a href="#explications" class="lnk">Voir le plafond de chaque indemnité</a></p>
+      <div class="staff">
+        <button type="button" class="btn ghost" id="e-up">Importer un fichier de salariés</button>
+        <button type="button" class="lnk-btn" id="e-tpl">Télécharger le modèle Excel</button>
+        <input type="file" id="e-file" accept=".xlsx,.xls,.csv" hidden>
+        <p class="cndp">Le fichier est lu dans ton navigateur. Il n'est envoyé nulle part.</p>
+        <p class="impmsg" id="e-msg" role="status"></p>
+      </div>
       <div id="e-rows"></div>
       <button type="button" id="e-add" class="addbtn">Ajouter un poste</button>
       <div class="nav"><button type="button" class="btn ghost" data-go="intro">Retour</button><button type="button" class="btn pri" data-go="emp/2">Continuer</button></div>
@@ -481,6 +491,8 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 
 <script>
 (() => {
+  // Numéro du récépissé ou de l'autorisation CNDP. Laisse vide tant qu'il n'est pas délivré.
+  const CNDP_NO = '';
   const AIDATA = { s: null, e: null };   // derniers résultats, envoyés à l'analyse IA sur demande
   // ---------- règles ----------
   // Barèmes annuels sur le revenu net imposable : [plafond de tranche, taux]
@@ -767,6 +779,11 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   const eSaved = store.get('empopt');
   const QUICK = [['transport', 'Transport'], ['panier', 'Panier'], ['km', 'Kilométrique'], ['voiture', 'Forfait voiture'], ['representation', 'Représentation'], ['deplacement', 'Déplacement'], ['autre', 'Autre']];
   function empRows() {
+    if (emp.length > 40) {
+      const heads = emp.reduce((a, e) => a + (+e.n || 0), 0);
+      $('e-rows').innerHTML = `<div class="rub poste big"><p><b>${nf0.format(heads)} salariés importés</b>, regroupés en ${nf0.format(emp.length)} profils de paie identiques.</p><p class="hint">Le détail est trop long pour être modifié ici. Corrige ton fichier et importe-le de nouveau si besoin.</p><button type="button" class="btn ghost" id="e-clear">Revenir à l'exemple</button></div>`;
+      return;
+    }
     $('e-rows').innerHTML = emp.map((e, i) => `<div class="rub poste">
       <div class="r1"><input type="text" data-e="l" data-i="${i}" value="${esc(e.l || '')}" placeholder="Nom du poste" aria-label="Nom du poste"><button type="button" class="del" data-del="${i}" aria-label="Supprimer ce poste">✕</button></div>
       <div class="r2"><div class="f" style="margin:0"><label for="e-n${i}">Effectif</label><input id="e-n${i}" type="number" min="0" step="1" value="${e.n}" data-e="n" data-i="${i}"></div>
@@ -782,7 +799,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   // Les primes suivent l'augmentation, les indemnités restent à leur montant.
   function posteSlip(e, y, k, opt, rules = y) {
     const f = Math.pow(1 + opt.g, k), base = e.b * f, prime = (e.p || 0) * f + (opt.m13 ? base / 12 : 0);
-    const st = { base, dep: opt.dep, cnss: true, fp27: false, nc: opt.nc, ret: 0, entree: '', rub: [{ t: 'prime', m: prime }, ...(e.rub || []).map(r => ({ ...r }))] };
+    const st = { base, dep: e.dep === undefined || e.dep === '' ? opt.dep : +e.dep, cnss: true, fp27: false, nc: opt.nc, ret: 0, entree: '', rub: [{ t: 'prime', m: prime }, ...(e.rub || []).map(r => ({ ...r }))] };
     const first = bulletin(st, y, rules); st.ret = first.sbi * opt.cimr;
     const sl = bulletin(st, y, rules), cimrPat = sl.sbi * opt.cimr * 1.3;
     const ind = sl.lines.slice(1).reduce((a, l) => ({ tot: a.tot + l.m, exCn: a.exCn + (l.m - l.cnssSub), forf: a.forf + (!l.c.tax && !l.c.always && !l.r.just ? l.m : 0) }), { tot: 0, exCn: 0, forf: 0 });
@@ -822,7 +839,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     }
     const lines = emp.map(e => ({ e, s: posteSlip(e, 2026, 0, opt) }));
     const td = (l, v, cls = '') => `<td data-l="${l}"${cls ? ` class="${cls}"` : ''}>${v}</td>`;
-    $('e-detail').innerHTML = `<thead><tr><th>Poste</th><th>Effectif</th><th>Brut mensuel</th><th>dont indemnités sans charges</th><th>Charges patronales</th><th>Coût mensuel</th><th>Coût annuel</th></tr></thead><tbody>${lines.map(({ e, s }) => `<tr>${td('Poste', esc(e.l || 'Poste'))}${td('Effectif', nf0.format(+e.n || 0))}${td('Brut mensuel', dh(s.brut))}${td('dont indemnités sans charges', s.ind.exCn > 0.5 ? dh(s.ind.exCn) : '—')}${td('Charges patronales', dh(s.patAll))}${td('Coût mensuel', dh(s.costAll))}${td('Coût annuel', dh(s.costAll * 12 * (+e.n || 0)))}</tr>`).join('')}<tr class="sub">${td('Poste', '<b>Total</b>')}${td('Effectif', `<b>${nf0.format(heads)}</b>`)}${td('Brut mensuel', dh(y0.brut / 12))}${td('dont indemnités sans charges', y0.exCn > 0.5 ? dh(y0.exCn / 12) : '—')}${td('Charges patronales', dh(y0.pat / 12))}${td('Coût mensuel', dh(y0.cost / 12))}${td('Coût annuel', `<b>${dh(y0.cost)}</b>`)}</tr></tbody>`;
+    $('e-detail').innerHTML = `<thead><tr><th>Poste</th><th>Effectif</th><th>Brut mensuel</th><th>dont indemnités sans charges</th><th>Charges patronales</th><th>Coût mensuel</th><th>Coût annuel</th></tr></thead><tbody>${lines.slice(0, 60).map(({ e, s }) => `<tr>${td('Poste', esc(e.l || 'Poste'))}${td('Effectif', nf0.format(+e.n || 0))}${td('Brut mensuel', dh(s.brut))}${td('dont indemnités sans charges', s.ind.exCn > 0.5 ? dh(s.ind.exCn) : '—')}${td('Charges patronales', dh(s.patAll))}${td('Coût mensuel', dh(s.costAll))}${td('Coût annuel', dh(s.costAll * 12 * (+e.n || 0)))}</tr>`).join('')}<tr class="sub">${td('Poste', '<b>Total</b>')}${td('Effectif', `<b>${nf0.format(heads)}</b>`)}${td('Brut mensuel', dh(y0.brut / 12))}${td('dont indemnités sans charges', y0.exCn > 0.5 ? dh(y0.exCn / 12) : '—')}${td('Charges patronales', dh(y0.pat / 12))}${td('Coût mensuel', dh(y0.cost / 12))}${td('Coût annuel', `<b>${dh(y0.cost)}</b>`)}</tr></tbody>`;
     $('e-table').innerHTML = `<thead><tr><th>Année</th><th>Masse salariale brute</th><th>Charges patronales</th><th>Budget total</th><th>Net versé</th><th>Net en plus (réforme)</th></tr></thead><tbody>${years.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}">${td('Année', YEARS[i] + (i === 0 ? ' (actuel)' : ''))}${td('Masse salariale brute', dh(x.brut))}${td('Charges patronales', dh(x.pat))}${td('Budget total', `<b>${dh(x.cost)}</b>`)}${td('Net versé', dh(x.net))}${td('Net en plus (réforme)', i ? sgn(x.gain) : '—', i && x.gain > 0.5 ? 'pos' : '')}</tr>`).join('')}</tbody>`;
     $('e-foot').textContent = `Le budget comprend le salaire brut, les charges patronales CNSS, AMO, allocations familiales et formation professionnelle${opt.cimr ? ', et la part patronale de la CIMR' : ''}. Il augmente seulement avec les hausses de salaire : la réforme de l'IR ne change pas tes charges, elle augmente le net de tes salariés. Chaque indemnité est exonérée de charges jusqu'à son plafond CNSS. La partie qui dépasse supporte les charges comme du salaire.${y0.forf > 0.5 ? ` Tu verses ${dh(y0.forf)} d'indemnités forfaitaires par an. À partir de 2031, elles seront imposées à l'IR comme du salaire, sauf si tu les transformes en remboursements de frais justifiés. Ton coût ne change pas, mais le net de tes salariés baisse, ce que le calcul intègre déjà.` : ''} Le calcul ne compte pas les heures supplémentaires, les congés non pris ni les indemnités de départ.`;
   }
@@ -850,7 +867,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   ['s-brut', 's-entree', 's-dep', 's-cnss', 's-fp27', 's-nc', 's-ret', 's-year'].forEach(id => $(id).addEventListener('input', renderSal));
   $('s-rub').addEventListener('input', syncRub);
   if (canImport) $('s-imp').hidden = false;
-  $('s-imp-btn').addEventListener('click', () => { if (!$('s-imp-ok').checked) { impMsg("Coche d'abord la case d'accord ci-dessous.", true); $('s-imp-ok').focus(); return; } $('s-imp-file').click(); });
+  $('s-imp-btn').addEventListener('click', () => { $('s-imp-file').click(); });
   $('s-imp-file').addEventListener('change', e => importSlip(e.target.files[0]));
   $('s-rub').addEventListener('click', e => { const b = e.target.closest('[data-rdel]'); if (!b) return; rub.splice(+b.dataset.rdel, 1); rubRows(); renderSal(); });
   $('s-add').addEventListener('click', () => { rub.push({ t: 'prime', m: 0 }); rubRows(); renderSal(); const sel = $('s-rub').querySelectorAll('select[data-k="t"]'); sel[sel.length - 1].focus(); });
@@ -963,6 +980,85 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     finally { btn.disabled = false; }
   }
   document.addEventListener('click', e => { const b = e.target.closest('[data-xl]'); if (b) exportXL(b.dataset.xl, b); });
+
+  // ---------- import d'un fichier de salariés ----------
+  // Une ligne par salarié ou par poste. Colonnes reconnues (l'ordre et les accents n'importent pas) :
+  // Poste ou Nom, Effectif, Salaire de base, Primes imposables, Personnes à charge, et une colonne par indemnité.
+  const COLS = {
+    l: ['poste', 'nom', 'fonction', 'emploi', 'matricule', 'salarie'], n: ['effectif', 'nombre', 'nb'], b: ['salaire de base', 'salaire base', 'base', 'salaire'], p: ['primes imposables', 'primes', 'prime imposable', 'prime'],
+    dep: ['personnes a charge', 'charges de famille', 'enfants', 'deductions'],
+    transport: ['transport', 'indemnite de transport'], transport750: ['transport hors ville', 'transport hors perimetre'], panier: ['panier', 'prime de panier'], km: ['indemnite kilometrique', 'kilometrique'], voiture: ['forfait voiture', 'indemnite de voiture', 'voiture'],
+    representation: ['representation', 'indemnite de representation'], deplacement: ['deplacement', 'indemnite de deplacement'], tournee: ['tournee', 'prime de tournee'], caisse: ['caisse', 'indemnite de caisse'],
+    salissure: ['salissure', 'usure'], outillage: ['outillage'], frais: ['frais justifies', 'remboursement de frais', 'frais'], avantage: ['avantage en nature', 'avantages en nature'], autre: ['autre indemnite', 'autres indemnites']
+  };
+  const norm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const numv = v => { if (typeof v === 'number') return v; const x = parseFloat(String(v || '').replace(/\s| | /g, '').replace(',', '.')); return isFinite(x) ? x : 0; };
+  function mapHeader(hdr) {
+    const m = {};
+    hdr.forEach((h, i) => { const n = norm(h); if (!n) return; let best = null, bl = 0;
+      Object.entries(COLS).forEach(([k, al]) => al.forEach(a => { if ((n === a || n.startsWith(a + ' ') || n.includes(a)) && a.length > bl) { best = k; bl = a.length; } }));
+      if (best && m[best] === undefined) m[best] = i; });
+    // le nom du poste prime sur le nom ou le matricule du salarié
+    const pi = hdr.findIndex(h => /poste|fonction|emploi|categorie/.test(norm(h))); if (pi >= 0) m.l = pi;
+    return m;
+  }
+  function staffFromRows(rows) {
+    const hi = rows.findIndex(r => r && r.filter(x => String(x).trim()).length >= 2);
+    if (hi < 0) throw new Error('vide');
+    const m = mapHeader(rows[hi]);
+    if (m.b === undefined) throw new Error('base');
+    const out = new Map();
+    rows.slice(hi + 1).forEach(r => {
+      if (!r) return; const b = numv(r[m.b]); if (!(b > 0)) return;
+      const label = m.l !== undefined ? String(r[m.l] || '').trim().slice(0, 40) : '';
+      const n = m.n !== undefined ? Math.max(0, Math.round(numv(r[m.n]))) || 1 : 1;
+      const rub = [];
+      Object.keys(COLS).filter(k => CAT[k] || k === 'transport750').forEach(k => { if (m[k] === undefined) return; const v = numv(r[m[k]]); if (!(v > 0)) return;
+        const t = k === 'transport750' ? 'transport' : k, o = newRub(t); o.m = v; if (k === 'transport750') o.z = 750; if (t === 'autre') o.p = v; rub.push(o); });
+      const e = { l: label, n, b, p: m.p !== undefined ? numv(r[m.p]) : 0, rub };
+      if (m.dep !== undefined && String(r[m.dep]).trim() !== '') e.dep = Math.min(6, Math.max(0, Math.round(numv(r[m.dep]))));
+      // regroupe les profils de paie identiques pour garder un calcul rapide
+      const key = JSON.stringify([m.l !== undefined && out.size < 40 ? label : '', e.b, e.p, e.dep, rub]);
+      const prev = out.get(key); if (prev) prev.n += n; else out.set(key, e);
+    });
+    const list = [...out.values()];
+    if (!list.length) throw new Error('lignes');
+    if (list.length > 40) list.forEach(e => { if (!e.l) e.l = 'Profil'; });
+    return { list, found: Object.keys(m) };
+  }
+  async function importStaff(file) {
+    const msg = (t, err) => { const x = $('e-msg'); x.textContent = t; x.className = 'impmsg' + (err ? ' err' : ''); };
+    if (!file) return;
+    msg('Lecture du fichier…');
+    try {
+      const X = await loadXLSX();
+      const wb = X.read(await file.arrayBuffer(), { type: 'array' });
+      const rows = X.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, defval: '', raw: true });
+      const { list, found } = staffFromRows(rows);
+      emp = list; empRows(); renderEmp();
+      const heads = emp.reduce((a, e) => a + (+e.n || 0), 0);
+      const ind = found.filter(k => CAT[k] || k === 'transport750').length;
+      msg(`${nf0.format(heads)} salarié${heads > 1 ? 's' : ''} importé${heads > 1 ? 's' : ''}${emp.length < heads ? `, regroupés en ${nf0.format(emp.length)} profils` : ''}. ${ind ? `${ind} colonne${ind > 1 ? 's' : ''} d'indemnités reconnue${ind > 1 ? 's' : ''}.` : 'Aucune colonne d’indemnité reconnue.'}${found.includes('dep') ? ' Les personnes à charge du fichier sont utilisées.' : ''}`);
+    } catch (err) {
+      const why = { base: "La colonne « Salaire de base » est introuvable. Télécharge le modèle pour voir les colonnes attendues.", lignes: "Aucune ligne avec un salaire de base n'a été trouvée.", vide: 'Le fichier est vide.' }[err && err.message];
+      msg(why || "Ce fichier n'a pas pu être lu. Utilise un fichier Excel (.xlsx) ou CSV.", true);
+    } finally { $('e-file').value = ''; }
+  }
+  async function staffTemplate() {
+    const X = await loadXLSX(), wb = X.utils.book_new();
+    const rows = [['Poste', 'Effectif', 'Salaire de base', 'Primes imposables', 'Personnes à charge', 'Transport', 'Panier', 'Indemnité kilométrique', 'Forfait voiture', 'Représentation', 'Déplacement', 'Frais justifiés'],
+      ['Ouvrier', 4, 4500, 0, 2, 0, 400, 0, 0, 0, 0, 0], ['Technicien', 3, 9000, 300, 1, 500, 0, 0, 0, 0, 0, 0], ['Commercial', 2, 8000, 1000, 2, 0, 0, 1200, 0, 0, 0, 0], ['Directeur', 1, 25000, 0, 3, 0, 0, 0, 1500, 2500, 0, 0]];
+    const ws = X.utils.aoa_to_sheet(rows); ws['!cols'] = rows[0].map(h => ({ wch: Math.max(12, h.length + 2) }));
+    X.utils.book_append_sheet(wb, ws, 'Salariés');
+    const help = [['Comment remplir ce fichier'], ['Une ligne par salarié, ou par poste avec son effectif. Montants mensuels en DH.'], ['Les colonnes d’indemnités sont facultatives. Laisse 0 ou vide si le poste n’en a pas.'], ['Transport : en ville par défaut. Ajoute une colonne « Transport hors ville » pour le plafond de 750 DH.'], ['Indemnité kilométrique : le simulateur la considère justifiée par des ordres de mission.'], ['Le fichier est lu dans ton navigateur et n’est envoyé nulle part.']];
+    const wh = X.utils.aoa_to_sheet(help); wh['!cols'] = [{ wch: 90 }]; X.utils.book_append_sheet(wb, wh, 'Mode d’emploi');
+    X.writeFile(wb, 'modele-salaries-planbiz.xlsx');
+  }
+  $('e-up').addEventListener('click', () => $('e-file').click());
+  $('e-file').addEventListener('change', e => importStaff(e.target.files[0]));
+  $('e-tpl').addEventListener('click', () => staffTemplate().catch(() => { }));
+  $('e-rows').addEventListener('click', e => { if (e.target.id === 'e-clear') { store.set('emp2', null); location.reload(); } });
+  document.querySelectorAll('[data-cndp]').forEach(x => { x.textContent = `Lu par IA pour en relever les montants, rien n'est conservé. Conforme à la loi 09-08, ${CNDP_NO ? 'autorisation CNDP n° ' + CNDP_NO : 'déclaration CNDP en cours'}.`; });
 
   // ---------- parcours guidé ----------
   const SCREENS = { intro: 'v-intro', sal: 'p-sal', emp: 'p-emp', imp: 'p-imp' };
