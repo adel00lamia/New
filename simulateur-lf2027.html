@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Simulateur PLF 2027</title>
+<title>Simulateur BP PLF 2027</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Simule l'effet du projet de loi de finances 2027 sur ton salaire net, ta masse salariale ou ta trésorerie d'importateur, année par année jusqu'en 2031.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1093,7 +1093,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     if (x) { e.preventDefault(); $('v-after').hidden = false; $('explications').scrollIntoView({ behavior: 'smooth' }); const d = document.querySelector('.explain details'); if (d) d.open = true; return; }
     const sh = e.target.closest('[data-share]');
     if (sh) {
-      const url = location.origin + location.pathname, title = 'Simulateur PLF 2027 : ce que la réforme de l\'IR change pour toi';
+      const url = location.origin + location.pathname, title = 'Simulateur BP PLF 2027 : ce que la réforme de l\'IR change pour toi';
       if (navigator.share) navigator.share({ title, url }).catch(() => { });
       else if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => { sh.textContent = 'Lien copié'; setTimeout(() => { sh.textContent = 'Partager le simulateur'; }, 2000); });
     }

@@ -41,5 +41,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/simulateur-bp-plf2027",
+      "destination": "/simulateur-lf2027.html"
+    }
   ]
 }

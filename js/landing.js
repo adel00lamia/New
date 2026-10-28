@@ -65,7 +65,7 @@ const PBLanding = (() => {
   function render() {
     const el = document.getElementById('landing'); if (!el) return;
     const logo = window.PB ? PB.logo() : '';
-    el.innerHTML = `<header class="ld-top"><a class="auth-brand ld-brand" href="#" data-ld="top"><span class="logo-sm">${logo}</span><b>PlanBiz</b></a><nav class="ld-nav" aria-label="Sections"><a href="#ld-concept" data-ld="concept">Le concept</a><a href="#ld-faq" data-ld="faq">Questions fréquentes</a><a href="/simulateur-lf2027.html">Simulateur PLF 2027</a></nav><span class="sp"></span><button class="btn ghost sm" data-auth="login">Se connecter</button><button class="btn pri sm" data-auth="signup">Créer un compte</button></header>
+    el.innerHTML = `<header class="ld-top"><a class="auth-brand ld-brand" href="#" data-ld="top"><span class="logo-sm">${logo}</span><b>PlanBiz</b></a><nav class="ld-nav" aria-label="Sections"><a href="#ld-concept" data-ld="concept">Le concept</a><a href="#ld-faq" data-ld="faq">Questions fréquentes</a><a href="/simulateur-bp-plf2027">Simulateur BP PLF 2027</a></nav><span class="sp"></span><button class="btn ghost sm" data-auth="login">Se connecter</button><button class="btn pri sm" data-auth="signup">Créer un compte</button></header>
     <section class="ld-hero"><div class="ld-wrap ld-hero-in">
       <div class="ld-hero-t"><p class="eyebrow">Business plan · Maroc · loi de finances 2026</p>
         <h1>Ton business plan chiffré, prêt pour la banque.</h1>
