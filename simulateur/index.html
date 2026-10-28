@@ -223,6 +223,11 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 .tag{background:var(--surface2);color:var(--muted);text-transform:none}
 
 #e-rows .rub .r2{align-items:end}
+#e-rows .poste{background:var(--surface);padding:14px}
+.pind{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.pind .lbl{margin:0 0 8px;font-weight:600;font-size:13.5px}
+.pind .rub{background:var(--bg)}
+.quick.sm{margin:4px 0 0;gap:6px}.quick.sm button{padding:6px 11px;font-size:13px}
 #e-rows .rub label{font-size:13px;font-weight:600}
 .explain summary{list-style:none;font:600 15px var(--body)}
 .explain summary::-webkit-details-marker{display:none}
@@ -333,7 +338,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     <div class="step" data-step="1">
       <p class="stepn">Étape 1 sur 2</p>
       <h2>Qui compose ton équipe&nbsp;?</h2>
-      <p class="hint">Un poste par niveau de salaire, avec son effectif. Les montants sont mensuels.</p>
+      <p class="hint">Un poste par niveau de salaire, avec son effectif et ses indemnités. Les montants sont mensuels. <a href="#explications" class="lnk">Voir le plafond de chaque indemnité</a></p>
       <div id="e-rows"></div>
       <button type="button" id="e-add" class="addbtn">Ajouter un poste</button>
       <div class="nav"><button type="button" class="btn ghost" data-go="intro">Retour</button><button type="button" class="btn pri" data-go="emp/2">Continuer</button></div>
@@ -570,16 +575,29 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   const saved = store.get('sal2');
   let rub = ((saved && Array.isArray(saved.rub)) ? saved.rub : []).map(r => ALIAS[r.t] ? { ...r, t: ALIAS[r.t] } : r);
   const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  function rubRows() {
-    $('s-rub').innerHTML = rub.map((r, i) => { const c = CAT[r.t] || CAT.autre;
-      const extra = r.t === 'transport' ? `<select data-k="z" data-i="${i}" aria-label="Lieu de travail"><option value="500"${+r.z !== 750 ? ' selected' : ''}>en ville (500)</option><option value="750"${+r.z === 750 ? ' selected' : ''}>hors ville (750)</option></select>`
-        : r.t === 'panier' ? `<input type="number" min="0" max="31" step="1" data-k="j" data-i="${i}" value="${r.j ?? JOURS}" aria-label="Jours travaillés"><span class="hint" style="grid-column:2">jours travaillés</span>`
-        : r.t === 'km' ? `<input type="number" min="0" step="10" data-k="k" data-i="${i}" value="${r.k || 0}" aria-label="Kilomètres parcourus en mission dans le mois"><span class="hint" style="grid-column:2">km en mission ce mois</span>`
-        : r.t === 'autre' ? `<input type="number" min="0" step="50" data-k="p" data-i="${i}" value="${r.p || 0}" aria-label="Plafond d'exonération mensuel">` : '';
-      return `<div class="rub"><div class="r1"><select data-k="t" data-i="${i}" aria-label="Type de rubrique">${Object.entries(CAT).map(([k, v]) => `<option value="${k}"${k === r.t ? ' selected' : ''}>${esc(v.l)}</option>`).join('')}</select><button type="button" class="del" data-del="${i}" aria-label="Supprimer cette rubrique">✕</button></div>
-        <div class="r2"><input type="number" min="0" step="50" data-k="m" data-i="${i}" value="${r.m || 0}" aria-label="Montant mensuel en DH">${extra}</div>
+  // Éditeur de rubriques. pi = index du poste (employeur), absent pour le salarié.
+  function rubHTML(list, pi) {
+    const P = pi === undefined ? '' : ` data-pi="${pi}"`;
+    return list.map((r, i) => { const c = CAT[r.t] || CAT.autre;
+      const extra = r.t === 'transport' ? `<select data-k="z" data-i="${i}"${P} aria-label="Lieu de travail"><option value="500"${+r.z !== 750 ? ' selected' : ''}>en ville (500)</option><option value="750"${+r.z === 750 ? ' selected' : ''}>hors ville (750)</option></select>`
+        : r.t === 'panier' ? `<input type="number" min="0" max="31" step="1" data-k="j" data-i="${i}"${P} value="${r.j ?? JOURS}" aria-label="Jours travaillés"><span class="hint" style="grid-column:2">jours travaillés</span>`
+        : r.t === 'km' ? `<input type="number" min="0" step="10" data-k="k" data-i="${i}"${P} value="${r.k || 0}" aria-label="Kilomètres parcourus en mission dans le mois"><span class="hint" style="grid-column:2">km en mission par mois</span>`
+        : r.t === 'autre' ? `<input type="number" min="0" step="50" data-k="p" data-i="${i}"${P} value="${r.p || 0}" aria-label="Plafond d'exonération mensuel">` : '';
+      return `<div class="rub"><div class="r1"><select data-k="t" data-i="${i}"${P} aria-label="Type de rubrique">${Object.entries(CAT).map(([k, v]) => `<option value="${k}"${k === r.t ? ' selected' : ''}>${esc(v.l)}</option>`).join('')}</select><button type="button" class="del" data-rdel="${i}"${P} aria-label="Supprimer cette rubrique">✕</button></div>
+        <div class="r2"><input type="number" min="0" step="50" data-k="m" data-i="${i}"${P} value="${r.m || 0}" aria-label="Montant mensuel en DH">${extra}</div>
         <span class="hint">${r.l ? `<b style="font-weight:600;color:var(--ink)">${esc(r.l)}</b> · ` : ''}${esc(hintOf(c, r))}${r.t === 'autre' ? ' (champ de droite)' : ''}</span>
-        ${c.tax || c.always ? '' : `<label class="chk"><input type="checkbox" data-k="just" data-i="${i}"${r.just ? ' checked' : ''}> <span>sur justificatifs</span></label>`}</div>`; }).join('');
+        ${c.tax || c.always ? '' : `<label class="chk"><input type="checkbox" data-k="just" data-i="${i}"${P}${r.just ? ' checked' : ''}> <span>sur justificatifs</span></label>`}</div>`; }).join('');
+  }
+  function rubRows() { $('s-rub').innerHTML = rubHTML(rub); }
+  // Nouvelle rubrique d'un type donné, avec ses réglages par défaut
+  function newRub(t) { const o = { t, m: 0 }; if (t === 'transport') o.z = 500; if (t === 'panier') o.j = JOURS; if (t === 'autre') o.p = 0; if (t === 'km') { o.k = 0; o.just = true; } return o; }
+  // Mise à jour d'une rubrique depuis le formulaire. Renvoie vrai s'il faut redessiner la liste.
+  function editRub(list, t) {
+    const i = +t.dataset.i, k = t.dataset.k; if (!k || isNaN(i) || !list[i]) return false;
+    if (k === 'just') { list[i].just = t.checked; return false; }
+    if (k === 't') { const keep = list[i].l ? { l: list[i].l } : {}; list[i] = { ...newRub(t.value), m: list[i].m || 0, ...keep }; return true; }
+    list[i][k] = t.value === '' ? '' : +t.value;
+    return k === 'z' || k === 'k';
   }
   function state() { return { base: num('s-brut'), entree: $('s-entree').value, dep: +$('s-dep').value, cnss: $('s-cnss').checked, fp27: $('s-fp27').checked, ret: num('s-ret'), rub }; }
   function slipHTML(b, y) {
@@ -693,39 +711,43 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     } else $('s-ref').hidden = true;
     const ys = +$('s-year').value; $('s-slip').innerHTML = slipHTML(bulletin(st, ys), ys);
   }
-  function syncRub(e) {
-    const t = e.target, i = +t.dataset.i, k = t.dataset.k; if (!k || isNaN(i)) return;
-    if (k === 'just') rub[i].just = t.checked; else if (k === 't') { rub[i] = { t: t.value, m: rub[i].m || 0, ...(rub[i].l ? { l: rub[i].l } : {}), ...(CAT[t.value] && CAT[t.value].defJust ? { just: true } : {}) }; if (t.value === 'transport') rub[i].z = 500; rubRows(); } else rub[i][k] = t.value === '' ? '' : +t.value;
-    if (k === 'z' || k === 'k') rubRows();
-    renderSal();
-  }
+  function syncRub(e) { if (e.target.dataset.pi !== undefined) return; if (editRub(rub, e.target)) rubRows(); renderSal(); }
 
   // ---------- employeur ----------
-  let emp = store.get('emp2') || (store.get('emp') || [{ n: 4, b: 4500, i: 0 }, { n: 3, b: 9000, i: 500 }, { n: 1, b: 20000, i: 1500 }]).map((e, k) => ({ l: ['Ouvriers', 'Techniciens', 'Cadre'][k] || '', n: e.n, b: e.b, p: 0, i: e.i || 0 }));
+  // Un poste : { l, n, b, p (primes imposables), rub: [rubriques d'indemnités] }. Les anciennes « indemnités exonérées » deviennent une rubrique.
+  let emp = (store.get('emp2') || (store.get('emp') ? store.get('emp').map((e, k) => ({ l: ['Ouvriers', 'Techniciens', 'Cadre'][k] || '', n: e.n, b: e.b, p: 0, i: e.i || 0 })) : [{ l: 'Ouvriers', n: 4, b: 4500, p: 0, rub: [{ t: 'panier', m: 400, j: 26 }] }, { l: 'Techniciens', n: 3, b: 9000, p: 0, rub: [{ t: 'transport', m: 500, z: 500 }] }, { l: 'Cadre', n: 1, b: 20000, p: 0, rub: [{ t: 'representation', m: 1500 }, { t: 'voiture', m: 1000 }] }]))
+    .map(e => Array.isArray(e.rub) ? e : { l: e.l, n: e.n, b: e.b, p: e.p || 0, rub: e.i > 0 ? [{ t: 'autre', m: e.i, p: e.i, l: 'Indemnités exonérées' }] : [] })
+    .map(e => ({ ...e, rub: e.rub.map(r => ALIAS[r.t] ? { ...r, t: ALIAS[r.t] } : r) }));
   const eSaved = store.get('empopt');
+  const QUICK = [['transport', 'Transport'], ['panier', 'Panier'], ['km', 'Kilométrique'], ['voiture', 'Forfait voiture'], ['representation', 'Représentation'], ['deplacement', 'Déplacement'], ['autre', 'Autre']];
   function empRows() {
-    $('e-rows').innerHTML = emp.map((e, i) => `<div class="rub">
+    $('e-rows').innerHTML = emp.map((e, i) => `<div class="rub poste">
       <div class="r1"><input type="text" data-e="l" data-i="${i}" value="${esc(e.l || '')}" placeholder="Nom du poste" aria-label="Nom du poste"><button type="button" class="del" data-del="${i}" aria-label="Supprimer ce poste">✕</button></div>
       <div class="r2"><div class="f" style="margin:0"><label for="e-n${i}">Effectif</label><input id="e-n${i}" type="number" min="0" step="1" value="${e.n}" data-e="n" data-i="${i}"></div>
         <div class="f" style="margin:0"><label for="e-b${i}">Salaire de base (DH)</label><input id="e-b${i}" type="number" min="0" step="100" value="${e.b}" data-e="b" data-i="${i}"></div></div>
-      <div class="r2"><div class="f" style="margin:0"><label for="e-p${i}">Primes imposables (DH)</label><input id="e-p${i}" type="number" min="0" step="50" value="${e.p || 0}" data-e="p" data-i="${i}"></div>
-        <div class="f" style="margin:0"><label for="e-i${i}">Indemnités exonérées (DH)</label><input id="e-i${i}" type="number" min="0" step="50" value="${e.i || 0}" data-e="i" data-i="${i}"></div></div>
+      <div class="f" style="margin:10px 0 0"><label for="e-p${i}">Primes imposables (DH)</label><input id="e-p${i}" type="number" min="0" step="50" value="${e.p || 0}" data-e="p" data-i="${i}"><small>Rendement, ancienneté, heures sup., 13e mois mensualisé…</small></div>
+      <div class="pind"><p class="lbl">Indemnités de ce poste</p>
+        <div class="e-rub">${rubHTML(e.rub, i)}</div>
+        <div class="quick sm">${QUICK.map(([t, l]) => `<button type="button" data-eadd="${t}" data-pi="${i}">${l}</button>`).join('')}</div>
+      </div>
     </div>`).join('');
   }
-  // Bulletin d'un poste pour l'année y (k années d'augmentation), avec la CIMR calculée sur le brut imposable
+  // Bulletin d'un poste pour l'année y (k années d'augmentation), avec la CIMR calculée sur le brut imposable.
+  // Les primes suivent l'augmentation, les indemnités restent à leur montant.
   function posteSlip(e, y, k, opt, rules = y) {
-    const f = Math.pow(1 + opt.g, k), base = e.b * f, prime = (e.p || 0) * f + (opt.m13 ? base / 12 : 0), ind = e.i || 0;
-    const st = { base, dep: opt.dep, cnss: true, fp27: false, ret: 0, entree: '', rub: [{ t: 'prime', m: prime }, { t: 'autre', m: ind, p: ind }] };
+    const f = Math.pow(1 + opt.g, k), base = e.b * f, prime = (e.p || 0) * f + (opt.m13 ? base / 12 : 0);
+    const st = { base, dep: opt.dep, cnss: true, fp27: false, ret: 0, entree: '', rub: [{ t: 'prime', m: prime }, ...(e.rub || []).map(r => ({ ...r }))] };
     const first = bulletin(st, y, rules); st.ret = first.sbi * opt.cimr;
     const sl = bulletin(st, y, rules), cimrPat = sl.sbi * opt.cimr * 1.3;
-    return { ...sl, cimrPat, patAll: sl.patTot + cimrPat, costAll: sl.cost + cimrPat };
+    const ind = sl.lines.slice(1).reduce((a, l) => ({ tot: a.tot + l.m, exCn: a.exCn + (l.m - l.cnssSub), forf: a.forf + (!l.c.tax && !l.c.always && !l.r.just ? l.m : 0) }), { tot: 0, exCn: 0, forf: 0 });
+    return { ...sl, cimrPat, patAll: sl.patTot + cimrPat, costAll: sl.cost + cimrPat, ind };
   }
   function renderEmp() {
     const opt = { g: num('e-aug') / 100, cimr: num('e-cimr') / 100, dep: +$('e-dep').value, m13: $('e-13').checked };
     store.set('emp2', emp); store.set('empopt', { aug: num('e-aug'), cimr: num('e-cimr'), dep: opt.dep, m13: opt.m13 });
     const heads = emp.reduce((a, e) => a + (+e.n || 0), 0);
     const years = YEARS.map((y, k) => emp.reduce((a, e) => { const n = (+e.n || 0) * 12, s = posteSlip(e, y, k, opt), o = posteSlip(e, y, k, opt, 2026);
-      return { brut: a.brut + s.brut * n, pat: a.pat + s.patAll * n, cost: a.cost + s.costAll * n, ir: a.ir + s.ir * n, net: a.net + s.net * n, gain: a.gain + (s.net - o.net) * n, ind: a.ind + (e.i || 0) * n }; }, { brut: 0, pat: 0, cost: 0, ir: 0, net: 0, gain: 0, ind: 0 }));
+      return { brut: a.brut + s.brut * n, pat: a.pat + s.patAll * n, cost: a.cost + s.costAll * n, ir: a.ir + s.ir * n, net: a.net + s.net * n, gain: a.gain + (s.net - o.net) * n, ind: a.ind + s.ind.tot * n, exCn: a.exCn + s.ind.exCn * n, forf: a.forf + s.ind.forf * n }; }, { brut: 0, pat: 0, cost: 0, ir: 0, net: 0, gain: 0, ind: 0, exCn: 0, forf: 0 }));
     const y0 = years[0];
     $('e-tiles').innerHTML = `<div class="ticket">
       <p class="t-k">Ton budget de masse salariale, charges comprises</p>
@@ -737,9 +759,9 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     $('e-live').textContent = `Estimation en direct : ${dh(y0.cost)} de budget en 2026`;
     const lines = emp.map(e => ({ e, s: posteSlip(e, 2026, 0, opt) }));
     const td = (l, v, cls = '') => `<td data-l="${l}"${cls ? ` class="${cls}"` : ''}>${v}</td>`;
-    $('e-detail').innerHTML = `<thead><tr><th>Poste</th><th>Effectif</th><th>Brut mensuel</th><th>Charges patronales</th><th>Coût mensuel</th><th>Coût annuel</th></tr></thead><tbody>${lines.map(({ e, s }) => `<tr>${td('Poste', esc(e.l || 'Poste'))}${td('Effectif', nf0.format(+e.n || 0))}${td('Brut mensuel', dh(s.brut))}${td('Charges patronales', dh(s.patAll))}${td('Coût mensuel', dh(s.costAll))}${td('Coût annuel', dh(s.costAll * 12 * (+e.n || 0)))}</tr>`).join('')}<tr class="sub">${td('Poste', '<b>Total</b>')}${td('Effectif', `<b>${nf0.format(heads)}</b>`)}${td('Brut mensuel', dh(y0.brut / 12))}${td('Charges patronales', dh(y0.pat / 12))}${td('Coût mensuel', dh(y0.cost / 12))}${td('Coût annuel', `<b>${dh(y0.cost)}</b>`)}</tr></tbody>`;
+    $('e-detail').innerHTML = `<thead><tr><th>Poste</th><th>Effectif</th><th>Brut mensuel</th><th>dont indemnités sans charges</th><th>Charges patronales</th><th>Coût mensuel</th><th>Coût annuel</th></tr></thead><tbody>${lines.map(({ e, s }) => `<tr>${td('Poste', esc(e.l || 'Poste'))}${td('Effectif', nf0.format(+e.n || 0))}${td('Brut mensuel', dh(s.brut))}${td('dont indemnités sans charges', s.ind.exCn > 0.5 ? dh(s.ind.exCn) : '—')}${td('Charges patronales', dh(s.patAll))}${td('Coût mensuel', dh(s.costAll))}${td('Coût annuel', dh(s.costAll * 12 * (+e.n || 0)))}</tr>`).join('')}<tr class="sub">${td('Poste', '<b>Total</b>')}${td('Effectif', `<b>${nf0.format(heads)}</b>`)}${td('Brut mensuel', dh(y0.brut / 12))}${td('dont indemnités sans charges', y0.exCn > 0.5 ? dh(y0.exCn / 12) : '—')}${td('Charges patronales', dh(y0.pat / 12))}${td('Coût mensuel', dh(y0.cost / 12))}${td('Coût annuel', `<b>${dh(y0.cost)}</b>`)}</tr></tbody>`;
     $('e-table').innerHTML = `<thead><tr><th>Année</th><th>Masse salariale brute</th><th>Charges patronales</th><th>Budget total</th><th>Net versé</th><th>Net en plus (réforme)</th></tr></thead><tbody>${years.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}">${td('Année', YEARS[i] + (i === 0 ? ' (actuel)' : ''))}${td('Masse salariale brute', dh(x.brut))}${td('Charges patronales', dh(x.pat))}${td('Budget total', `<b>${dh(x.cost)}</b>`)}${td('Net versé', dh(x.net))}${td('Net en plus (réforme)', i ? sgn(x.gain) : '—', i && x.gain > 0.5 ? 'pos' : '')}</tr>`).join('')}</tbody>`;
-    $('e-foot').textContent = `Le budget comprend le salaire brut, les charges patronales CNSS, AMO, allocations familiales et formation professionnelle${opt.cimr ? ', et la part patronale de la CIMR' : ''}. Il augmente seulement avec les hausses de salaire : la réforme de l'IR ne change pas tes charges, elle augmente le net de tes salariés. Les indemnités exonérées sont supposées dans leurs plafonds et ne supportent pas de charges.${y0.ind > 0 ? ` Tu verses ${dh(y0.ind)} d'indemnités forfaitaires par an. À partir de 2031, elles seront imposées à l'IR comme du salaire, sauf si tu les transformes en remboursements de frais justifiés. Ton coût ne change pas, mais le net de tes salariés baisse d'autant, ce que la colonne « net en plus » intègre déjà.` : ''} Le calcul ne compte pas les heures supplémentaires, les congés non pris ni les indemnités de départ.`;
+    $('e-foot').textContent = `Le budget comprend le salaire brut, les charges patronales CNSS, AMO, allocations familiales et formation professionnelle${opt.cimr ? ', et la part patronale de la CIMR' : ''}. Il augmente seulement avec les hausses de salaire : la réforme de l'IR ne change pas tes charges, elle augmente le net de tes salariés. Chaque indemnité est exonérée de charges jusqu'à son plafond CNSS. La partie qui dépasse supporte les charges comme du salaire.${y0.forf > 0.5 ? ` Tu verses ${dh(y0.forf)} d'indemnités forfaitaires par an. À partir de 2031, elles seront imposées à l'IR comme du salaire, sauf si tu les transformes en remboursements de frais justifiés. Ton coût ne change pas, mais le net de tes salariés baisse, ce que le calcul intègre déjà.` : ''} Le calcul ne compte pas les heures supplémentaires, les congés non pris ni les indemnités de départ.`;
   }
 
   // ---------- importateur ----------
@@ -767,14 +789,18 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   if (canImport) $('s-imp').hidden = false;
   $('s-imp-btn').addEventListener('click', () => { if (!$('s-imp-ok').checked) { impMsg("Coche d'abord la case d'accord ci-dessous.", true); $('s-imp-ok').focus(); return; } $('s-imp-file').click(); });
   $('s-imp-file').addEventListener('change', e => importSlip(e.target.files[0]));
-  $('s-rub').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b) return; rub.splice(+b.dataset.del, 1); rubRows(); renderSal(); });
+  $('s-rub').addEventListener('click', e => { const b = e.target.closest('[data-rdel]'); if (!b) return; rub.splice(+b.dataset.rdel, 1); rubRows(); renderSal(); });
   $('s-add').addEventListener('click', () => { rub.push({ t: 'prime', m: 0 }); rubRows(); renderSal(); const sel = $('s-rub').querySelectorAll('select[data-k="t"]'); sel[sel.length - 1].focus(); });
   ['i-val', 'i-tax', 'i-reg'].forEach(id => $(id).addEventListener('input', renderImp));
-  $('e-rows').addEventListener('input', e => { const t = e.target; if (!t.dataset.e) return; emp[+t.dataset.i][t.dataset.e] = t.dataset.e === 'l' ? t.value.slice(0, 40) : Math.max(0, parseFloat(t.value) || 0); renderEmp(); });
+  $('e-rows').addEventListener('input', e => { const t = e.target; if (t.dataset.pi !== undefined && t.dataset.k) { if (editRub(emp[+t.dataset.pi].rub, t)) empRows(); renderEmp(); return; } if (!t.dataset.e) return; emp[+t.dataset.i][t.dataset.e] = t.dataset.e === 'l' ? t.value.slice(0, 40) : Math.max(0, parseFloat(t.value) || 0); renderEmp(); });
   ['e-aug', 'e-cimr', 'e-dep', 'e-13'].forEach(id => $(id).addEventListener('input', renderEmp));
   if (eSaved) { $('e-aug').value = eSaved.aug ?? 3; $('e-cimr').value = eSaved.cimr || 0; $('e-dep').value = String(eSaved.dep ?? 2); $('e-13').checked = !!eSaved.m13; }
+  $('e-rows').addEventListener('click', e => {
+    const q = e.target.closest('[data-eadd]'); if (q) { const pi = +q.dataset.pi; emp[pi].rub.push(newRub(q.dataset.eadd)); empRows(); renderEmp(); const ins = $('e-rows').querySelectorAll(`.poste:nth-child(${pi + 1}) input[data-k="m"]`); if (ins.length) ins[ins.length - 1].focus(); return; }
+    const rd = e.target.closest('[data-rdel]'); if (rd && rd.dataset.pi !== undefined) { emp[+rd.dataset.pi].rub.splice(+rd.dataset.rdel, 1); empRows(); renderEmp(); return; }
+  });
   $('e-rows').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b) return; emp.splice(+b.dataset.del, 1); empRows(); renderEmp(); });
-  $('e-add').addEventListener('click', () => { emp.push({ l: '', n: 1, b: 6000, p: 0, i: 0 }); empRows(); renderEmp(); });
+  $('e-add').addEventListener('click', () => { emp.push({ l: '', n: 1, b: 6000, p: 0, rub: [] }); empRows(); renderEmp(); });
 
   if (saved) { $('s-brut').value = saved.base; $('s-dep').value = saved.dep; $('s-cnss').checked = saved.cnss; $('s-fp27').checked = saved.fp27; $('s-ret').value = saved.ret || 0; if (saved.entree) $('s-entree').value = saved.entree; }
   rubRows();
@@ -829,12 +855,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   // ajout rapide d'une rubrique
   $('s-quick').addEventListener('click', e => {
     const b = e.target.closest('[data-add]'); if (!b) return;
-    const t = b.dataset.add, o = { t, m: 0 };
-    if (t === 'transport') o.z = 500;
-    if (t === 'panier') o.j = JOURS;
-    if (t === 'autre') o.p = 0;
-    if (t === 'km') { o.k = 0; o.just = true; }
-    rub.push(o); rubRows(); renderSal();
+    rub.push(newRub(b.dataset.add)); rubRows(); renderSal();
     const ins = $('s-rub').querySelectorAll('input[data-k="m"]'); if (ins.length) ins[ins.length - 1].focus();
   });
   route();
