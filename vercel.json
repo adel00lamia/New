@@ -9,6 +9,9 @@
     },
     "api/paie-lire.js": {
       "maxDuration": 60
+    },
+    "api/plf-analyse.js": {
+      "maxDuration": 60
     }
   },
   "headers": [

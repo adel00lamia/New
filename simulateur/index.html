@@ -258,6 +258,20 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 .bd-l li.tot{border-bottom:0;font-weight:600}.bd-l li.tot b{font-size:17px}
 .bd-tip{margin:12px 0 0;padding:10px 12px;border-radius:var(--r-sm);background:var(--good-soft);font-size:14px}
 .bd-note{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.ai{background:var(--surface);border:1px solid color-mix(in srgb,var(--primary) 35%,var(--line));border-radius:var(--r-lg);padding:18px clamp(18px,5vw,28px);margin:0 0 18px}
+.ai-btn{width:100%;background:var(--primary-soft);color:var(--primary);border-color:transparent}
+.ai-btn::before{content:"✦";margin-right:8px}
+.ai-btn:hover{border-color:var(--primary)}
+.ai-btn[disabled]{opacity:.6;cursor:wait}
+.ai-note{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.ai-out:not(:empty){margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.ai-out h4{margin:12px 0 6px;font:600 15px var(--display)}
+.ai-out h4:first-child{margin-top:0}
+.ai-out p,.ai-out li{font-size:14.5px;line-height:1.6;max-width:62ch}
+.ai-out p{margin:0 0 8px}
+.ai-out ul{margin:0 0 8px;padding-left:20px}
+.ai-out li{margin-bottom:6px}
+.ai-wait{color:var(--muted)}.ai-err{color:var(--warn)}
 @media (prefers-reduced-motion:reduce){.ticket.in{animation:none}}
 @media (max-width:480px){.nav .btn{flex:1}.nav span{display:none}.actions .btn{flex:1}}
 </style>
@@ -331,6 +345,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       <div class="cost" id="s-cost"></div>
       <div class="refbox" id="s-ref" hidden></div>
       <p class="sum" id="s-foot"></p>
+      <div class="ai" data-aibox="s" hidden><button type="button" class="btn ai-btn" data-ai="s">Obtenir une analyse et des recommandations</button><p class="ai-note">L'IA Claude reçoit seulement les montants calculés, sans nom ni bulletin. Rien n'est conservé.</p><div class="ai-out" id="s-ai" aria-live="polite"></div></div>
       <div class="actions"><button type="button" class="btn ghost" data-go="sal/1">Modifier mes réponses</button><button type="button" class="btn ghost" data-share>Partager le simulateur</button></div>
       <details class="fold"><summary>Année par année, jusqu'en 2031</summary>
         <div class="chart" id="s-chart"></div>
@@ -372,6 +387,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       <div id="e-tiles"></div>
       <div class="bd" id="e-bd"></div>
       <p class="sum" id="e-foot"></p>
+      <div class="ai" data-aibox="e" hidden><button type="button" class="btn ai-btn" data-ai="e">Obtenir une analyse et des recommandations</button><p class="ai-note">L'IA Claude reçoit seulement les montants calculés, sans nom ni bulletin. Rien n'est conservé.</p><div class="ai-out" id="e-ai" aria-live="polite"></div></div>
       <div class="actions"><button type="button" class="btn ghost" data-go="emp/1">Modifier mes réponses</button><button type="button" class="btn ghost" data-share>Partager le simulateur</button></div>
       <details class="fold"><summary>Budget 2026 par poste</summary><div class="tw"><table id="e-detail" class="compact stack"></table></div></details>
       <details class="fold"><summary>Projection du budget jusqu'en 2031</summary><div class="tw"><table id="e-table" class="compact stack"></table></div></details>
@@ -470,6 +486,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 
 <script>
 (() => {
+  const AIDATA = { s: null, e: null };   // derniers résultats, envoyés à l'analyse IA sur demande
   // ---------- règles ----------
   // Barèmes annuels sur le revenu net imposable : [plafond de tranche, taux]
   const BAREME = {
@@ -714,6 +731,13 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       const J = bulletin(st, 2031, 2031, true);
       const eff = [['Nouveau barème et déduction de 45 %', B.net - A.net], ['Indemnités forfaitaires imposées', C.net - B.net], ['Non-cumul de la déduction avec les indemnités exonérées', D.net - C.net]].filter((x, k) => k === 0 || Math.abs(x[1]) > 0.5);
       const conv = J.net - D.net;
+      AIDATA.s = { salaire_base: st.base, personnes_a_charge: st.dep, affilie_cnss: st.cnss, prime_anciennete_taux: base.anc, retenues_cimr_mutuelle: st.ret, lecture_non_cumul_2031: st.nc,
+        rubriques: base.lines.filter(l => l.m > 0).map(l => ({ type: l.c.l, montant: l.m, justifiee: !!(l.r.just || l.c.always), part_imposable_2026: l.impIR, part_soumise_cnss: l.cnssSub })),
+        net: { '2026': base.net, '2027': r[1].net, '2031': r[5].net }, ir: { '2026': base.ir, '2027': r[1].ir, '2031': r[5].ir },
+        gain_reforme_mois: { '2027': r[1].effet, '2031': r[5].effet },
+        effets_2031_par_mesure: Object.fromEntries(eff.map(([l, v]) => [l, v])), gain_si_frais_justifies_2031: conv,
+        cout_employeur_mois: base.cost, charges_patronales_mois: base.patTot, part_du_cout_recue_en_net: base.cost ? base.net / base.cost : 0 };
+      clearAI('s');
       $('s-bd').innerHTML = `<h3>Ce que chaque mesure change pour toi en 2031</h3>
         <ul class="bd-l">${eff.map(([l, v]) => `<li><span>${l}</span><b class="${v > 0.5 ? 'pos' : v < -0.5 ? 'neg' : ''}">${sgn(v)}</b></li>`).join('')}<li class="tot"><span>Effet total par mois</span><b class="${D.net - A.net > 0.5 ? 'pos' : 'neg'}">${sgn(D.net - A.net)}</b></li></ul>
         ${conv > 0.5 ? `<p class="bd-tip">Si ton employeur remplace tes indemnités forfaitaires par des remboursements de frais justifiés, ton net de 2031 gagne encore ${dh(conv)} par mois, sans coût de plus pour lui.</p>` : ''}
@@ -791,6 +815,11 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       const C = agg(e => posteSlip(e, 2031, 5, opt0).net), D = agg(e => posteSlip(e, 2031, 5, opt).net);
       const J = agg(e => posteSlip({ ...e, rub: e.rub.map(r => ({ ...r, just: true })) }, 2031, 5, opt).net);
       const eff = [['Nouveau barème et déduction de 45 %', B - A], ['Indemnités forfaitaires imposées', C - B], ['Non-cumul de la déduction avec les indemnités exonérées', D - C]].filter((x, k) => k === 0 || Math.abs(x[1]) > 0.5);
+      AIDATA.e = { augmentation_annuelle: opt.g, cimr_taux_salarial: opt.cimr, personnes_a_charge_moyenne: opt.dep, treizieme_mois: opt.m13, lecture_non_cumul_2031: opt.nc,
+        postes: emp.map(e => { const x = posteSlip(e, 2026, 0, opt); return { nom: e.l || 'Poste', effectif: +e.n || 0, salaire_base: e.b, primes_imposables: e.p || 0, indemnites: (e.rub || []).filter(r => r.m > 0).map(r => ({ type: (CAT[r.t] || CAT.autre).l, montant: r.m, justifiee: !!r.just })), cout_mensuel_par_salarie: x.costAll, charges_patronales_par_salarie: x.patAll, net_par_salarie: x.net }; }),
+        budget_an: { '2026': y0.cost, '2031': years[5].cost }, charges_patronales_an_2026: y0.pat, net_en_plus_equipe_an_2027: years[1].gain,
+        effets_2031_equipe_an: Object.fromEntries(eff.map(([l, v]) => [l, v])), gain_equipe_si_frais_justifies_2031_an: J - D };
+      clearAI('e');
       $('e-bd').innerHTML = `<h3>Coûts et avantages pour ton équipe en 2031</h3>
         <ul class="bd-l"><li><span>Ton coût employeur</span><b>Inchangé par la réforme</b></li>${eff.map(([l, v]) => `<li><span>${l}</span><b class="${v > 0.5 ? 'pos' : v < -0.5 ? 'neg' : ''}">${sgn(v)} par an</b></li>`).join('')}<li class="tot"><span>Net en plus pour l'équipe</span><b class="${D - A > 0.5 ? 'pos' : 'neg'}">${sgn(D - A)} par an</b></li></ul>
         ${J - D > 0.5 ? `<p class="bd-tip">En remplaçant les indemnités forfaitaires par des remboursements de frais justifiés, ton équipe gagne encore ${dh(J - D)} net par an en 2031, sans coût de plus pour toi.</p>` : ''}
@@ -845,6 +874,34 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   rubRows();
   const im = store.get('imp'); if (im) { $('i-val').value = im.val; $('i-tax').value = im.tax; $('i-reg').checked = im.reg; }
   empRows(); renderSal(); renderEmp(); renderImp();
+  // ---------- analyse IA ----------
+  const AIAPI = location.hostname === 'planbiz.vercel.app' ? '/api/plf-analyse' : 'https://planbiz.vercel.app/api/plf-analyse';
+  function clearAI(k) { const o = $(k + '-ai'); if (o && o.dataset.done) { o.innerHTML = ''; delete o.dataset.done; } }
+  function mdLite(t) {
+    const out = []; let ul = false;
+    t.split('\n').map(x => x.trim()).filter(Boolean).forEach(l => {
+      const txt = esc(l.replace(/^#+\s*/, '').replace(/^[-•*]\s+/, '')).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+      if (/^[-•*]\s+/.test(l)) { if (!ul) { out.push('<ul>'); ul = true; } out.push(`<li>${txt}</li>`); return; }
+      if (ul) { out.push('</ul>'); ul = false; }
+      out.push(/^#+\s/.test(l) ? `<h4>${txt}</h4>` : `<p>${txt}</p>`);
+    });
+    if (ul) out.push('</ul>');
+    return out.join('');
+  }
+  async function askAI(k, btn) {
+    const o = $(k + '-ai'); if (!AIDATA[k]) return;
+    btn.disabled = true; o.innerHTML = '<p class="ai-wait">Analyse en cours, cela prend quelques secondes…</p>';
+    try {
+      const r = await fetch(AIAPI, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ profil: k === 's' ? 'salarie' : 'employeur', data: AIDATA[k] }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.text) { o.innerHTML = `<p class="ai-err">${esc(d.error || 'L’analyse a échoué. Réessaie dans un instant.')}</p>`; return; }
+      o.innerHTML = mdLite(d.text); o.dataset.done = '1';
+    } catch (e) { o.innerHTML = '<p class="ai-err">Connexion impossible. Vérifie ta connexion et réessaie.</p>'; }
+    finally { btn.disabled = false; }
+  }
+  document.addEventListener('click', e => { const b = e.target.closest('[data-ai]'); if (b) askAI(b.dataset.ai, b); });
+  if (canImport) document.querySelectorAll('[data-aibox]').forEach(x => { x.hidden = false; });
+
   // ---------- parcours guidé ----------
   const SCREENS = { intro: 'v-intro', sal: 'p-sal', emp: 'p-emp', imp: 'p-imp' };
   function route() {
