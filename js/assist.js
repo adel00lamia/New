@@ -81,7 +81,7 @@ document.addEventListener('keydown', e => { if (e.target.id === 'hpIn' && e.key 
 
 /* ---------- guided tour ---------- */
 const STEPS = [
-  { view: 'tableau', sel: '.rail', title: 'Ton parcours en 19 étapes', text: 'Le menu suit l\'ordre d\'un business plan : le projet, puis les chiffres, puis les résultats. Un point vert indique une section remplie.' },
+  { view: 'tableau', sel: '.rail', get title() { return `Ton parcours en ${typeof SECTIONS !== 'undefined' ? SECTIONS.filter(x => x.group !== 'Ressources').length - 3 : 21} étapes`; }, text: 'Le menu suit l\'ordre d\'un business plan : le projet, puis les chiffres, puis les résultats. Un point vert indique une section remplie.' },
   { sel: '.bizchip', title: 'Le business ouvert', text: 'Tu peux gérer plusieurs business. Clique ici pour revenir à « Mes business », en créer un autre ou le dupliquer.' },
   { sel: '.seg', title: 'Trois scénarios', text: 'Passe de pessimiste à optimiste : les volumes de vente changent et tout le business plan se recalcule instantanément.' },
   { sel: '.kpis', title: 'Tes indicateurs en direct', text: 'Chiffre d\'affaires, résultat, trésorerie la plus basse et fonds à lever se mettent à jour à chaque saisie.' },
@@ -99,7 +99,7 @@ function place() {
   const st = STEPS[ti]; if (!layer) return;
   const el = st.sel ? [...document.querySelectorAll(st.sel)].find(x => x.offsetParent !== null || x.id === 'pbHelpBtn') : null;
   const hole = layer.querySelector('.tour-hole'), card = layer.querySelector('.tour-card');
-  card.innerHTML = `<p class="tour-n">Étape ${ti + 1} sur ${STEPS.length}</p><h3>${st.title}</h3><p>${st.text}</p><div class="tour-dots">${STEPS.map((_, k) => `<i class="${k === ti ? 'on' : ''}"></i>`).join('')}</div>
+  card.innerHTML = `<p class="tour-n">Visite guidée · ${ti + 1}/${STEPS.length}</p><h3>${st.title}</h3><p>${st.text}</p><div class="tour-dots">${STEPS.map((_, k) => `<i class="${k === ti ? 'on' : ''}"></i>`).join('')}</div>
    <div class="row" style="justify-content:space-between;margin-top:12px"><button class="btn sm ghost" data-tour="end">Quitter</button><span class="row">${ti ? '<button class="btn sm" data-tour="prev">Précédent</button>' : ''}<button class="btn sm pri" data-tour="next">${ti === STEPS.length - 1 ? 'Terminer' : 'Suivant'}</button></span></div>`;
   const vw = window.innerWidth, vh = window.innerHeight;
   if (el) {

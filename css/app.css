@@ -5,24 +5,10 @@ body{margin:0}
 img,svg{max-width:100%}
 /* Layout: fixed left rail (parcours) + working canvas; sticky live-KPI bar on top. Ledger feel: tabular numbers, hairline rules, teal ink + saffron accent. */
 :root{
-  --bg:#F2F5F4; --surface:#FFFFFF; --surface2:#EAF0F0; --ink:#0F1F23; --muted:#56686D; --line:#D5DFE0;
-  --primary:#0B5B57; --primary-ink:#FFFFFF; --primary-soft:#DDEEEB; --accent:#C27B2A; --accent-soft:#F7EAD6;
-  --good:#23794A; --good-soft:#DFF1E6; --warn:#A86A12; --warn-soft:#FBEFD8; --crit:#B3261E; --crit-soft:#FBE2DF;
-  --display:"Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+  /* Polices communes. Les couleurs sont définies plus bas, dans le thème « finance » (marine et bleu). */
   --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --r:12px; --shadow:0 1px 2px rgba(15,31,35,.06),0 4px 14px rgba(15,31,35,.05);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0C1416; --surface:#132024; --surface2:#1A2B30; --ink:#E5EEEF; --muted:#94A7AB; --line:#26393E;
-  --primary:#5BB8BF; --primary-ink:#06191C; --primary-soft:#173A3E; --accent:#E5A64E; --accent-soft:#3A2B16;
-  --good:#5CC98A; --good-soft:#163222; --warn:#E3AA4F; --warn-soft:#382A12; --crit:#F07A70; --crit-soft:#3D1A17;
-  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0C1416; --surface:#132024; --surface2:#1A2B30; --ink:#E5EEEF; --muted:#94A7AB; --line:#26393E;
-  --primary:#5BB8BF; --primary-ink:#06191C; --primary-soft:#173A3E; --accent:#E5A64E; --accent-soft:#3A2B16;
-  --good:#5CC98A; --good-soft:#163222; --warn:#E3AA4F; --warn-soft:#382A12; --crit:#F07A70; --crit-soft:#3D1A17;
-  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5}
@@ -283,7 +269,7 @@ label.opt{cursor:pointer;display:block}
   --bg:#F4F6F9; --surface:#FFFFFF; --surface2:#F0F3F7; --ink:#0B1526; --muted:#4F5D73; --line:#DDE3EB;
   --primary:#1652F0; --primary-ink:#FFFFFF; --primary-soft:#E7EEFF; --accent:#0A2540; --accent-soft:#EEF2F8;
   --navy:#0A2540; --navy2:#12304F; --navy-ink:#C7D3E3; --navy-mut:#8DA1BC;
-  --good:#0E8A5F; --good-soft:#E3F5EE; --warn:#B25E09; --warn-soft:#FDF1E2; --crit:#C4321C; --crit-soft:#FCE8E5;
+  --good:#0B7A54; --good-soft:#E3F5EE; --warn:#9A5108; --warn-soft:#FDF1E2; --crit:#C4321C; --crit-soft:#FCE8E5;
   --display:"Instrument Sans","IBM Plex Sans",system-ui,sans-serif;
   --r:8px; --shadow:0 1px 2px rgba(11,21,38,.05);
 }
@@ -314,8 +300,12 @@ h1{font-size:28px;font-weight:700;letter-spacing:-.02em} h2{font-weight:700;lett
 .banner{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--primary);border-radius:6px}
 .tile{padding:14px 16px;border-left:1px solid var(--line)}
 .tile small{letter-spacing:.05em}
-.tile b{font-size:22px;color:var(--ink)}
+.tile b{font-size:clamp(17px,4.4vw,22px);color:var(--ink);white-space:nowrap}
 .tile.k-good{border-left:3px solid var(--good)} .tile.k-crit{border-left:3px solid var(--crit)} .tile.k-warn{border-left:3px solid var(--warn)}
+.tile.k-good small::after,.tile.k-warn small::after,.tile.k-crit small::after{display:inline-block;margin-left:6px;padding:0 6px;border-radius:999px;font-size:9.5px;font-weight:700;letter-spacing:.04em;vertical-align:1px}
+.tile.k-good small::after{content:"Bon";background:var(--good-soft);color:var(--good)}
+.tile.k-warn small::after{content:"À surveiller";background:var(--warn-soft);color:var(--warn)}
+.tile.k-crit small::after{content:"Alerte";background:var(--crit-soft);color:var(--crit)}
 th{background:var(--surface2);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-size:11px}
 table tr:nth-child(even) td{background:color-mix(in srgb,var(--surface2) 45%,transparent)}
 tr.tot td{background:var(--surface2)!important}
@@ -587,3 +577,26 @@ abbr.gl{text-decoration:underline dotted var(--primary);text-underline-offset:3p
 .menu-pop button[data-pay]:hover{background:var(--surface2)}
 .ld-price.hi{border-top-color:var(--accent)}.ld-pp{font-size:13px;color:var(--muted)!important;margin:2px 0 8px!important}.ld-pp b{font-family:var(--mono);font-size:24px;color:var(--ink)}
 @media (max-width:720px){.pay-plans{grid-template-columns:minmax(0,1fr)}}
+
+/* ===== Barre du haut : compacte, l'avatar reste sur la ligne ===== */
+.top{flex-wrap:nowrap}
+.top .kpis{flex-wrap:nowrap;min-width:0;overflow-x:auto;scrollbar-width:none}
+.top .kpis::-webkit-scrollbar{display:none}
+.top .kpi{flex:none}
+.top .umenu{flex:none}
+.top .seg{flex:none}
+@media (max-width:1100px){.top .kpi:nth-child(4){display:none}}
+@media (max-width:860px){
+  .top{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-areas:"back nav nav menu" "seg seg kpis kpis";gap:8px 10px;padding-top:8px;padding-bottom:8px}
+  .top .backhub{grid-area:back;padding:6px 10px;font-size:0;line-height:1}
+  .top .backhub::before{content:"←";font-size:17px}
+  .top .mobnav{grid-area:nav;width:100%;min-width:0;padding:7px 10px;font-size:13.5px}
+  .top .umenu{grid-area:menu}
+  .top .avatar{width:32px;height:32px}
+  .top .seg{grid-area:seg}
+  .top .seg button{padding:5px 8px;font-size:12px}
+  .top .kpis{grid-area:kpis;gap:14px;align-self:center;-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent);padding-right:18px}
+  .top .kpi:nth-child(4){display:flex}
+  .top .kpi small{font-size:9.5px}
+  .top .kpi b{font-size:13px}
+}
