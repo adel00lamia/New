@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta property="og:title" content="Simulateur BP PLF 2027 : ce que la réforme de l'IR change pour toi">
+<meta property="og:title" content="Simulateur BP PLF 2027 : ce que le PLF 2027 change pour toi">
 <meta property="og:description" content="Ton salaire net, ta masse salariale ou ta trésorerie d'importateur, année par année de 2026 à 2031.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0A2540">
@@ -293,8 +293,8 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 
   <!-- Accueil : choix du profil -->
   <section class="screen intro" id="v-intro">
-    <h1>Combien la réforme de l'IR change pour toi&nbsp;?</h1>
-    <p class="lead">Le projet de loi de finances 2027 baisse l'impôt sur le revenu par étapes jusqu'en 2031. Réponds à trois questions et vois ce que tu gagnes, mois par mois.</p>
+    <h1>Ce que le PLF 2027 change pour toi</h1>
+    <p class="lead">L'impôt sur le revenu baisse par étapes jusqu'en 2031. Choisis ta situation, réponds à quelques questions et découvre ton gain, ton coût ou ton budget, année par année.</p>
     <div class="choices" role="list">
       <button type="button" class="choice" data-go="sal/1" role="listitem"><span class="ch-t">Je suis salarié</span><span class="ch-d">Mon salaire net, avant et après la réforme</span></button>
       <button type="button" class="choice" data-go="emp/1" role="listitem"><span class="ch-t">J'emploie des salariés</span><span class="ch-d">Le budget de ma masse salariale jusqu'en 2031</span></button>
@@ -1105,7 +1105,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     if (x) { e.preventDefault(); $('v-after').hidden = false; $('explications').scrollIntoView({ behavior: 'smooth' }); const d = document.querySelector('.explain details'); if (d) d.open = true; return; }
     const sh = e.target.closest('[data-share]');
     if (sh) {
-      const url = location.origin + location.pathname, title = 'Simulateur BP PLF 2027 : ce que la réforme de l\'IR change pour toi';
+      const url = location.origin + location.pathname, title = 'Simulateur BP PLF 2027 : ce que le PLF 2027 change pour toi';
       if (navigator.share) navigator.share({ title, url }).catch(() => { });
       else if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => { sh.textContent = 'Lien copié'; setTimeout(() => { sh.textContent = 'Partager le simulateur'; }, 2000); });
     }
