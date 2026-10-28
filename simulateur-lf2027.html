@@ -369,7 +369,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
         <button type="button" class="btn ghost" id="e-up">Importer un fichier de salariés</button>
         <button type="button" class="lnk-btn" id="e-tpl">Télécharger le modèle Excel</button>
         <input type="file" id="e-file" accept=".xlsx,.xls,.csv" hidden>
-        <p class="cndp">Le fichier est lu dans ton navigateur. Il n'est envoyé nulle part.</p>
+        <p class="cndp">En important ce fichier, tu autorises l'utilisation de ses données pour ce calcul. Elles ne sont conservées nulle part.</p>
         <p class="impmsg" id="e-msg" role="status"></p>
       </div>
       <div id="e-rows"></div>
@@ -1058,7 +1058,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   $('e-file').addEventListener('change', e => importStaff(e.target.files[0]));
   $('e-tpl').addEventListener('click', () => staffTemplate().catch(() => { }));
   $('e-rows').addEventListener('click', e => { if (e.target.id === 'e-clear') { store.set('emp2', null); location.reload(); } });
-  document.querySelectorAll('[data-cndp]').forEach(x => { x.textContent = `Lu par IA pour en relever les montants, rien n'est conservé. Conforme à la loi 09-08, ${CNDP_NO ? 'autorisation CNDP n° ' + CNDP_NO : 'déclaration CNDP en cours'}.`; });
+  document.querySelectorAll('[data-cndp]').forEach(x => { x.textContent = "En important ton bulletin, tu autorises l'utilisation de ses données pour ce calcul. Elles ne sont conservées nulle part."; });
 
   // ---------- parcours guidé ----------
   const SCREENS = { intro: 'v-intro', sal: 'p-sal', emp: 'p-emp', imp: 'p-imp' };
