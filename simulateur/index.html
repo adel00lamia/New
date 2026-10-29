@@ -410,6 +410,60 @@ body{padding:0 0 64px}
 .ticket .t-next{margin:12px 0 0;font-size:13.5px;color:var(--muted)}
 @media (max-width:420px){.ticket{padding:18px 16px;gap:0 14px}.ticket .t-row+.t-row{padding-left:14px}}
 .band .eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 12px;font:600 12.5px var(--body);letter-spacing:.06em;text-transform:uppercase;color:#C7D3E3}.band .eyebrow .flag{width:21px;height:14px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.25)}
+
+/* ===== Connexion ===== */
+body.locked{overflow:hidden}
+body.locked .band,body.locked .wrap,body.locked .peek{filter:blur(3px);pointer-events:none;user-select:none}
+.gate{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--navy) 55%,transparent);overflow-y:auto}
+.gate[hidden]{display:none}
+.gate-card{width:100%;max-width:400px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:26px 24px 20px;box-shadow:0 24px 60px rgba(10,37,64,.3)}
+.gate-brand{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.gate-brand .logo{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--navy);color:#fff}
+.gate-brand .logo svg{width:20px;height:20px}
+.gate-brand b{font:700 17px var(--display)}
+.gate-sub{font-size:12.5px;color:var(--muted);padding-left:8px;border-left:1px solid var(--line)}
+.gate-card h2{font:700 22px var(--display);margin:0 0 6px}
+.gate-lead{color:var(--muted);font-size:14.5px;margin:0 0 18px}
+.gate-card .f{margin-bottom:14px}
+.gate-card .f label{font-weight:600;font-size:13.5px}.gate-card .f{display:flex;flex-direction:column;gap:6px}.gate-card input[type=email],.gate-card input[type=password]{width:100%;font:15px var(--body);padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);color:var(--ink)}.gate-card input:focus{outline:2px solid var(--primary);outline-offset:1px;border-color:transparent}.gate-card small{font-size:12.5px;color:var(--muted)}.band .brandbar{display:flex;align-items:center;justify-content:flex-start}.band .brandbar .cta{margin-left:auto}.band .brandbar .acct+.cta{margin-left:0}.acct{margin-left:auto}
+.gate-card .chk{margin:0 0 12px;font-size:13.5px}
+.gate-msg{font-size:13.5px;margin:0 0 12px;min-height:0}
+.gate-msg:empty{display:none}
+.gate-msg.bad{color:#C0392B}.gate-msg.ok{color:var(--good)}
+.gate-go{width:100%}
+.gate-alt{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;font-size:13.5px}
+.acct{display:flex;align-items:center;gap:10px;margin-left:auto;margin-right:12px;font-size:13px;color:#C7D3E3}
+.acct .lnk-btn{color:#fff}
+@media (max-width:640px){.acct-mail{display:none}.acct{margin-right:8px}}
+/* ===== Assistant ===== */
+.chat-fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;border:0;border-radius:999px;background:var(--primary);color:#fff;font:600 14.5px var(--body);padding:12px 18px;box-shadow:0 10px 26px rgba(10,37,64,.28);cursor:pointer}
+.chat-fab::before{content:"✦";margin-right:8px}
+.chat-fab[hidden]{display:none}
+body.peeking .chat-fab{bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+body.chatting .chat-fab{display:none}
+.chat{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:45;width:min(400px,calc(100vw - 32px));height:min(600px,calc(100dvh - 32px));display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 60px rgba(10,37,64,.28);overflow:hidden}
+.chat[hidden]{display:none}
+.chat-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:var(--navy);color:#fff}
+.chat-h b{display:block;font:600 15px var(--display)}
+.chat-h small{font-size:12.5px;color:#C7D3E3}
+.chat-x{border:0;background:none;color:#fff;font-size:24px;line-height:1;cursor:pointer;padding:2px 6px}
+.chat-log{flex:1;overflow-y:auto;padding:14px 14px 6px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:88%;padding:10px 12px;border-radius:14px;font-size:14px;line-height:1.55}
+.msg p{margin:0 0 6px}.msg p:last-child{margin:0}
+.msg h4{margin:6px 0 4px;font:600 14px var(--display)}
+.msg ul{margin:0 0 6px;padding-left:18px}.msg li{margin-bottom:4px}
+.msg.bot{align-self:flex-start;background:var(--surface2);border-bottom-left-radius:4px}
+.msg.me{align-self:flex-end;background:var(--primary);color:#fff;border-bottom-right-radius:4px}
+.msg.wait{color:var(--muted)}
+.msg.err{background:var(--warn-soft);color:var(--ink)}
+.chat-sugg{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.chat-sugg button{border:1px solid var(--line);background:var(--surface);color:var(--primary);border-radius:999px;padding:7px 12px;font:500 13px var(--body);cursor:pointer;text-align:left}
+.chat-sugg button:hover{border-color:var(--primary)}
+.chat-f{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);align-items:flex-end}
+.chat-f textarea{flex:1;resize:none;min-height:42px;max-height:120px;font:14px var(--body);padding:10px 12px;border-radius:12px}
+.chat-f .btn{padding:10px 14px}
+.chat-note{margin:0;padding:0 14px 10px;font-size:11.5px;color:var(--muted)}
+@media (max-width:520px){.chat{right:0;left:0;bottom:0;width:100%;height:100dvh;border-radius:0}}
 </style>
 </head>
 <body>
@@ -1307,7 +1361,125 @@ body{padding:0 0 64px}
   $('peek').addEventListener('click', () => { const k = Object.keys(PROFS).find(x => !$(PROFS[x]).hidden) || 'sal'; $(PROFS[k]).querySelector('.out').scrollIntoView({ behavior: 'smooth' }); });
   addEventListener('scroll', peek, { passive: true }); addEventListener('resize', peek); document.addEventListener('input', () => setTimeout(peek, 0)); document.addEventListener('click', () => setTimeout(peek, 0));
   setTimeout(peek, 0);
-  window.PLF27 = { salaire, irBareme, bulletin, applySlip, posteSlip };
+  window.PLF27 = { salaire, irBareme, bulletin, applySlip, posteSlip, mdLite, esc,
+    context() { const k = ['sal', 'emp', 'imp'].find(x => !$('p-' + x).hidden) || 'sal';
+      if (k === 'imp') return { profil: 'importateur', data: { importations_an: num('i-val'), impot_annuel: num('i-tax'), attestation_regularite: $('i-reg').checked } };
+      return { profil: k === 'emp' ? 'employeur' : 'salarie', data: AIDATA[k === 'emp' ? 'e' : 's'] || {} }; } };
+})();
+</script>
+<div class="gate" id="gate" hidden>
+  <form class="gate-card" id="g-form" novalidate>
+    <div class="gate-brand"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="17" width="5" height="9" rx="1" fill="currentColor" opacity=".55"/><rect x="13.5" y="11" width="5" height="15" rx="1" fill="currentColor" opacity=".8"/><rect x="21" y="5" width="5" height="21" rx="1" fill="currentColor"/></svg></span><b>PlanBiz</b><span class="gate-sub">Simulateur BP PLF 2027 · Maroc</span></div>
+    <h2 id="g-title">Connexion</h2>
+    <p class="gate-lead" id="g-lead">Connecte-toi avec ton compte PlanBiz pour utiliser le simulateur. C'est gratuit.</p>
+    <div class="f"><label for="g-email">E-mail</label><input id="g-email" type="email" autocomplete="email" required></div>
+    <div class="f" id="g-pass-f"><label for="g-pass">Mot de passe</label><input id="g-pass" type="password" autocomplete="current-password" minlength="8" required><small id="g-pass-h" hidden>8 caractères minimum.</small></div>
+    <label class="chk" id="g-terms-f" hidden><input type="checkbox" id="g-terms"> <span>J'accepte les <a href="https://planbiz.vercel.app/legal.html#conditions" target="_blank" rel="noopener">conditions d'utilisation</a> et la <a href="https://planbiz.vercel.app/legal.html#confidentialite" target="_blank" rel="noopener">politique de confidentialité</a>.</span></label>
+    <p class="gate-msg" id="g-msg" role="status"></p>
+    <button type="submit" class="btn pri gate-go" id="g-go">Se connecter</button>
+    <div class="gate-alt" id="g-alt"></div>
+  </form>
+</div>
+<button type="button" class="chat-fab" id="chat-fab" hidden aria-controls="chat" aria-expanded="false">Une question sur le PLF ?</button>
+<section class="chat" id="chat" hidden aria-label="Assistant PLF 2027">
+  <header class="chat-h"><div><b>Assistant PLF 2027</b><small id="chat-left"></small></div><button type="button" class="chat-x" id="chat-x" aria-label="Fermer">×</button></header>
+  <div class="chat-log" id="chat-log" aria-live="polite">
+    <div class="msg bot"><p>Pose-moi tes questions sur le PLF 2027 : indemnités, frais professionnels, barème, coût employeur… Je tiens compte de ta simulation en cours.</p></div>
+    <div class="chat-sugg" id="chat-sugg"><button type="button">Mes indemnités seront-elles imposées ?</button><button type="button">Pourquoi mon net augmente en 2027 ?</button><button type="button">Comment marche le non-cumul de 2031 ?</button></div>
+  </div>
+  <form class="chat-f" id="chat-f"><textarea id="chat-in" rows="2" maxlength="1500" placeholder="Écris ta question…" aria-label="Ta question"></textarea><button type="submit" class="btn pri" id="chat-go">Envoyer</button></form>
+  <p class="chat-note">Tes questions ne sont pas conservées. Les montants de ta simulation sont envoyés avec la question.</p>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const SB_URL = 'https://jecydmxekdorycgfwtwy.supabase.co', SB_KEY = 'sb_publishable_a-ccau1Xus1RmybrNV6xBg_P59YAdfS';
+  const CHAT = location.hostname === 'planbiz.vercel.app' ? '/api/plf-chat' : 'https://planbiz.vercel.app/api/plf-chat';
+  const local = location.protocol === 'file:' && !/[?&]gate=1/.test(location.search);
+  const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } }) : null;
+  let mode = 'login', session = null, hist = [], left = null, max = 5;
+
+  // ---------- connexion ----------
+  function renderGate(msg) {
+    const L = { login: ['Connexion', 'Connecte-toi avec ton compte PlanBiz pour utiliser le simulateur. C\'est gratuit.', 'Se connecter'], signup: ['Créer un compte', 'Un seul compte gratuit pour le simulateur et pour PlanBiz.', 'Créer mon compte'], reset: ['Mot de passe oublié', 'Reçois un lien par e-mail pour choisir un nouveau mot de passe.', 'Envoyer le lien'] }[mode];
+    $('g-title').textContent = L[0]; $('g-lead').textContent = L[1]; $('g-go').textContent = L[2];
+    $('g-pass-f').hidden = mode === 'reset'; $('g-terms-f').hidden = mode !== 'signup'; $('g-pass-h').hidden = mode !== 'signup';
+    $('g-pass').autocomplete = mode === 'signup' ? 'new-password' : 'current-password';
+    $('g-alt').innerHTML = mode === 'login' ? '<button type="button" class="lnk-btn" data-gm="signup">Créer un compte</button><button type="button" class="lnk-btn" data-gm="reset">Mot de passe oublié ?</button>' : '<button type="button" class="lnk-btn" data-gm="login">J\'ai déjà un compte</button>';
+    const m = $('g-msg'); m.textContent = msg || ''; m.className = 'gate-msg' + (msg && msg.startsWith('✓') ? ' ok' : msg ? ' bad' : '');
+  }
+  function lock(on) { $('gate').hidden = !on; document.body.classList.toggle('locked', on); if (on) { renderGate(); setTimeout(() => $('g-email').focus(), 50); } }
+  function showUser() {
+    let u = document.querySelector('.band .acct');
+    if (!session) { if (u) u.remove(); return; }
+    if (!u) { u = document.createElement('div'); u.className = 'acct'; const cta = document.querySelector('.band .brandbar .cta'); (cta ? cta.parentNode : document.querySelector('.band .brandbar')).insertBefore(u, cta || null); }
+    u.innerHTML = `<span class="acct-mail">${PLF27.esc(session.user.email || '')}</span><button type="button" class="lnk-btn" id="g-out">Se déconnecter</button>`;
+  }
+  async function onSession(s) {
+    session = s; showUser();
+    if (local) { lock(false); $('chat-fab').hidden = !s; if (s) refreshLeft(); return; }
+    lock(!s); $('chat-fab').hidden = !s;
+    if (s) refreshLeft();
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-gm]'); if (b) { mode = b.dataset.gm; renderGate(); return; }
+    if (e.target.id === 'g-out' && sb) sb.auth.signOut();
+  });
+  $('g-form').addEventListener('submit', async e => {
+    e.preventDefault(); if (!sb) return;
+    const email = $('g-email').value.trim(), pass = $('g-pass').value, go = $('g-go');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { renderGate('Écris une adresse e-mail valide.'); return; }
+    if (mode !== 'reset' && pass.length < 8) { renderGate('Le mot de passe doit faire 8 caractères au moins.'); return; }
+    if (mode === 'signup' && !$('g-terms').checked) { renderGate('Coche la case pour accepter les conditions et la politique de confidentialité.'); return; }
+    go.disabled = true;
+    try {
+      const back = location.origin + location.pathname;
+      if (mode === 'login') { const { error } = await sb.auth.signInWithPassword({ email, password: pass }); if (error) throw error; }
+      else if (mode === 'signup') {
+        const { data, error } = await sb.auth.signUp({ email, password: pass, options: { emailRedirectTo: back, data: { terms_accepted_at: new Date().toISOString(), terms_version: '2026-10', source: 'simulateur-plf2027' } } });
+        if (error) throw error;
+        if (!data.session) { mode = 'login'; renderGate('✓ Compte créé. Clique sur le lien reçu par e-mail pour le confirmer, puis connecte-toi.'); }
+      } else { const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: 'https://planbiz.vercel.app/#reset' }); if (error) throw error; mode = 'login'; renderGate('✓ Lien envoyé : vérifie ta boîte mail.'); }
+    } catch (err) {
+      const m = String(err.message || err);
+      renderGate(/Invalid login/i.test(m) ? 'E-mail ou mot de passe incorrect.' : /not confirmed/i.test(m) ? 'Confirme d\'abord ton e-mail avec le lien reçu.' : /already registered/i.test(m) ? 'Un compte existe déjà avec cet e-mail : connecte-toi.' : /rate limit|over_email/i.test(m) ? 'Trop de tentatives. Réessaie dans quelques minutes.' : 'Connexion impossible pour le moment. Réessaie dans un instant.');
+    } finally { go.disabled = false; }
+  });
+
+  // ---------- assistant ----------
+  const tok = async () => { if (!sb) return ''; const { data } = await sb.auth.getSession(); return data.session ? data.session.access_token : ''; };
+  function setLeft(n, m) { if (typeof n === 'number') left = n; if (m) max = m; $('chat-left').textContent = left === null ? '' : left > 0 ? `${left} question${left > 1 ? 's' : ''} sur ${max}` : `Tes ${max} questions sont utilisées. Le simulateur reste utilisable sans limite.`; $('chat-go').disabled = left === 0; $('chat-in').disabled = left === 0; }
+  async function refreshLeft() {
+    try { const r = await fetch(CHAT, { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + await tok() }, body: JSON.stringify({ check: true }) }); const d = await r.json().catch(() => ({})); if (typeof d.left === 'number') setLeft(d.left, d.max); } catch (e) { }
+  }
+  function add(role, html) { const d = document.createElement('div'); d.className = 'msg ' + role; d.innerHTML = html; $('chat-log').appendChild(d); $('chat-log').scrollTop = $('chat-log').scrollHeight; return d; }
+  function openChat(on) { $('chat').hidden = !on; $('chat-fab').setAttribute('aria-expanded', String(on)); document.body.classList.toggle('chatting', on); if (on) { setTimeout(() => $('chat-in').focus(), 30); if (left === null && session) refreshLeft(); } }
+  $('chat-fab').addEventListener('click', () => openChat($('chat').hidden));
+  $('chat-x').addEventListener('click', () => openChat(false));
+  $('chat-sugg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { $('chat-in').value = b.textContent; $('chat-f').requestSubmit(); } });
+  $('chat-in').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('chat-f').requestSubmit(); } });
+  $('chat-f').addEventListener('submit', async e => {
+    e.preventDefault();
+    const q = $('chat-in').value.trim(); if (!q || left === 0) return;
+    const sg = $('chat-sugg'); if (sg) sg.remove();
+    add('me', `<p>${PLF27.esc(q)}</p>`); $('chat-in').value = ''; hist.push({ role: 'user', content: q });
+    const w = add('bot wait', '<p>Je réfléchis…</p>'); $('chat-go').disabled = true;
+    try {
+      const c = PLF27.context();
+      const r = await fetch(CHAT, { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + await tok() }, body: JSON.stringify({ messages: hist.slice(-10), profil: c.profil, context: c.data }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.text) { hist.pop(); w.className = 'msg bot err'; w.innerHTML = `<p>${PLF27.esc(d.error || 'La réponse a échoué. Réessaie dans un instant.')}</p>`; if (r.status === 401 && sb) sb.auth.signOut(); }
+      else { w.className = 'msg bot'; w.innerHTML = PLF27.mdLite(d.text); hist.push({ role: 'assistant', content: d.text }); }
+      setLeft(typeof d.left === 'number' ? d.left : left, d.max);
+    } catch (err) { hist.pop(); w.className = 'msg bot err'; w.innerHTML = '<p>Connexion impossible. Vérifie ta connexion et réessaie.</p>'; }
+    finally { if (left !== 0) $('chat-go').disabled = false; }
+  });
+
+  // ---------- démarrage ----------
+  if (!sb) { $('chat-fab').hidden = true; return; }   // bibliothèque non chargée : le simulateur reste utilisable
+  sb.auth.getSession().then(({ data }) => onSession(data.session));
+  sb.auth.onAuthStateChange((ev, s) => { if (ev !== 'INITIAL_SESSION') onSession(s); });
 })();
 </script>
 </body>
