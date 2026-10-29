@@ -318,158 +318,232 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 @media (prefers-reduced-motion:reduce){.ticket.in{animation:none}}
 @media (max-width:480px){.nav .btn{flex:1}.nav span{display:none}.actions .btn{flex:1 1 45%}}
 .xl-btn::before{content:"";display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-1px;border:2px solid currentColor;border-top:0;border-radius:0 0 2px 2px;box-shadow:inset 0 -5px 0 -3px currentColor}
+/* ===================== Page unique ===================== */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .band{background:#12213A}}
+body{padding:0 0 64px}
+.band{background:var(--navy);color:#fff;padding:18px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px))}
+.band-top,.band-in{max-width:1160px;margin:0 auto}
+.band .brandbar{margin-bottom:28px}
+.band .brand,.band .ptitle{color:#fff}
+.band .brand .logo{background:#fff;color:var(--navy)}
+.band .ptitle{border-left-color:rgba(255,255,255,.25)}
+.band .cta{color:#fff;border-color:rgba(255,255,255,.45)}
+.band .cta:hover{background:#fff;color:var(--navy)}
+.band h1{font:700 clamp(28px,5vw,44px)/1.08 var(--display);letter-spacing:-.025em;margin:0 0 10px;max-width:20ch;color:#fff}
+.band .lead{color:#C7D3E3;font-size:16px;max-width:58ch;margin:0 0 24px}
+.seg3{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.seg3 button{border:0;background:transparent;color:#C7D3E3;font:600 14.5px var(--body);padding:10px 16px;border-radius:9px;cursor:pointer}
+.seg3 button[aria-selected="true"]{background:#fff;color:var(--navy)}
+.seg3 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.wrap{max-width:1160px;margin:-40px auto 0;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.calc{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:20px;align-items:start}
+.form{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px 22px 18px;box-shadow:0 10px 30px rgba(10,37,64,.08)}
+.grp{padding:18px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}.form>.grp:last-of-type{border-bottom:0}.form>details.more{border-top:1px solid var(--line)}
+.grp small,.form .f small{font-size:12.5px;color:var(--muted)}
+.lbl{font:600 14.5px var(--display);color:var(--ink)}
+.form .money{margin:0}
+.form .money input{font-size:28px;padding:10px 0}
+.form .money span{font-size:15px}
+.form .money.sm{max-width:160px}
+.form .money.sm input{font-size:22px}
+.form .pills{margin:0;flex-wrap:nowrap;gap:6px}.form .pills button{flex:1;min-width:0;padding:0}
+.form .quick{margin:0}
+.form .imp{margin-top:6px;padding:0;border:0;background:none}
+.form .impbtn{width:auto;margin:0;padding:8px 12px;font-size:13.5px}
+.form .cndp{margin-top:6px}
+.form .staff{margin:0}
+.form details.more{border:0;padding:16px 0 4px;margin:0}
+.form details.more[open] summary{margin-bottom:14px}
+.form .f{margin-bottom:14px}
+.form .f label{font-weight:600;font-size:13.5px}
+.form .chk{margin:4px 0 10px}
+.out{position:sticky;top:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.out .ticket{margin:0;box-shadow:0 10px 30px rgba(10,37,64,.08)}
+.out .sum{margin:0}
+.out .actions{margin:0;gap:8px}
+.out .actions .btn{padding:9px 14px;font-size:14px}
+.out .ai{margin:0;padding:14px 16px}
+.out .why,.out .bd,.out .cost{margin:0 0 12px;border:0;padding:0;background:none}
+.out .bd:last-child,.out .why:last-child{margin-bottom:0}
+.dtabs{display:flex;gap:2px;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;margin-top:4px}
+.dtabs::-webkit-scrollbar{display:none}
+.dtabs button{flex:none;border:0;background:none;color:var(--muted);font:600 14px var(--body);padding:10px 12px;border-bottom:2.5px solid transparent;margin-bottom:-1px;cursor:pointer}
+.dtabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--primary)}
+.dtabs button:focus-visible{outline:2px solid var(--primary);outline-offset:-2px}
+.dpanel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px clamp(16px,4vw,24px)}
+.caveat{max-width:1160px;margin:22px auto 0;font-size:13px;color:var(--muted)}
+.after{margin-top:44px}
+.peek{position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--navy);color:#fff;font:600 14px var(--body);border:0;width:100%;text-align:left;cursor:pointer;box-shadow:0 -6px 20px rgba(10,37,64,.2)}
+.peek span:last-child{flex:none;background:#fff;color:var(--navy);border-radius:8px;padding:6px 10px;font-size:13px}
+@media (max-width:900px){
+  .calc{grid-template-columns:minmax(0,1fr)}
+  .out{position:static}
+  .peek.on{display:flex}
+  body.peeking{padding-bottom:72px}
+}
+@media (max-width:520px){
+  .band{padding-bottom:56px}
+  .band .brandbar{margin-bottom:20px}
+  .seg3{display:grid;grid-template-columns:1fr;width:100%}
+  .seg3 button{text-align:left}
+  .form{padding:4px 16px 14px}
+}
 </style>
 </head>
 <body>
-<header class="brandbar"><a class="brand" href="https://planbiz.vercel.app" target="_blank" rel="noopener"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="17" width="5" height="9" rx="1" fill="currentColor" opacity=".55"/><rect x="13.5" y="11" width="5" height="15" rx="1" fill="currentColor" opacity=".8"/><rect x="21" y="5" width="5" height="21" rx="1" fill="currentColor"/></svg></span><b>PlanBiz</b></a><span class="ptitle">Simulateur BP PLF 2027</span><a class="cta" href="https://planbiz.vercel.app" target="_blank" rel="noopener"><span class="cta-l">Créer mon business plan</span><span class="cta-s">Mon BP</span></a></header>
-<main class="wrap" id="app">
+<main id="app">
 
-  <!-- Accueil : choix du profil -->
-  <section class="screen intro" id="v-intro">
-    <h1>Ce que le PLF 2027 change pour toi</h1>
-    <p class="lead">L'impôt sur le revenu baisse par étapes jusqu'en 2031. Choisis ta situation, réponds à quelques questions et découvre ton gain, ton coût ou ton budget, année par année.</p>
-    <div class="choices" role="list">
-      <button type="button" class="choice" data-go="sal/1" role="listitem"><span class="ch-t">Je suis salarié</span><span class="ch-d">Mon salaire net, avant et après la réforme</span></button>
-      <button type="button" class="choice" data-go="emp/1" role="listitem"><span class="ch-t">J'emploie des salariés</span><span class="ch-d">Le budget de ma masse salariale jusqu'en 2031</span></button>
-      <button type="button" class="choice" data-go="imp/1" role="listitem"><span class="ch-t">J'importe pour revendre</span><span class="ch-d">L'avance de 5 % sur mes importations</span></button>
+  <section class="band">
+    <header class="brandbar band-top"><a class="brand" href="https://planbiz.vercel.app" target="_blank" rel="noopener"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="17" width="5" height="9" rx="1" fill="currentColor" opacity=".55"/><rect x="13.5" y="11" width="5" height="15" rx="1" fill="currentColor" opacity=".8"/><rect x="21" y="5" width="5" height="21" rx="1" fill="currentColor"/></svg></span><b>PlanBiz</b></a><span class="ptitle">Simulateur BP PLF 2027</span><a class="cta" href="https://planbiz.vercel.app" target="_blank" rel="noopener"><span class="cta-l">Créer mon business plan</span><span class="cta-s">Mon BP</span></a></header>
+    <div class="band-in">
+      <h1>Ce que le PLF 2027 change pour toi</h1>
+      <p class="lead">Ton salaire net, le coût de ton équipe ou l'avance sur tes importations, calculés selon le projet de loi, de 2026 à 2031.</p>
+      <div class="seg3" role="tablist" aria-label="Ta situation">
+        <button type="button" role="tab" id="t-sal" aria-controls="p-sal" data-prof="sal">Je suis salarié</button>
+        <button type="button" role="tab" id="t-emp" aria-controls="p-emp" data-prof="emp">J'emploie des salariés</button>
+        <button type="button" role="tab" id="t-imp" aria-controls="p-imp" data-prof="imp">J'importe pour revendre</button>
+      </div>
     </div>
-    <p class="caveat">Projet de loi présenté le 23 octobre 2026, pas encore voté. Le calcul donne un ordre de grandeur, pas une paie officielle.</p>
   </section>
 
+  <div class="wrap">
+
   <!-- Salarié -->
-  <section class="screen flow" id="p-sal" hidden>
-    <div class="progress" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="step" data-step="1">
-      <p class="stepn">Étape 1 sur 3</p>
-      <h2>Quel est ton salaire de base par mois&nbsp;?</h2>
-      <p class="hint">Le montant brut, sans la prime d'ancienneté ni les primes. Tu les ajoutes juste après.</p>
-      <label class="money"><input id="s-brut" type="number" inputmode="decimal" min="0" step="100" value="10000" aria-label="Salaire de base mensuel en dirhams"><span>DH</span></label>
-      <div class="imp" id="s-imp" hidden>
-          <button type="button" id="s-imp-btn" class="impbtn">Importer mon dernier bulletin de paie</button>
+  <section class="calc" id="p-sal" role="tabpanel" aria-labelledby="t-sal">
+    <div class="form">
+      <div class="grp">
+        <label class="lbl" for="s-brut">Salaire de base mensuel</label>
+        <label class="money"><input id="s-brut" type="number" inputmode="decimal" min="0" step="100" value="10000"><span>DH brut</span></label>
+        <small>Sans la prime d'ancienneté ni les primes.</small>
+        <div class="imp" id="s-imp" hidden>
+          <button type="button" id="s-imp-btn" class="impbtn">Remplir avec mon bulletin de paie</button>
           <input type="file" id="s-imp-file" accept="application/pdf,image/jpeg,image/png,image/webp,image/*" hidden>
           <p class="cndp" data-cndp></p>
           <p class="impmsg" id="s-imp-msg" role="status"></p>
         </div>
-      <div class="nav"><button type="button" class="btn ghost" data-go="intro">Retour</button><button type="button" class="btn pri" data-go="sal/2">Continuer</button></div>
-    </div>
-    <div class="step" data-step="2" hidden>
-      <p class="stepn">Étape 2 sur 3</p>
-      <h2>Ta situation</h2>
-      <div class="f"><span class="lbl" id="dep-l">Personnes à charge</span>
+      </div>
+      <div class="grp">
+        <span class="lbl" id="dep-l">Personnes à charge</span>
         <div class="pills" role="radiogroup" aria-labelledby="dep-l" data-for="s-dep"><button type="button" role="radio" data-v="0">0</button><button type="button" role="radio" data-v="1">1</button><button type="button" role="radio" data-v="2">2</button><button type="button" role="radio" data-v="3">3</button><button type="button" role="radio" data-v="4">4</button><button type="button" role="radio" data-v="5">5</button><button type="button" role="radio" data-v="6">6</button></div>
         <select id="s-dep" hidden><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
-        <small>Ton conjoint et tes enfants à charge, 6 au plus.</small></div>
-      <div class="f"><label for="s-entree">Date d'entrée dans l'entreprise <em>facultatif</em></label><input id="s-entree" type="date" value=""><small>Pour ajouter la prime d'ancienneté, qui augmente avec les années.</small></div>
-      <label class="chk"><input type="checkbox" id="s-cnss" checked> <span>Je suis affilié à la CNSS</span></label>
-      <details class="more"><summary>Plus d'options</summary>
-        <div class="f"><label for="s-ret">Retraite complémentaire et mutuelle (DH par mois)</label><input id="s-ret" type="number" inputmode="decimal" min="0" step="50" value="0"><small>Ta part salariale de la CIMR et de la mutuelle.</small></div>
-        <div class="f"><label for="s-nc">En 2031, déduction de 45 % et indemnités exonérées</label><select id="s-nc"><option value="reduce" selected>Les indemnités exonérées réduisent la déduction (lecture retenue)</option><option value="total">Toute indemnité exonérée supprime la déduction (lecture stricte)</option><option value="none">Pas de non-cumul (comme aujourd'hui)</option></select><small>Le projet de loi interdit de cumuler les deux à partir de 2031, sans préciser comment. Choisis la lecture à simuler.</small></div>
-        <label class="chk"><input type="checkbox" id="s-fp27"> <span>Imposer les indemnités forfaitaires dès 2027<br><small class="small">Par défaut, elles deviennent imposables en 2031.</small></span></label>
-      </details>
-      <div class="nav"><button type="button" class="btn ghost" data-go="sal/1">Retour</button><button type="button" class="btn pri" data-go="sal/3">Continuer</button></div>
-    </div>
-    <div class="step" data-step="3" hidden>
-      <p class="stepn">Étape 3 sur 3</p>
-      <h2>As-tu des primes ou des indemnités&nbsp;?</h2>
-      <p class="hint">Transport, panier, voiture, représentation… Chacune a son propre plafond d'exonération.</p>
-      <div class="quick" id="s-quick">
-        <button type="button" data-add="transport">Transport</button><button type="button" data-add="panier">Panier</button><button type="button" data-add="km">Indemnité kilométrique</button><button type="button" data-add="voiture">Forfait voiture</button><button type="button" data-add="representation">Représentation</button><button type="button" data-add="prime">Prime imposable</button><button type="button" data-add="autre">Autre</button>
       </div>
-      <div id="s-rub"></div>
-      <button type="button" id="s-add" class="addbtn" hidden>Ajouter une rubrique</button>
-      <p class="hint"><a href="#explications" class="lnk">Voir le plafond de chaque indemnité</a></p>
-      <div class="nav"><button type="button" class="btn ghost" data-go="sal/2">Retour</button><button type="button" class="btn pri" data-go="sal/res">Voir mon résultat</button></div>
+      <div class="grp">
+        <span class="lbl">Primes et indemnités</span>
+        <div class="quick" id="s-quick">
+          <button type="button" data-add="transport">Transport</button><button type="button" data-add="panier">Panier</button><button type="button" data-add="km">Kilométrique</button><button type="button" data-add="voiture">Forfait voiture</button><button type="button" data-add="representation">Représentation</button><button type="button" data-add="prime">Prime imposable</button><button type="button" data-add="autre">Autre</button>
+        </div>
+        <div id="s-rub"></div>
+        <button type="button" id="s-add" class="addbtn" hidden>Ajouter une rubrique</button>
+      </div>
+      <details class="more">
+        <summary>Plus d'options</summary>
+        <div class="f"><label for="s-entree">Date d'entrée dans l'entreprise</label><input id="s-entree" type="date" value=""><small>Ajoute la prime d'ancienneté, qui augmente avec les années.</small></div>
+        <label class="chk"><input type="checkbox" id="s-cnss" checked> <span>Je suis affilié à la CNSS</span></label>
+        <div class="f"><label for="s-ret">Retraite complémentaire et mutuelle (DH par mois)</label><input id="s-ret" type="number" inputmode="decimal" min="0" step="50" value="0"></div>
+        <div class="f"><label for="s-nc">En 2031, déduction de 45 % et indemnités exonérées</label><select id="s-nc"><option value="reduce" selected>Les indemnités exonérées réduisent la déduction</option><option value="total">Toute indemnité exonérée supprime la déduction</option><option value="none">Pas de non-cumul</option></select><small>Le projet de loi interdit le cumul à partir de 2031 sans préciser comment.</small></div>
+        <label class="chk"><input type="checkbox" id="s-fp27"> <span>Imposer les indemnités forfaitaires dès 2027</span></label>
+      </details>
+      <p class="live" hidden><span id="s-live"></span></p>
     </div>
-    <p class="live" aria-live="polite"><span id="s-live"></span></p>
 
-    <div class="result" data-step="res" hidden>
+    <div class="out" aria-live="polite">
       <div id="s-tiles"></div>
-      <div class="why" id="s-why"></div>
-      <div class="bd" id="s-bd"></div>
-      <div class="cost" id="s-cost"></div>
       <div class="refbox" id="s-ref" hidden></div>
       <p class="sum" id="s-foot"></p>
-      <div class="ai" data-aibox="s" hidden><button type="button" class="btn ai-btn" data-ai="s">Obtenir une analyse et des recommandations</button><p class="ai-note">L'IA Claude reçoit seulement les montants calculés, sans nom ni bulletin. Rien n'est conservé.</p><div class="ai-out" id="s-ai" aria-live="polite"></div></div>
-      <div class="actions"><button type="button" class="btn ghost" data-go="sal/1">Modifier mes réponses</button><button type="button" class="btn ghost xl-btn" data-xl="sal">Télécharger en Excel</button><button type="button" class="btn ghost" data-share>Partager le simulateur</button></div>
-      <details class="fold"><summary>Année par année, jusqu'en 2031</summary>
-        <div class="chart" id="s-chart"></div>
-        <div class="tw"><table id="s-table" class="compact stack"></table></div>
-      </details>
-      <details class="fold"><summary>Mon bulletin de paie détaillé</summary>
+      <div class="actions">
+        <button type="button" class="btn ghost xl-btn" data-xl="sal">Excel</button>
+        <button type="button" class="btn ghost" data-share>Partager</button>
+      </div>
+      <div class="ai" data-aibox="s" hidden><button type="button" class="btn ai-btn" data-ai="s">Analyse et recommandations</button><p class="ai-note">L'IA reçoit seulement les montants calculés. Rien n'est conservé.</p><div class="ai-out" id="s-ai" aria-live="polite"></div></div>
+      <div class="dtabs" role="tablist" aria-label="Détails">
+        <button type="button" role="tab" data-tab="s-why-p" aria-selected="true">Pourquoi ce gain</button>
+        <button type="button" role="tab" data-tab="s-years-p">Année par année</button>
+        <button type="button" role="tab" data-tab="s-slip-p">Bulletin de paie</button>
+        <button type="button" role="tab" data-tab="s-cost-p">Coût pour l'entreprise</button>
+      </div>
+      <div class="dpanel" id="s-why-p"><div class="why" id="s-why"></div><div class="bd" id="s-bd"></div></div>
+      <div class="dpanel" id="s-years-p" hidden><div class="chart" id="s-chart"></div><div class="tw"><table id="s-table" class="compact stack"></table></div></div>
+      <div class="dpanel" id="s-slip-p" hidden>
         <div class="slip-head"><label class="small" for="s-year">Avec les règles de <select id="s-year"><option>2026</option><option selected>2027</option><option>2028</option><option>2029</option><option>2030</option><option>2031</option></select></label></div>
         <div class="tw"><table id="s-slip" class="slip"></table></div>
-      </details>
-      <p class="caveat">Projet de loi, pas encore voté. Le ministre a aussi annoncé l'exonération des salaires nets de moins de 10 000 DH dès 2027, mais cette mesure ne figure pas dans le barème publié : elle n'est pas prise en compte ici.</p>
+      </div>
+      <div class="dpanel" id="s-cost-p" hidden><div class="cost" id="s-cost"></div></div>
     </div>
   </section>
 
   <!-- Employeur -->
-  <section class="screen flow" id="p-emp" hidden>
-    <div class="progress two" aria-hidden="true"><i></i><i></i></div>
-    <div class="step" data-step="1">
-      <p class="stepn">Étape 1 sur 2</p>
-      <h2>Qui compose ton équipe&nbsp;?</h2>
-      <p class="hint">Un poste par niveau de salaire, avec son effectif et ses indemnités. Les montants sont mensuels. <a href="#explications" class="lnk">Voir le plafond de chaque indemnité</a></p>
-      <div class="staff">
-        <button type="button" class="btn ghost" id="e-up">Importer un fichier de salariés</button>
-        <button type="button" class="lnk-btn" id="e-tpl">Télécharger le modèle Excel</button>
-        <input type="file" id="e-file" accept=".xlsx,.xls,.csv" hidden>
-        <p class="cndp">En important ce fichier, tu autorises l'utilisation de ses données pour ce calcul. Elles ne sont conservées nulle part.</p>
-        <p class="impmsg" id="e-msg" role="status"></p>
+  <section class="calc" id="p-emp" role="tabpanel" aria-labelledby="t-emp" hidden>
+    <div class="form">
+      <div class="grp">
+        <span class="lbl">Ton équipe</span>
+        <div class="staff">
+          <button type="button" class="btn ghost" id="e-up">Importer un fichier de salariés</button>
+          <button type="button" class="lnk-btn" id="e-tpl">Modèle Excel</button>
+          <input type="file" id="e-file" accept=".xlsx,.xls,.csv" hidden>
+          <p class="cndp">En important ce fichier, tu autorises l'utilisation de ses données pour ce calcul. Elles ne sont conservées nulle part.</p>
+          <p class="impmsg" id="e-msg" role="status"></p>
+        </div>
+        <div id="e-rows"></div>
+        <button type="button" id="e-add" class="addbtn">Ajouter un poste</button>
       </div>
-      <div id="e-rows"></div>
-      <button type="button" id="e-add" class="addbtn">Ajouter un poste</button>
-      <div class="nav"><button type="button" class="btn ghost" data-go="intro">Retour</button><button type="button" class="btn pri" data-go="emp/2">Continuer</button></div>
-    </div>
-    <div class="step" data-step="2" hidden>
-      <p class="stepn">Étape 2 sur 2</p>
-      <h2>Comment évoluent tes salaires&nbsp;?</h2>
-      <div class="f"><label for="e-aug">Augmentation annuelle des salaires</label><label class="money sm"><input id="e-aug" type="number" inputmode="decimal" min="0" max="30" step="0.5" value="3"><span>%</span></label><small>Appliquée chaque année à partir de 2027.</small></div>
-      <label class="chk"><input type="checkbox" id="e-13"> <span>Je verse un 13e mois</span></label>
-      <details class="more"><summary>Plus d'options</summary>
+      <div class="grp">
+        <label class="lbl" for="e-aug">Augmentation annuelle des salaires</label>
+        <label class="money sm"><input id="e-aug" type="number" inputmode="decimal" min="0" max="30" step="0.5" value="3"><span>%</span></label>
+        <label class="chk"><input type="checkbox" id="e-13"> <span>Je verse un 13e mois</span></label>
+      </div>
+      <details class="more">
+        <summary>Plus d'options</summary>
         <div class="f"><label for="e-cimr">Retraite complémentaire CIMR, taux salarial (%)</label><input id="e-cimr" type="number" inputmode="decimal" min="0" max="12" step="0.5" value="0"><small>La part patronale est comptée à 1,3 fois ce taux.</small></div>
-        <div class="f"><label for="e-dep">Personnes à charge en moyenne par salarié</label><select id="e-dep"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select><small>Change le net de tes salariés, pas ton coût.</small></div>
-        <div class="f"><label for="e-nc">En 2031, déduction de 45 % et indemnités exonérées</label><select id="e-nc"><option value="reduce" selected>Les indemnités exonérées réduisent la déduction (lecture retenue)</option><option value="total">Toute indemnité exonérée supprime la déduction (lecture stricte)</option><option value="none">Pas de non-cumul (comme aujourd'hui)</option></select><small>Le projet de loi interdit de cumuler les deux à partir de 2031, sans préciser comment.</small></div>
+        <div class="f"><label for="e-dep">Personnes à charge en moyenne par salarié</label><select id="e-dep"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
+        <div class="f"><label for="e-nc">En 2031, déduction de 45 % et indemnités exonérées</label><select id="e-nc"><option value="reduce" selected>Les indemnités exonérées réduisent la déduction</option><option value="total">Toute indemnité exonérée supprime la déduction</option><option value="none">Pas de non-cumul</option></select></div>
       </details>
-      <div class="nav"><button type="button" class="btn ghost" data-go="emp/1">Retour</button><button type="button" class="btn pri" data-go="emp/res">Voir mon résultat</button></div>
+      <p class="live" hidden><span id="e-live"></span></p>
     </div>
-    <p class="live" aria-live="polite"><span id="e-live"></span></p>
-    <div class="result" data-step="res" hidden>
+
+    <div class="out" aria-live="polite">
       <div id="e-tiles"></div>
-      <div class="bd" id="e-bd"></div>
       <p class="sum" id="e-foot"></p>
-      <div class="ai" data-aibox="e" hidden><button type="button" class="btn ai-btn" data-ai="e">Obtenir une analyse et des recommandations</button><p class="ai-note">L'IA Claude reçoit seulement les montants calculés, sans nom ni bulletin. Rien n'est conservé.</p><div class="ai-out" id="e-ai" aria-live="polite"></div></div>
-      <div class="actions"><button type="button" class="btn ghost" data-go="emp/1">Modifier mes réponses</button><button type="button" class="btn ghost xl-btn" data-xl="emp">Télécharger en Excel</button><button type="button" class="btn ghost" data-share>Partager le simulateur</button></div>
-      <details class="fold"><summary>Budget 2026 par poste</summary><div class="tw"><table id="e-detail" class="compact stack"></table></div></details>
-      <details class="fold"><summary>Projection du budget jusqu'en 2031</summary><div class="tw"><table id="e-table" class="compact stack"></table></div></details>
+      <div class="actions">
+        <button type="button" class="btn ghost xl-btn" data-xl="emp">Excel</button>
+        <button type="button" class="btn ghost" data-share>Partager</button>
+      </div>
+      <div class="ai" data-aibox="e" hidden><button type="button" class="btn ai-btn" data-ai="e">Analyse et recommandations</button><p class="ai-note">L'IA reçoit seulement les montants calculés. Rien n'est conservé.</p><div class="ai-out" id="e-ai" aria-live="polite"></div></div>
+      <div class="dtabs" role="tablist" aria-label="Détails">
+        <button type="button" role="tab" data-tab="e-bd-p" aria-selected="true">Coûts et avantages</button>
+        <button type="button" role="tab" data-tab="e-detail-p">Par poste</button>
+        <button type="button" role="tab" data-tab="e-table-p">Jusqu'en 2031</button>
+      </div>
+      <div class="dpanel" id="e-bd-p"><div class="bd" id="e-bd"></div></div>
+      <div class="dpanel" id="e-detail-p" hidden><div class="tw"><table id="e-detail" class="compact stack"></table></div></div>
+      <div class="dpanel" id="e-table-p" hidden><div class="tw"><table id="e-table" class="compact stack"></table></div></div>
     </div>
   </section>
 
   <!-- Importateur -->
-  <section class="screen flow" id="p-imp" hidden>
-    <div class="progress two" aria-hidden="true"><i></i><i></i></div>
-    <div class="step" data-step="1">
-      <p class="stepn">Étape 1 sur 2</p>
-      <h2>Combien importes-tu par an&nbsp;?</h2>
-      <p class="hint">La valeur en douane des marchandises que tu revends en l'état.</p>
-      <label class="money"><input id="i-val" type="number" inputmode="decimal" min="0" step="10000" value="2000000" aria-label="Importations annuelles en dirhams"><span>DH</span></label>
-      <div class="nav"><button type="button" class="btn ghost" data-go="intro">Retour</button><button type="button" class="btn pri" data-go="imp/2">Continuer</button></div>
+  <section class="calc" id="p-imp" role="tabpanel" aria-labelledby="t-imp" hidden>
+    <div class="form">
+      <div class="grp">
+        <label class="lbl" for="i-val">Importations par an</label>
+        <label class="money"><input id="i-val" type="number" inputmode="decimal" min="0" step="10000" value="2000000"><span>DH</span></label>
+        <small>Valeur en douane des marchandises revendues en l'état.</small>
+      </div>
+      <div class="grp">
+        <label class="lbl" for="i-tax">Impôt annuel sur ton activité</label>
+        <label class="money"><input id="i-tax" type="number" inputmode="decimal" min="0" step="1000" value="60000"><span>DH</span></label>
+        <small>Ton IS, ou ton IR professionnel. L'avance s'en déduit.</small>
+        <label class="chk"><input type="checkbox" id="i-reg"> <span>J'ai une attestation de régularité fiscale</span></label>
+      </div>
     </div>
-    <div class="step" data-step="2" hidden>
-      <p class="stepn">Étape 2 sur 2</p>
-      <h2>Quel impôt paies-tu sur ton activité&nbsp;?</h2>
-      <p class="hint">Ton IS, ou ton IR professionnel, sur une année. L'avance viendra s'en déduire.</p>
-      <label class="money"><input id="i-tax" type="number" inputmode="decimal" min="0" step="1000" value="60000" aria-label="Impôt annuel en dirhams"><span>DH</span></label>
-      <label class="chk"><input type="checkbox" id="i-reg"> <span>J'ai une attestation de régularité fiscale</span></label>
-      <div class="nav"><button type="button" class="btn ghost" data-go="imp/1">Retour</button><button type="button" class="btn pri" data-go="imp/res">Voir mon résultat</button></div>
-    </div>
-    <div class="result" data-step="res" hidden>
+    <div class="out" aria-live="polite">
       <div id="i-tiles"></div>
       <p class="sum" id="i-foot"></p>
-      <div class="actions"><button type="button" class="btn ghost" data-go="imp/1">Modifier mes réponses</button><button type="button" class="btn ghost" data-share>Partager le simulateur</button></div>
-      <details class="fold"><summary>Année par année</summary><div class="tw"><table id="i-table" class="compact stack"></table></div></details>
+      <div class="actions"><button type="button" class="btn ghost" data-share>Partager</button></div>
+      <div class="dtabs" role="tablist" aria-label="Détails"><button type="button" role="tab" data-tab="i-table-p" aria-selected="true">Année par année</button></div>
+      <div class="dpanel" id="i-table-p"><div class="tw"><table id="i-table" class="compact stack"></table></div></div>
     </div>
   </section>
+
+  <p class="caveat">Projet de loi présenté le 23 octobre 2026, pas encore voté. Le calcul donne un ordre de grandeur, pas une paie officielle. Le ministre a aussi annoncé l'exonération des salaires nets de moins de 10 000 DH, qui ne figure pas dans le barème publié et n'est pas prise en compte.</p>
 
   <div class="after" id="v-after">
   <h2 style="margin-top:34px">Les chiffres à retenir</h2>
@@ -557,7 +631,9 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   <p class="src">Sources : <a href="https://fr.le360.ma/economie/reforme-de-lir-les-nouveaux-baremes-de-2027-a-2030-etape-par-etape-vers-un-taux-maximal-de-30_IV4K3SYWDRFLTKETNA4TORQQOY/" target="_blank" rel="noopener">Le360, barèmes 2027-2030</a>, <a href="https://auditcloud.ma/2026/10/23/projet-de-loi-de-finances-2027-les-principales-mesures-a-retenir/" target="_blank" rel="noopener">AuditCloud, barème 2031 et avance à l'import</a>, <a href="https://medias24.com/2026/10/23/plf2027-ir-is-tva-voici-les-principales-mesures-fiscales-proposes-par-le-gouvernement-mansouri-1783297/" target="_blank" rel="noopener">Médias24, mesures fiscales</a>, <a href="https://lematin.ma/economie/plf-2027-voici-les-principales-dispositions-fiscales-et-douanieres/371991" target="_blank" rel="noopener">Le Matin, dispositions fiscales et douanières</a>. Barème 2026 et cotisations : règles en vigueur (LF 2025 et LF 2026). Plafonds des indemnités : note de la DGI sur l'article 57 du CGI (2017, présentée par <a href="https://forvismazars.com/ma/fr/content/download/903328/file/01%20MAZARS_Clarification%20R%C3%A9gles%20fiscales%20IR.pdf" target="_blank" rel="noopener">Forvis Mazars</a>) et arrêté CNSS publié au BO n° 7443 du 29 septembre 2025 (<a href="https://fr.le360.ma/economie/nouvelles-regles-de-la-securite-sociale-le-detail-des-indemnites-exonerees_DHSK2LSVTVAERKAETHYJDBIZOQ/" target="_blank" rel="noopener">Le360</a>). Déduction de 45 % dès 2027 : <a href="https://fr.le360.ma/politique/exclusif-une-reforme-historique-de-limpot-sur-le-revenu-ce-qui-va-changer-pour-les-salaries-des-2027_UBLXPQPXLNEUZLLXYXQQXJ3GE4/" target="_blank" rel="noopener">Le360</a> et <a href="https://actionfinance.ma/bareme-ir-2027/" target="_blank" rel="noopener">Action Finance</a>. Autres mesures : synthèse fiscale du PLF n° 60.26 par Ouhida Ahmed, fiscaliste. Simulation mise à jour le 29 octobre 2026.</p>
   <p class="src">Un outil gratuit proposé par <a href="https://planbiz.vercel.app" target="_blank" rel="noopener">PlanBiz</a>, le business plan chiffré pour les projets au Maroc.</p>
   </div>
+  </div>
 </main>
+<button type="button" class="peek" id="peek" aria-hidden="true" tabindex="-1"><span id="peek-t"></span><span>Voir</span></button>
 
 <script>
 (() => {
@@ -790,7 +866,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     const st = state(); store.set('sal2', st);
     const fp27 = st.fp27, indTot = rub.reduce((a, r) => a + (CAT[r.t] && !CAT[r.t].tax && !CAT[r.t].always && !r.just ? Math.max(0, +r.m || 0) : 0), 0);
     const r = YEARS.map(y => { const now = bulletin(st, y), old = bulletin(st, y, 2026); return { y, anc: now.anc, brut: now.brut, ...now, effet: now.net - old.net }; });
-    const just = YEARS.map(y => bulletin(st, y, y, true));
+    const just = YEARS.map(y => bulletin({ ...st, nc: 'none' }, y, y, true));   // indemnités restées exonérées comme aujourd'hui
     const base = r[0];
     const g27 = r[1].effet, g31 = r[5].effet;
     $('s-tiles').innerHTML = `<div class="ticket">
@@ -853,7 +929,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     const tdl = (l, v, c = '') => `<td data-l="${l}"${c ? ` class="${c}"` : ''}>${v}</td>`;
     $('s-table').innerHTML = `<thead><tr><th>Année</th>${withAnc ? '<th>Ancienneté</th>' : ''}<th>Brut</th><th>IR par mois</th><th>Net par mois</th><th>Gain par mois</th><th>Gain sur l'année</th></tr></thead><tbody>${r.map((x, i) => `<tr class="${i === 0 ? 'base' : ''}">${tdl('Année', x.y + (i === 0 ? ', aujourd\'hui' : x.y === 2031 ? ', barème définitif' : ''))}${withAnc ? tdl('Ancienneté', `${nf0.format(Math.floor(ancYears(st.entree, x.y)))} ans, prime de ${Math.round(x.anc * 100)} %`) : ''}${tdl('Brut', dh(x.brut))}${tdl('IR par mois', dh(x.ir))}${tdl('Net par mois', dh(x.net))}${tdl('Gain par mois', i ? sgn(x.effet) : '—', i && x.effet > 0.5 ? 'pos' : '')}${tdl("Gain sur l'année", i ? sgn(x.effet * 12) : '—', i && x.effet > 0.5 ? 'pos' : '')}</tr>`).join('')}</tbody>`;
     const cost = r[5].ir - just[5].ir;
-    const indTxt = indTot > 0 ? `Tes indemnités forfaitaires (${dh(indTot)} par mois) deviennent imposables en ${fp27 ? '2027' : '2031'}. La partie aujourd'hui exonérée te coûte alors ${dh(cost)} d'IR par mois en 2031. Pour la garder exonérée, ton employeur devra la transformer en remboursements de frais justifiés. ` : '';
+    const indTxt = indTot > 0 ? `Tes indemnités forfaitaires (${dh(indTot)} par mois) deviennent imposables en ${fp27 ? '2027' : '2031'}. Elles te coûtent alors ${dh(cost)} d'IR par mois en 2031. ` : '';
     const ancTxt = withAnc ? `La prime d'ancienneté est calculée au 1er juillet de chaque année. Le gain dû à la réforme compare, pour le même bulletin, les règles de l'année à celles de 2026 : il ne compte pas la hausse liée à l'ancienneté. ` : '';
     $('s-foot').textContent = `${indTxt}${ancTxt}`;
     if (ref) { const gap = base.net - ref.net, pc = ref.net ? Math.abs(gap) / ref.net : 0;
@@ -1155,45 +1231,33 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   $('e-rows').addEventListener('click', e => { if (e.target.id === 'e-clear') { store.set('emp2', null); location.reload(); } });
   document.querySelectorAll('[data-cndp]').forEach(x => { x.textContent = "En important ton bulletin, tu autorises l'utilisation de ses données pour ce calcul. Elles ne sont conservées nulle part."; });
 
-  // ---------- parcours guidé ----------
-  const SCREENS = { intro: 'v-intro', sal: 'p-sal', emp: 'p-emp', imp: 'p-imp' };
-  function route() {
-    let [prof, step] = (location.hash.slice(1) || 'intro').split('/');
-    if (!SCREENS[prof]) prof = 'intro';
-    Object.entries(SCREENS).forEach(([k, id]) => { $(id).hidden = k !== prof; });
-    const isRes = step === 'res';
-    $('v-after').hidden = !isRes;
-    if (prof !== 'intro') {
-      const sec = $(SCREENS[prof]), parts = [...sec.querySelectorAll('[data-step]')];
-      const cur = parts.find(x => x.dataset.step === step) || parts[0];
-      parts.forEach(x => { x.hidden = x !== cur; });
-      const n = isRes ? 99 : +cur.dataset.step;
-      sec.querySelectorAll('.progress i').forEach((b, k) => b.classList.toggle('on', k < n));
-      sec.querySelector('.progress').hidden = isRes;
-      const live = sec.querySelector('.live'); if (live) live.hidden = isRes;
-      if (isRes) { const t = cur.querySelector('.ticket'); if (t) { t.classList.remove('in'); void t.offsetWidth; t.classList.add('in'); } }
-      const h = cur.querySelector('h2, .ticket .t-k'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
-    }
-    scrollTo({ top: 0 });
+  // ---------- page unique : profil et onglets ----------
+  const PROFS = { sal: 'p-sal', emp: 'p-emp', imp: 'p-imp' };
+  function setProf(k, push) {
+    if (!PROFS[k]) k = 'sal';
+    Object.entries(PROFS).forEach(([key, id]) => { const on = key === k; $(id).hidden = !on; const t = $('t-' + key); t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
+    if (push && location.hash.slice(1) !== k) history.replaceState(null, '', '#' + k);
+    store.set('prof', k);
   }
-  addEventListener('hashchange', route);
+  addEventListener('hashchange', () => setProf(location.hash.slice(1).split('/')[0], false));
+  document.querySelector('.seg3').addEventListener('click', e => { const b = e.target.closest('[data-prof]'); if (b) setProf(b.dataset.prof, true); });
+  document.querySelector('.seg3').addEventListener('keydown', e => { if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) return; const ks = Object.keys(PROFS), cur = ks.findIndex(k => !$(PROFS[k]).hidden), n = ks[(cur + (e.key === 'ArrowRight' ? 1 : ks.length - 1)) % ks.length]; setProf(n, true); $('t-' + n).focus(); });
   document.addEventListener('click', e => {
-    const g = e.target.closest('[data-go]');
-    if (g) {
-      const to = g.dataset.go;
-      if (to === 'sal/2' && !(num('s-brut') > 0)) { $('s-brut').focus(); $('s-brut').closest('.money').classList.add('bad'); return; }
-      location.hash = to; return;
-    }
+    const t = e.target.closest('[data-tab]'); if (!t) return;
+    const bar = t.closest('.dtabs'), out = bar.parentElement;
+    bar.querySelectorAll('[data-tab]').forEach(b => b.setAttribute('aria-selected', String(b === t)));
+    out.querySelectorAll('.dpanel').forEach(pn => { pn.hidden = pn.id !== t.dataset.tab; });
+  });
+  document.addEventListener('click', e => {
     const x = e.target.closest('a[href="#explications"]');
-    if (x) { e.preventDefault(); $('v-after').hidden = false; $('explications').scrollIntoView({ behavior: 'smooth' }); const d = document.querySelector('.explain details'); if (d) d.open = true; return; }
+    if (x) { e.preventDefault(); $('explications').scrollIntoView({ behavior: 'smooth' }); const d = document.querySelector('.explain details'); if (d) d.open = true; return; }
     const sh = e.target.closest('[data-share]');
     if (sh) {
       const url = location.origin + location.pathname, title = 'Simulateur BP PLF 2027 : ce que le PLF 2027 change pour toi';
       if (navigator.share) navigator.share({ title, url }).catch(() => { });
-      else if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => { sh.textContent = 'Lien copié'; setTimeout(() => { sh.textContent = 'Partager le simulateur'; }, 2000); });
+      else if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => { const o = sh.textContent; sh.textContent = 'Lien copié'; setTimeout(() => { sh.textContent = o; }, 2000); });
     }
   });
-  $('s-brut').addEventListener('input', () => $('s-brut').closest('.money').classList.remove('bad'));
   // personnes à charge en boutons
   function pills() { document.querySelectorAll('.pills').forEach(g => { const sel = $(g.dataset.for); g.querySelectorAll('button').forEach(b => { const on = b.dataset.v === sel.value; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; }); }); }
   document.querySelectorAll('.pills').forEach(g => {
@@ -1207,7 +1271,17 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
     rub.push(newRub(b.dataset.add)); rubRows(); renderSal();
     const ins = $('s-rub').querySelectorAll('input[data-k="m"]'); if (ins.length) ins[ins.length - 1].focus();
   });
-  route();
+  setProf((location.hash.slice(1).split('/')[0]) || store.get('prof') || 'sal', false);
+  // barre de résultat sur téléphone, tant que le résultat n'est pas à l'écran
+  function peek() {
+    const k = Object.keys(PROFS).find(x => !$(PROFS[x]).hidden) || 'sal', out = $(PROFS[k]).querySelector('.out'), r = out.getBoundingClientRect();
+    const txt = k === 'sal' ? $('s-live').textContent.replace('Estimation en direct : ', 'Gain : ') : k === 'emp' ? $('e-live').textContent.replace('Estimation en direct : ', 'Budget : ') : '';
+    const show = !!txt && r.top > innerHeight - 40 && innerWidth <= 900;
+    $('peek').classList.toggle('on', show); document.body.classList.toggle('peeking', show); $('peek-t').textContent = txt;
+  }
+  $('peek').addEventListener('click', () => { const k = Object.keys(PROFS).find(x => !$(PROFS[x]).hidden) || 'sal'; $(PROFS[k]).querySelector('.out').scrollIntoView({ behavior: 'smooth' }); });
+  addEventListener('scroll', peek, { passive: true }); addEventListener('resize', peek); document.addEventListener('input', () => setTimeout(peek, 0)); document.addEventListener('click', () => setTimeout(peek, 0));
+  setTimeout(peek, 0);
   window.PLF27 = { salaire, irBareme, bulletin, applySlip, posteSlip };
 })();
 </script>
