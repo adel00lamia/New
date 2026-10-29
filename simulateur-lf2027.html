@@ -277,6 +277,39 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 .ai-out ul{margin:0 0 8px;padding-left:20px}
 .ai-out li{margin-bottom:6px}
 .ai-wait{color:var(--muted)}.ai-err{color:var(--warn)}
+.why{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px clamp(18px,5vw,28px);margin:0 0 18px}
+.why:empty{display:none}
+.why h3{margin:0 0 8px;font:600 15px var(--display);color:var(--muted)}
+.w-lead{margin:0 0 14px;font-size:14.5px;max-width:62ch}
+.w-chart{margin:0 0 4px}
+.w-row{display:grid;grid-template-columns:40px minmax(0,1fr);align-items:center;gap:8px;margin-bottom:8px}
+.w-y{font:600 13px var(--display)}
+.w-bar{position:relative;display:flex;height:30px;border-radius:6px;overflow:visible}
+.w-bar i{display:flex;align-items:center;justify-content:center;border-right:2px solid var(--surface);min-width:0}
+.w-bar i:first-child{border-radius:6px 0 0 6px}.w-bar i:last-child{border-radius:0 6px 6px 0;border-right:0}
+.w-bar em{font:600 11.5px var(--body);font-style:normal;white-space:nowrap;overflow:hidden}
+.t0{background:var(--surface2);color:var(--muted)}.t10{background:#DCE6FF;color:#123}.t20{background:#A9C0FF;color:#0B1526}.t25{background:#8CA9FF;color:#0B1526}
+.t30,.t34{background:#5B82F0;color:#fff}.t35,.t37{background:#1652F0;color:#fff}
+.w-me{position:absolute;top:-5px;bottom:-5px;width:3px;margin-left:-1.5px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px var(--surface)}
+.w-ax{position:relative;height:18px;margin-left:48px;font-size:11px;color:var(--muted)}
+.w-ax span{position:absolute;transform:translateX(-50%);white-space:nowrap}.w-ax span:first-child{transform:none}.w-ax span:last-child:not(:first-child){transform:translateX(-100%)}
+.w-cap{display:flex;align-items:center;gap:8px;margin:2px 0 12px;font-size:12.5px;color:var(--muted)}
+.w-dot{display:inline-block;width:3px;height:14px;border-radius:2px;background:var(--ink)}
+.w-zones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.w-zones div{position:relative;border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:3px}
+.w-zones div b{font-size:13.5px}.w-zones div span{color:var(--muted)}
+.w-zones div.on{border-color:var(--primary);background:var(--primary-soft)}
+.w-zones em{position:absolute;top:-9px;right:10px;font:700 11px var(--body);font-style:normal;background:var(--primary);color:var(--primary-ink);padding:1px 8px;border-radius:999px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .t10{background:#1E3366;color:#E8EEF7}:root:not([data-theme="light"]) .t20,:root:not([data-theme="light"]) .t25{background:#2B4C99;color:#E8EEF7}}
+:root[data-theme="dark"] .t10{background:#1E3366;color:#E8EEF7}:root[data-theme="dark"] .t20,:root[data-theme="dark"] .t25{background:#2B4C99;color:#E8EEF7}
+.flash{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.flash div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.flash b{font:700 20px var(--display);letter-spacing:-.01em}.flash span{font-size:13px;color:var(--muted)}
+.dates{list-style:none;margin:0;padding:0 0 0 18px;border-left:2px solid var(--line)}
+.dates li{position:relative;padding:0 0 16px 14px;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.dates li::before{content:"";position:absolute;left:-25px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2.5px solid var(--primary)}
+.dates b{font:600 15px var(--display)}.dates span{color:var(--muted);max-width:60ch}
+@media (max-width:620px){.flash{grid-template-columns:repeat(2,minmax(0,1fr))}.w-zones{grid-template-columns:minmax(0,1fr)}.w-bar em{font-size:10px}}
 @media (prefers-reduced-motion:reduce){.ticket.in{animation:none}}
 @media (max-width:480px){.nav .btn{flex:1}.nav span{display:none}.actions .btn{flex:1 1 45%}}
 .xl-btn::before{content:"";display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-1px;border:2px solid currentColor;border-top:0;border-radius:0 0 2px 2px;box-shadow:inset 0 -5px 0 -3px currentColor}
@@ -346,6 +379,7 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 
     <div class="result" data-step="res" hidden>
       <div id="s-tiles"></div>
+      <div class="why" id="s-why"></div>
       <div class="bd" id="s-bd"></div>
       <div class="cost" id="s-cost"></div>
       <div class="refbox" id="s-ref" hidden></div>
@@ -433,6 +467,26 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
   </section>
 
   <div class="after" id="v-after">
+  <h2 style="margin-top:34px">Les chiffres à retenir</h2>
+  <div class="flash">
+    <div><b>60 000 DH</b><span>de revenu net imposable exonéré dès 2027</span></div>
+    <div><b>45 %</b><span>de déduction forfaitaire pour frais professionnels</span></div>
+    <div><b>35 000 DH</b><span>plafond annuel de cette déduction</span></div>
+    <div><b>500 DH</b><span>de gain mensuel maximal en 2027</span></div>
+    <div><b>30 %</b><span>taux maximal de l'IR en 2031</span></div>
+    <div><b>500 000 DH</b><span>seuil du taux de 30 % en 2031</span></div>
+    <div><b>5 %</b><span>d'avance sur les importations revendues en l'état</span></div>
+    <div><b>60 mois</b><span>durée de cette avance</span></div>
+  </div>
+
+  <h2 style="margin-top:34px">Les dates clés</h2>
+  <ol class="dates">
+    <li><b>1er janvier 2027</b><span>Nouveau barème transitoire et déduction de 45 % pour frais professionnels. IS à 40 % pour les grands distributeurs d'hydrocarbures.</span></li>
+    <li><b>1er juillet 2027</b><span>Avance de 5 % sur les importations revendues en l'état. Option pour la TVA sur la marge des marchands de biens.</span></li>
+    <li><b>2028 à 2030</b><span>Le barème de l'IR baisse chaque année.</span></li>
+    <li><b>1er janvier 2031</b><span>Barème définitif, avec 30 % au-delà de 500 000 DH. Seules les indemnités qui remboursent des frais justifiés restent exonérées.</span></li>
+  </ol>
+
   <h2 style="margin-top:34px" id="explications">Comprendre le calcul</h2>
   <div class="explain">
     <details>
@@ -483,15 +537,19 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
 
   <h2 style="margin-top:34px">Les autres mesures du PLF 2027</h2>
   <div class="measures">
-    <div class="card"><span class="tag">Toutes les entreprises</span><h3>Pas de changement annoncé pour l'IS des PME</h3><p>Aucune modification de l'IS à 20 % et 35 %, de la cotisation minimale ou de la CSS n'est rapportée. Seuls les importateurs et distributeurs d'hydrocarbures dont le bénéfice atteint 100 MDH passeraient à 40 %.</p></div>
-    <div class="card"><span class="tag">Secteur informel</span><h3>Régularisation sans pénalité en 2027</h3><p>Un exploitant informel qui s'inscrit à la taxe professionnelle en 2027 n'est imposé qu'à partir de son inscription, sans poursuites pour les années passées.</p></div>
-    <div class="card"><span class="tag">Fournisseurs</span><h3>Remboursement de la TVA retenue en trop</h3><p>Quand la TVA retenue à la source dépasse la TVA réellement due, l'excédent devient remboursable sur demande.</p></div>
-    <div class="card"><span class="tag">Salariés et employeurs</span><h3>Indemnités : seules les dépenses justifiées restent exonérées</h3><p>Les indemnités forfaitaires versées chaque mois (transport, représentation, panier, déplacement) deviennent imposables comme du salaire avec le barème de 2031. Seuls les remboursements de frais justifiés restent exonérés. Le bulletin de paie du parcours salarié le montre rubrique par rubrique.</p></div>
-    <div class="card"><span class="tag">Particuliers</span><h3>Voitures de luxe et cigarettes électroniques</h3><p>Le droit de timbre sur les voitures de plus de 400 000 DH passe de 5–20 % à 6–24 %. La taxe sur les cigarettes électroniques double, de 50 à 100 DH par unité.</p></div>
-    <div class="card"><span class="tag">Immobilier</span><h3>TVA sur la marge pour les marchands de biens</h3><p>Les professionnels qui achètent des immeubles bâtis pour les revendre pourront opter pour une TVA calculée sur leur marge.</p></div>
+    <div class="card"><span class="tag">Grandes entreprises</span><h3>IS à 40 % pour les distributeurs d'hydrocarbures</h3><p>Le taux de 40 % s'étend aux sociétés d'importation ou de distribution d'hydrocarbures dont le bénéfice net atteint 100 MDH, pour les exercices ouverts à partir du 1er janvier 2027. Aucune modification de l'IS des PME n'est annoncée.</p></div>
+    <div class="card"><span class="tag">Importateurs</span><h3>Avance de 5 % en douane</h3><p>À partir du 1er juillet 2027, les importateurs de marchandises revendues en l'état paient une avance de 5 % de la valeur en douane pendant 60 mois. Elle se déduit de l'IS ou de l'IR, et l'excédent est restitué. Le parcours « J'importe pour revendre » la calcule.</p></div>
+    <div class="card"><span class="tag">Salariés et employeurs</span><h3>Indemnités : seuls les frais justifiés restent exonérés</h3><p>À partir des revenus de 2031, les indemnités versées de façon permanente deviennent un complément de salaire imposable. Seuls les remboursements de frais réels et justifiés restent exonérés. Le bulletin du parcours salarié le montre rubrique par rubrique.</p></div>
+    <div class="card"><span class="tag">Fournisseurs</span><h3>Restitution de la TVA retenue en trop</h3><p>Quand la TVA retenue à la source dépasse la TVA due, l'excédent est restitué au fournisseur sur demande, après la fin du trimestre.</p></div>
+    <div class="card"><span class="tag">Immobilier</span><h3>TVA sur la marge pour les marchands de biens</h3><p>À partir du 1er juillet 2027, les marchands d'immeubles bâtis peuvent opter pour une TVA calculée sur leur marge. La TVA sur les travaux de rénovation reste déductible, celle sur l'achat ne l'est pas.</p></div>
+    <div class="card"><span class="tag">Particuliers</span><h3>Timbre des voitures neuves</h3><p>Le droit de timbre à la première immatriculation est de 6 % entre 400 000 et 600 000 DH HT, 12 % jusqu'à 800 000 DH, 18 % jusqu'à 1 000 000 DH et 24 % au-delà.</p></div>
+    <div class="card"><span class="tag">Épargnants</span><h3>Plus-values mobilières déclarées à chaque cession</h3><p>À partir du 1er janvier 2027, chaque cession de valeurs mobilières se déclare et se paie dans le mois qui suit l'opération.</p></div>
+    <div class="card"><span class="tag">Consommation</span><h3>Tabac et cigarette électronique</h3><p>La taxe sur les cigarettes augmente chaque année de 2027 à 2031. La cigarette électronique est taxée à 100 DH par unité.</p></div>
+    <div class="card"><span class="tag">Secteur informel</span><h3>Régularisation sans pénalité</h3><p>Un exploitant qui s'inscrit à la taxe professionnelle en 2027 n'est imposé que sur les revenus acquis à partir de son inscription.</p></div>
+    <div class="card"><span class="tag">Régions et Mondial 2030</span><h3>Recettes des régions et régime du Mondial</h3><p>5 % de l'IS et 5 % de l'IR sont affectés aux régions en 2027. Un régime d'exonération est prévu pour la FIFA, les fédérations, les diffuseurs et les prestataires du Mondial 2030.</p></div>
   </div>
 
-  <p class="src">Sources : <a href="https://fr.le360.ma/economie/reforme-de-lir-les-nouveaux-baremes-de-2027-a-2030-etape-par-etape-vers-un-taux-maximal-de-30_IV4K3SYWDRFLTKETNA4TORQQOY/" target="_blank" rel="noopener">Le360, barèmes 2027-2030</a>, <a href="https://auditcloud.ma/2026/10/23/projet-de-loi-de-finances-2027-les-principales-mesures-a-retenir/" target="_blank" rel="noopener">AuditCloud, barème 2031 et avance à l'import</a>, <a href="https://medias24.com/2026/10/23/plf2027-ir-is-tva-voici-les-principales-mesures-fiscales-proposes-par-le-gouvernement-mansouri-1783297/" target="_blank" rel="noopener">Médias24, mesures fiscales</a>, <a href="https://lematin.ma/economie/plf-2027-voici-les-principales-dispositions-fiscales-et-douanieres/371991" target="_blank" rel="noopener">Le Matin, dispositions fiscales et douanières</a>. Barème 2026 et cotisations : règles en vigueur (LF 2025 et LF 2026). Plafonds des indemnités : note de la DGI sur l'article 57 du CGI (2017, présentée par <a href="https://forvismazars.com/ma/fr/content/download/903328/file/01%20MAZARS_Clarification%20R%C3%A9gles%20fiscales%20IR.pdf" target="_blank" rel="noopener">Forvis Mazars</a>) et arrêté CNSS publié au BO n° 7443 du 29 septembre 2025 (<a href="https://fr.le360.ma/economie/nouvelles-regles-de-la-securite-sociale-le-detail-des-indemnites-exonerees_DHSK2LSVTVAERKAETHYJDBIZOQ/" target="_blank" rel="noopener">Le360</a>). Déduction de 45 % dès 2027 : <a href="https://fr.le360.ma/politique/exclusif-une-reforme-historique-de-limpot-sur-le-revenu-ce-qui-va-changer-pour-les-salaries-des-2027_UBLXPQPXLNEUZLLXYXQQXJ3GE4/" target="_blank" rel="noopener">Le360</a> et <a href="https://actionfinance.ma/bareme-ir-2027/" target="_blank" rel="noopener">Action Finance</a>. Simulation mise à jour le 27 octobre 2026.</p>
+  <p class="src">Sources : <a href="https://fr.le360.ma/economie/reforme-de-lir-les-nouveaux-baremes-de-2027-a-2030-etape-par-etape-vers-un-taux-maximal-de-30_IV4K3SYWDRFLTKETNA4TORQQOY/" target="_blank" rel="noopener">Le360, barèmes 2027-2030</a>, <a href="https://auditcloud.ma/2026/10/23/projet-de-loi-de-finances-2027-les-principales-mesures-a-retenir/" target="_blank" rel="noopener">AuditCloud, barème 2031 et avance à l'import</a>, <a href="https://medias24.com/2026/10/23/plf2027-ir-is-tva-voici-les-principales-mesures-fiscales-proposes-par-le-gouvernement-mansouri-1783297/" target="_blank" rel="noopener">Médias24, mesures fiscales</a>, <a href="https://lematin.ma/economie/plf-2027-voici-les-principales-dispositions-fiscales-et-douanieres/371991" target="_blank" rel="noopener">Le Matin, dispositions fiscales et douanières</a>. Barème 2026 et cotisations : règles en vigueur (LF 2025 et LF 2026). Plafonds des indemnités : note de la DGI sur l'article 57 du CGI (2017, présentée par <a href="https://forvismazars.com/ma/fr/content/download/903328/file/01%20MAZARS_Clarification%20R%C3%A9gles%20fiscales%20IR.pdf" target="_blank" rel="noopener">Forvis Mazars</a>) et arrêté CNSS publié au BO n° 7443 du 29 septembre 2025 (<a href="https://fr.le360.ma/economie/nouvelles-regles-de-la-securite-sociale-le-detail-des-indemnites-exonerees_DHSK2LSVTVAERKAETHYJDBIZOQ/" target="_blank" rel="noopener">Le360</a>). Déduction de 45 % dès 2027 : <a href="https://fr.le360.ma/politique/exclusif-une-reforme-historique-de-limpot-sur-le-revenu-ce-qui-va-changer-pour-les-salaries-des-2027_UBLXPQPXLNEUZLLXYXQQXJ3GE4/" target="_blank" rel="noopener">Le360</a> et <a href="https://actionfinance.ma/bareme-ir-2027/" target="_blank" rel="noopener">Action Finance</a>. Autres mesures : synthèse fiscale du PLF n° 60.26 par Ouhida Ahmed, fiscaliste. Simulation mise à jour le 29 octobre 2026.</p>
   </div>
 </main>
 
@@ -747,6 +805,26 @@ th{text-transform:none!important;letter-spacing:0!important;font-size:12.5px!imp
       const J = bulletin(st, 2031, 2031, true);
       const eff = [['Nouveau barème et déduction de 45 %', B.net - A.net], ['Indemnités forfaitaires imposées', C.net - B.net], ['Non-cumul de la déduction avec les indemnités exonérées', D.net - C.net]].filter((x, k) => k === 0 || Math.abs(x[1]) > 0.5);
       const conv = J.net - D.net;
+      // Pourquoi ce gain en 2027 : barème et déduction, avec le revenu de l'utilisateur placé sur les deux barèmes
+      {
+        const b26 = bulletin(st, 2026), b27 = bulletin(st, 2027), s26 = b26.sni * 12, s27 = b27.sni * 12;
+        const fam = Math.min(+st.dep || 0, FAM.max) * FAM.per;
+        const irY = (sni, y) => Math.max(0, irBareme(sni, y) - fam) / 12;
+        const gBar = irY(s26, 2026) - irY(s26, 2027), gFp = irY(s26, 2027) - irY(s27, 2027);
+        const maxX = Math.max(120000, Math.min(260000, Math.ceil(Math.max(s26, s27) * 1.15 / 20000) * 20000));
+        const seg = y => { let lo = 0; return BAREME[y].map(([hi, t]) => { const a = lo, b = Math.min(hi, maxX); lo = hi; return b > a ? { a, b, t, open: hi > maxX } : null; }).filter(Boolean); };
+        const row = (y, sni) => `<div class="w-row"><span class="w-y">${y}</span><div class="w-bar">${seg(y).map(x => `<i class="t${Math.round(x.t * 100)}" style="width:${((x.b - x.a) / maxX * 100).toFixed(3)}%"><em>${Math.round(x.t * 100)} %${x.open ? ' →' : ''}</em></i>`).join('')}<b class="w-me" style="left:${Math.min(99.5, sni / maxX * 100).toFixed(2)}%" title="Ton revenu net imposable : ${dh(sni)} par an"></b></div></div>`;
+        const ticks = [0, 40000, 60000, 80000, 100000, 150000, 200000, 250000].filter(v => v <= maxX).map(v => `<span style="left:${(v / maxX * 100).toFixed(2)}%">${v ? nf0.format(v / 1000) + ' k' : '0'}</span>`).join('');
+        const zone = s27 < 60000 ? 0 : s27 <= 100000 ? 1 : 2;
+        const Z = [['Moins de 60 000 DH', "Plus aucun IR dès 2027"], ['De 60 000 à 100 000 DH', 'Un gain partiel, moins de 500 DH par mois'], ['Plus de 100 000 DH', 'Un gain plafonné à 500 DH par mois, pour tous']];
+        $('s-why').innerHTML = st.base > 0 ? `<h3>Pourquoi ce gain en 2027 ?</h3>
+          <p class="w-lead">Ton revenu net imposable est de <b>${dh(s26)}</b> par an en 2026. En 2027, le barème ne change qu'entre 40 000 et 100 000 DH, et la déduction forfaitaire passe à 45 %.${b26.ir < 0.5 ? ' Tu ne paies déjà pas d\'IR aujourd\'hui, donc la réforme ne change pas ton net.' : ''}</p>
+          <div class="w-chart" aria-hidden="true">${row(2026, s26)}${row(2027, s27)}<div class="w-ax">${ticks}</div></div>
+          <p class="w-cap"><b class="w-dot"></b> ton revenu net imposable sur chaque barème</p>
+          <ul class="bd-l"><li><span>Nouveau barème</span><b class="${gBar > 0.5 ? 'pos' : ''}">${sgn(gBar)} par mois</b></li><li><span>Déduction de 45 % au lieu de ${Math.round(b26.fpRate * 100)} %</span><b class="${gFp > 0.5 ? 'pos' : ''}">${sgn(gFp)} par mois</b></li></ul>
+          <div class="w-zones">${Z.map((z, k) => `<div class="${k === zone ? 'on' : ''}"><b>${z[0]}</b><span>${z[1]}</span>${k === zone ? '<em>Toi</em>' : ''}</div>`).join('')}</div>
+          <p class="bd-note">Les zones portent sur le revenu net imposable annuel de 2027, après cotisations et déduction forfaitaire.</p>` : '';
+      }
       AIDATA.s = { salaire_base: st.base, personnes_a_charge: st.dep, affilie_cnss: st.cnss, prime_anciennete_taux: base.anc, retenues_cimr_mutuelle: st.ret, lecture_non_cumul_2031: st.nc,
         rubriques: base.lines.filter(l => l.m > 0).map(l => ({ type: l.c.l, montant: l.m, justifiee: !!(l.r.just || l.c.always), part_imposable_2026: l.impIR, part_soumise_cnss: l.cnssSub })),
         net: { '2026': base.net, '2027': r[1].net, '2031': r[5].net }, ir: { '2026': base.ir, '2027': r[1].ir, '2031': r[5].ir },
