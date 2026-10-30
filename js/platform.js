@@ -122,6 +122,8 @@ function printDoc() {
 /* ---------- auth screen ---------- */
 let authMode = 'login', authMsg = '';
 function renderLanding() {
+  if (/inscription/.test(location.hash)) { authMode = 'signup'; return renderAuth(); }
+  if (/demo/.test(location.hash) && typeof startDemo === 'function') { try { history.replaceState(null, '', location.pathname); } catch (e) { } return startDemo(); }
   if (typeof PBLanding === 'undefined' || /connexion|reset/.test(location.hash)) return renderAuth();
   PBLanding.render(); show('landing'); window.scrollTo(0, 0);
 }

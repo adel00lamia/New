@@ -6,11 +6,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || 'https://jecydmxekdorycgfwtwy.s
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sb_publishable_a-ccau1Xus1RmybrNV6xBg_P59YAdfS';
 const MAX = Math.max(1, Math.min(50, parseInt(process.env.PLF_CHAT_MAX || '5', 10)));
 
-function allowed(origin) {
-  if (!origin) return false;
-  const extra = (process.env.PAIE_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
-  return extra.includes(origin) || /^https:\/\/(planbiz|[a-z0-9-]*simulateur[a-z0-9-]*|[a-z0-9-]*plf[a-z0-9-]*|[a-z0-9-]+-la-s-projects3)\.vercel\.app$/.test(origin);
-}
+const { allowed, readBody } = require('./_origins');
 
 const RULES = `Règles du projet de loi de finances 2027 du Maroc (PLF, présenté le 23 octobre 2026, pas encore voté), telles qu'utilisées par le simulateur :
 - Barème IR annuel 2026 : 0 % jusqu'à 40 000 DH, 10 % jusqu'à 60 000, 20 % jusqu'à 80 000, 30 % jusqu'à 100 000, 34 % jusqu'à 180 000, 37 % au-delà.
@@ -63,42 +59,60 @@ module.exports = async function handler(req, res) {
   const auth = req.headers.authorization || '';
   if (!auth.startsWith('Bearer ') || auth.length < 20) { res.status(401).json({ error: 'Connecte-toi pour poser une question.' }); return; }
 
-  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+  const body = readBody(req);
+  if (!body) { res.status(400).json({ error: 'Requête invalide.' }); return; }
 
-  // 1) questions restantes (lecture seule)
+  // 1) questions restantes (lecture seule) : toute réponse inattendue bloque l'accès
   let left;
-  try { const r = await rpc('plf_chat_left', { p_max: MAX }, auth); if (!r.auth || r.v < 0) { res.status(401).json({ error: 'Session expirée : reconnecte-toi.' }); return; } left = r.v; }
-  catch (e) { res.status(502).json({ error: 'Vérification du compte impossible.' }); return; }
+  try {
+    const r = await rpc('plf_chat_left', { p_max: MAX }, auth);
+    if (!r.auth || r.v === -1) { res.status(401).json({ error: 'Session expirée : reconnecte-toi.' }); return; }
+    if (!Number.isInteger(r.v)) { res.status(502).json({ error: 'Vérification du compte impossible.' }); return; }
+    left = r.v;
+  } catch (e) { res.status(502).json({ error: 'Vérification du compte impossible.' }); return; }
   if (body.check) { res.status(200).json({ left, max: MAX }); return; }
   if (left <= 0) { res.status(429).json({ error: `Tu as utilisé tes ${MAX} questions.`, left: 0, max: MAX }); return; }
   if (!process.env.ANTHROPIC_API_KEY) { res.status(503).json({ error: 'Assistant indisponible pour le moment.' }); return; }
 
-  const messages = (Array.isArray(body.messages) ? body.messages : []).slice(-10)
+  // historique court : 3 échanges au plus, réponses précédentes tronquées
+  const messages = (Array.isArray(body.messages) ? body.messages : []).slice(-7)
     .filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
-    .map(m => ({ role: m.role, content: m.content.slice(0, m.role === 'user' ? 1500 : 4000) }));
+    .map(m => ({ role: m.role, content: m.content.slice(0, m.role === 'user' ? 1500 : 1500) }));
   while (messages.length && messages[0].role !== 'user') messages.shift();
   if (!messages.length || messages[messages.length - 1].role !== 'user' || !messages[messages.length - 1].content.trim()) { res.status(400).json({ error: 'Question vide.' }); return; }
+
+  // 2) réservation : une seule question à la fois par compte, la place est rendue si l'IA échoue
+  let nonce;
+  try {
+    const r = await rpc('begin_plf_chat', { p_max: MAX }, auth);
+    const v = r.v || {};
+    if (!r.auth || v.left === -1) { res.status(401).json({ error: 'Session expirée : reconnecte-toi.' }); return; }
+    if (v.left === 0) { res.status(429).json({ error: `Tu as utilisé tes ${MAX} questions.`, left: 0, max: MAX }); return; }
+    if (v.busy) { res.status(429).json({ error: 'Une question est déjà en cours. Attends sa réponse.', left: v.left, max: MAX }); return; }
+    if (!v.nonce) { res.status(502).json({ error: 'Vérification du compte impossible.' }); return; }
+    nonce = v.nonce; left = v.left;
+  } catch (e) { res.status(502).json({ error: 'Vérification du compte impossible.' }); return; }
+  const finish = async ok => { try { const r = await rpc('end_plf_chat', { p_nonce: nonce, p_ok: ok, p_max: MAX }, auth); return Number.isInteger(r.v) && r.v >= 0 ? r.v : (ok ? left - 1 : left); } catch (e) { return ok ? left - 1 : left; } };
   const profil = ['salarie', 'employeur', 'importateur'].includes(body.profil) ? body.profil : 'salarie';
   const ctx = JSON.stringify(clean(body.context || {})).slice(0, 10000);
 
-  // 2) réponse de l'IA
+  // 3) réponse de l'IA
   const up = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
       model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5',
-      max_tokens: 2000,
+      max_tokens: 1500,
       system: `${SYSTEM}\n\nProfil de l'utilisateur : ${profil}.\nRésultats de sa simulation en cours (montants en DH, mensuels sauf mention « an ») :\n${ctx}`,
       messages
     })
   }).catch(() => null);
-  if (!up || !up.ok) { const t = up ? (await up.text().catch(() => '')).slice(0, 200) : 'réseau'; console.error('plf-chat', up && up.status, t); res.status(502).json({ error: 'La réponse a échoué. Ta question n’a pas été décomptée, réessaie dans un instant.', left, max: MAX }); return; }
+  if (!up || !up.ok) { const t = up ? (await up.text().catch(() => '')).slice(0, 200) : 'réseau'; console.error('plf-chat', up && up.status, t); const l = await finish(false); res.status(502).json({ error: 'La réponse a échoué. Ta question n’a pas été décomptée, réessaie dans un instant.', left: l, max: MAX }); return; }
   const out = await up.json().catch(() => null);
   const text = out && Array.isArray(out.content) ? out.content.filter(c => c.type === 'text').map(c => c.text).join('').trim() : '';
-  if (!text) { res.status(502).json({ error: 'La réponse a échoué. Ta question n’a pas été décomptée.', left, max: MAX }); return; }
+  if (!text) { const l = await finish(false); res.status(502).json({ error: 'La réponse a échoué. Ta question n’a pas été décomptée.', left: l, max: MAX }); return; }
 
-  // 3) la question n'est décomptée qu'une fois la réponse obtenue
-  let after = left - 1;
-  try { const r = await rpc('consume_plf_chat', { p_max: MAX }, auth); if (r.auth && typeof r.v === 'number' && r.v >= 0) after = r.v; else if (r.v === -1) after = 0; } catch (e) { }
+  // 4) la question est décomptée une fois la réponse obtenue
+  const after = await finish(true);
   res.status(200).json({ text: text.slice(0, 6000), left: after, max: MAX });
 };

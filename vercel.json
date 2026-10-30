@@ -49,6 +49,10 @@
     {
       "source": "/simulateur-bp-plf2027",
       "destination": "/simulateur-lf2027.html"
+    },
+    {
+      "source": "/plf2027",
+      "destination": "/plf2027.html"
     }
   ]
 }

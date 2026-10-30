@@ -465,7 +465,7 @@ body.chatting .chat-fab{display:none}
 <main id="app">
 
   <section class="band">
-    <header class="brandbar band-top"><a class="brand" href="https://planbiz.vercel.app" target="_blank" rel="noopener"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="17" width="5" height="9" rx="1" fill="currentColor" opacity=".55"/><rect x="13.5" y="11" width="5" height="15" rx="1" fill="currentColor" opacity=".8"/><rect x="21" y="5" width="5" height="21" rx="1" fill="currentColor"/></svg></span><b>PlanBiz</b></a><span class="ptitle">Simulateur BP PLF 2027</span><a class="cta" href="https://planbiz.vercel.app" target="_blank" rel="noopener"><span class="cta-l">Créer mon business plan</span><span class="cta-s">Mon BP</span></a></header>
+    <header class="brandbar band-top"><a class="brand" href="https://planbiz.vercel.app" target="_blank" rel="noopener"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="17" width="5" height="9" rx="1" fill="currentColor" opacity=".55"/><rect x="13.5" y="11" width="5" height="15" rx="1" fill="currentColor" opacity=".8"/><rect x="21" y="5" width="5" height="21" rx="1" fill="currentColor"/></svg></span><b>PlanBiz</b></a><span class="ptitle">Simulateur BP PLF 2027</span><a class="cta" href="https://planbiz.vercel.app/#inscription" target="_blank" rel="noopener"><span class="cta-l">Créer mon business plan</span><span class="cta-s">Mon BP</span></a></header>
     <div class="band-in">
       <p class="eyebrow"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" rx="2" fill="#C1272D"/><path d="M15 5.2l1.76 5.43h-4.6l3.72 2.7-1.42 4.37" fill="none" stroke="#006233" stroke-width="1.1" stroke-linejoin="round"/><path d="M15 5.2l-1.76 5.43h4.6l-3.72 2.7 1.42 4.37" fill="none" stroke="#006233" stroke-width="1.1" stroke-linejoin="round"/></svg>Maroc · Projet de loi de finances 2027</p>
       <h1>Ce que le PLF 2027 change pour toi</h1>
@@ -526,7 +526,7 @@ body.chatting .chat-fab{display:none}
         <button type="button" class="btn ghost xl-btn" data-xl="sal">Excel</button>
         <button type="button" class="btn ghost" data-share>Partager</button>
       </div>
-      <div class="ai" data-aibox="s" hidden><button type="button" class="btn ai-btn" data-ai="s">Analyse et recommandations</button><p class="ai-note">L'IA reçoit seulement les montants calculés. Rien n'est conservé.</p><div class="ai-out" id="s-ai" aria-live="polite"></div></div>
+      <div class="ai" data-aibox="s" hidden><button type="button" class="btn ai-btn" data-ai="s">Analyse et recommandations</button><p class="ai-note">L'IA reçoit seulement les montants calculés. PlanBiz ne les conserve pas.</p><div class="ai-out" id="s-ai" aria-live="polite"></div></div>
       <div class="dtabs" role="tablist" aria-label="Détails">
         <button type="button" role="tab" data-tab="s-why-p" aria-selected="true">Pourquoi ce gain</button>
         <button type="button" role="tab" data-tab="s-years-p">Année par année</button>
@@ -579,7 +579,7 @@ body.chatting .chat-fab{display:none}
         <button type="button" class="btn ghost xl-btn" data-xl="emp">Excel</button>
         <button type="button" class="btn ghost" data-share>Partager</button>
       </div>
-      <div class="ai" data-aibox="e" hidden><button type="button" class="btn ai-btn" data-ai="e">Analyse et recommandations</button><p class="ai-note">L'IA reçoit seulement les montants calculés. Rien n'est conservé.</p><div class="ai-out" id="e-ai" aria-live="polite"></div></div>
+      <div class="ai" data-aibox="e" hidden><button type="button" class="btn ai-btn" data-ai="e">Analyse et recommandations</button><p class="ai-note">L'IA reçoit les postes, effectifs et montants saisis. PlanBiz ne les conserve pas.</p><div class="ai-out" id="e-ai" aria-live="polite"></div></div>
       <div class="dtabs" role="tablist" aria-label="Détails">
         <button type="button" role="tab" data-tab="e-bd-p" aria-selected="true">Coûts et avantages</button>
         <button type="button" role="tab" data-tab="e-detail-p">Par poste</button>
@@ -893,7 +893,7 @@ body.chatting .chat-fab{display:none}
   // ---------- import d'un bulletin ----------
   let ref = null;
   const API = location.hostname === 'planbiz.vercel.app' ? '/api/paie-lire' : 'https://planbiz.vercel.app/api/paie-lire';
-  const canImport = location.protocol === 'file:' || /^(planbiz|[a-z0-9-]*simulateur[a-z0-9-]*|[a-z0-9-]*plf[a-z0-9-]*|[a-z0-9-]+-la-s-projects3)\.vercel\.app$/.test(location.hostname) || location.hostname === 'localhost';
+  const canImport = location.protocol === 'file:' || /^(planbiz|new-simulateur)(-git-[a-z0-9-]+-la-s-projects3|-[a-z0-9]{9}-la-s-projects3)?\.vercel\.app$/.test(location.hostname) || location.hostname === 'localhost';
   const impMsg = (t, err) => { const m = $('s-imp-msg'); m.textContent = t; m.className = 'impmsg' + (err ? ' err' : ''); };
   function readB64(file) { return new Promise((ok, ko) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1]); fr.onerror = ko; fr.readAsDataURL(file); }); }
   async function shrink(file) {
@@ -1251,6 +1251,7 @@ body.chatting .chat-fab{display:none}
     if (hi < 0) throw new Error('vide');
     const m = mapHeader(rows[hi]);
     if (m.b === undefined) throw new Error('base');
+    if (rows.length - hi - 1 > 10000) throw new Error('trop');
     const out = new Map();
     rows.slice(hi + 1).forEach(r => {
       if (!r) return; const b = numv(r[m.b]); if (!(b > 0)) return;
@@ -1267,6 +1268,7 @@ body.chatting .chat-fab{display:none}
     });
     const list = [...out.values()];
     if (!list.length) throw new Error('lignes');
+    if (list.length > 500) throw new Error('profils');
     if (list.length > 40) list.forEach(e => { if (!e.l) e.l = 'Profil'; });
     return { list, found: Object.keys(m) };
   }
@@ -1284,7 +1286,7 @@ body.chatting .chat-fab{display:none}
       const ind = found.filter(k => CAT[k] || k === 'transport750').length;
       msg(`${nf0.format(heads)} salarié${heads > 1 ? 's' : ''} importé${heads > 1 ? 's' : ''}${emp.length < heads ? `, regroupés en ${nf0.format(emp.length)} profils` : ''}. ${ind ? `${ind} colonne${ind > 1 ? 's' : ''} d'indemnités reconnue${ind > 1 ? 's' : ''}.` : 'Aucune colonne d’indemnité reconnue.'}${found.includes('dep') ? ' Les personnes à charge du fichier sont utilisées.' : ''}`);
     } catch (err) {
-      const why = { base: "La colonne « Salaire de base » est introuvable. Télécharge le modèle pour voir les colonnes attendues.", lignes: "Aucune ligne avec un salaire de base n'a été trouvée.", vide: 'Le fichier est vide.' }[err && err.message];
+      const why = { base: "La colonne « Salaire de base » est introuvable. Télécharge le modèle pour voir les colonnes attendues.", lignes: "Aucune ligne avec un salaire de base n'a été trouvée.", vide: 'Le fichier est vide.', trop: 'Le fichier dépasse 10 000 lignes. Découpe-le ou regroupe les salariés par poste.', profils: 'Le fichier donne plus de 500 profils différents. Regroupe les salariés par poste avec une colonne Effectif.' }[err && err.message];
       msg(why || "Ce fichier n'a pas pu être lu. Utilise un fichier Excel (.xlsx) ou CSV.", true);
     } finally { $('e-file').value = ''; }
   }
@@ -1382,7 +1384,7 @@ body.chatting .chat-fab{display:none}
     <div class="chat-sugg" id="chat-sugg"><button type="button">Mes indemnités seront-elles imposées ?</button><button type="button">Pourquoi mon net augmente en 2027 ?</button><button type="button">Comment marche le non-cumul de 2031 ?</button></div>
   </div>
   <form class="chat-f" id="chat-f"><textarea id="chat-in" rows="2" maxlength="1500" placeholder="Écris ta question…" aria-label="Ta question"></textarea><button type="submit" class="btn pri" id="chat-go">Envoyer</button></form>
-  <p class="chat-note">Tes questions ne sont pas conservées. Les montants de ta simulation sont envoyés avec la question.</p>
+  <p class="chat-note">PlanBiz ne conserve pas tes questions. Les montants de ta simulation sont envoyés avec la question.</p>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>

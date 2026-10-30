@@ -11,11 +11,7 @@ const crypto = require('crypto');
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://jecydmxekdorycgfwtwy.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sb_publishable_a-ccau1Xus1RmybrNV6xBg_P59YAdfS';
 
-function allowed(origin) {
-  if (!origin) return false;
-  const extra = (process.env.PAIE_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
-  return extra.includes(origin) || /^https:\/\/(planbiz|[a-z0-9-]*simulateur[a-z0-9-]*|[a-z0-9-]*plf[a-z0-9-]*|[a-z0-9-]+-la-s-projects3)\.vercel\.app$/.test(origin);
-}
+const { allowed, readBody, quotaHeaders, pdfPages } = require('./_origins');
 
 const RULES = `Règles utilisées par le simulateur (projet de loi de finances 2027 du Maroc, pas encore voté) :
 - Barème IR annuel 2026 : 0 % jusqu'à 40 000 DH, 10 % jusqu'à 60 000, 20 % jusqu'à 80 000, 30 % jusqu'à 100 000, 34 % jusqu'à 180 000, 37 % au-delà. 2027 : 0 % jusqu'à 60 000, 10 % jusqu'à 80 000, 20 % jusqu'à 100 000, 34 % jusqu'à 180 000, 37 % au-delà. Barème cible 2031 : 0 % jusqu'à 60 000, 10 % jusqu'à 150 000, 20 % jusqu'à 500 000, 30 % au-delà.
@@ -57,7 +53,8 @@ module.exports = async function handler(req, res) {
   if (origin && !allowed(origin)) { res.status(403).json({ error: 'Origine non autorisée.' }); return; }
   if (!process.env.ANTHROPIC_API_KEY) { res.status(503).json({ error: 'Analyse indisponible pour le moment.' }); return; }
 
-  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+  const body = readBody(req);
+  if (!body) { res.status(400).json({ error: 'Requête invalide.' }); return; }
   const profil = body.profil === 'employeur' ? 'employeur' : body.profil === 'salarie' ? 'salarie' : '';
   if (!profil || !body.data || typeof body.data !== 'object') { res.status(400).json({ error: 'Données manquantes.' }); return; }
   const data = clean(body.data);
@@ -68,7 +65,7 @@ module.exports = async function handler(req, res) {
   const who = crypto.createHash('sha256').update((process.env.PAIE_SALT || 'planbiz-paie') + '|' + ip).digest('hex').slice(0, 32);
   try {
     const q = await fetch(`${SUPABASE_URL}/rest/v1/rpc/consume_anon_quota`, {
-      method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_KEY },
+      method: 'POST', headers: quotaHeaders(SUPABASE_KEY),
       body: JSON.stringify({ p_kind: 'analyse', p_who: who, p_max: parseInt(process.env.ANALYSE_DAILY_LIMIT || '5', 10), p_global: parseInt(process.env.ANALYSE_GLOBAL_LIMIT || '500', 10) })
     });
     if ((await q.json()) !== true) { res.status(429).json({ error: 'Limite d’analyses atteinte pour aujourd’hui. Réessaie demain.' }); return; }

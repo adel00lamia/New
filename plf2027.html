@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PLF 2027 Maroc : combien tu gagnes vraiment | PlanBiz</title>
+<meta name="description" content="Simule gratuitement l'effet du projet de loi de finances 2027 du Maroc sur ton salaire net, ta masse salariale ou tes importations. Puis construis ton business plan chiffré avec PlanBiz.">
+<meta property="og:title" content="PLF 2027 Maroc : combien tu gagnes vraiment ?">
+<meta property="og:description" content="Ton nouveau salaire net en 2 minutes, le coût de ton équipe jusqu'en 2031, et un business plan complet quand tu es prêt.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://planbiz.vercel.app/plf2027">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230A2540'/%3E%3Crect x='7' y='17' width='4.5' height='8' rx='1' fill='%23fff' opacity='.55'/%3E%3Crect x='13.75' y='12' width='4.5' height='13' rx='1' fill='%23fff' opacity='.8'/%3E%3Crect x='20.5' y='7' width='4.5' height='18' rx='1' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#F4F6FA;--surface:#FFFFFF;--surface2:#EEF2F8;--ink:#0B1B2E;--muted:#55657C;--line:#DDE3EC;--primary:#1652F0;--primary-soft:#E7EEFF;--navy:#0A2540;--navy2:#12304F;--navy-ink:#C7D3E3;--good:#0E8A5F;--good-soft:#E3F5EE;--warn:#A85F0B;
+--display:"Instrument Sans","IBM Plex Sans",system-ui,sans-serif;--body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1220;--surface:#101B2D;--surface2:#16233A;--ink:#E8EEF7;--muted:#9AA9C0;--line:#24344F;--primary:#5B8CFF;--primary-soft:#172A52;--navy:#0B1626;--navy2:#12213A;--good:#3CC48D;--good-soft:#0F2E24;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0A1220;--surface:#101B2D;--surface2:#16233A;--ink:#E8EEF7;--muted:#9AA9C0;--line:#24344F;--primary:#5B8CFF;--primary-soft:#172A52;--navy:#0B1626;--navy2:#12213A;--good:#3CC48D;--good-soft:#0F2E24;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:inherit}
+img,svg{display:block}
+.in{max-width:1120px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.02em;margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:13px 20px;font:600 15.5px var(--body);text-decoration:none;border:1.5px solid transparent;cursor:pointer;white-space:nowrap;transition:transform .15s,background .15s,border-color .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn.pri{background:var(--primary);color:#fff}
+.btn.pri:hover{background:#0F45D4}
+.btn.ghost{border-color:currentColor;color:inherit;background:transparent}
+.btn.light{background:#fff;color:#0A2540}
+.btn:focus-visible{outline:3px solid #8FB0FF;outline-offset:2px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 12.5px var(--body);letter-spacing:.08em;text-transform:uppercase}
+.flag{width:21px;height:14px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.25)}
+
+/* en-tête */
+.top{background:var(--navy);color:#fff}
+.bar{display:flex;align-items:center;gap:14px;padding-top:18px;padding-bottom:18px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font:700 18px var(--display)}
+.logo{width:32px;height:32px;border-radius:8px;background:#fff;color:#0A2540;display:grid;place-items:center}
+.logo svg{width:20px;height:20px}
+.bar nav{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:14.5px}
+.bar nav a{text-decoration:none;color:var(--navy-ink)}
+.bar nav a:hover{color:#fff}
+.bar .btn{padding:9px 14px;font-size:14px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center;padding-top:44px;padding-bottom:84px}
+.hero .eyebrow{color:var(--navy-ink);margin-bottom:16px}
+.hero h1{font-size:clamp(34px,5.6vw,58px);line-height:1.04;font-weight:700;margin-bottom:18px}
+.hero h1 em{font-style:normal;color:#7FD8B4}
+.hero .lead{color:var(--navy-ink);font-size:18px;max-width:52ch;margin:0 0 28px}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.reassure{display:flex;flex-wrap:wrap;gap:6px 18px;margin:20px 0 0;padding:0;list-style:none;font-size:13.5px;color:var(--navy-ink)}
+.reassure li::before{content:"✓";color:#7FD8B4;font-weight:700;margin-right:6px}
+
+/* carte exemple */
+.demo-card{background:var(--surface);color:var(--ink);border-radius:20px;padding:24px;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.demo-card .k{font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.demo-card .who{font-size:14.5px;color:var(--muted);margin:0 0 16px}
+.pick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:18px}
+.pick button{border:1px solid var(--line);background:var(--surface2);color:var(--ink);border-radius:10px;padding:9px 0;font:600 14px var(--body);cursor:pointer}
+.pick button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;margin-bottom:14px}
+.two div+div{border-left:1px solid var(--line);padding-left:20px}
+.two small{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.two b{font:600 clamp(24px,3.4vw,30px)/1.05 var(--display);letter-spacing:-.02em}
+.two div+div b{color:var(--primary)}
+.cur{font-size:.5em;font-weight:600;color:var(--muted);margin-left:.3em}
+.gain{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;padding:14px 16px;border-radius:12px;background:var(--good-soft)}
+.gain b{font:700 28px/1 var(--display);color:var(--good);letter-spacing:-.02em}
+.gain span{font-size:14px}
+.demo-card .note{font-size:13px;color:var(--muted);margin:12px 0 0}
+.demo-card .go{margin-top:16px;width:100%}
+
+/* sections */
+section.s{padding:84px 0}
+.s-h{max-width:640px;margin:0 0 40px}
+.s-h .eyebrow{color:var(--primary);margin-bottom:10px}
+.s-h h2{font-size:clamp(28px,4vw,40px);line-height:1.1;margin-bottom:12px}
+.s-h p{color:var(--muted);font-size:17px;margin:0}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column}
+.card .ico{width:44px;height:44px;border-radius:12px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;margin-bottom:16px}
+.card .ico svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-size:20px;margin-bottom:8px}
+.card p{color:var(--muted);margin:0 0 14px;font-size:15px}
+.card ul{margin:0 0 18px;padding:0;list-style:none;font-size:14.5px}
+.card li{padding:6px 0;border-top:1px solid var(--line)}
+.card li::before{content:"→";color:var(--primary);margin-right:8px}
+.card a.more{margin-top:auto;font-weight:600;color:var(--primary);text-decoration:none}
+.card a.more:hover{text-decoration:underline}
+
+/* chiffres */
+.facts{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.fact{padding:8px 24px}
+.fact+.fact{border-left:1px solid var(--line)}
+.fact b{display:block;font:700 clamp(30px,4vw,42px)/1.05 var(--display);letter-spacing:-.02em;color:var(--navy)}
+.fact span{display:block;color:var(--muted);font-size:14.5px;margin-top:6px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fact b{color:var(--ink)}}
+.table-ex{margin-top:36px;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.table-ex table{width:100%;border-collapse:collapse;font-size:15px}
+.table-ex th,.table-ex td{padding:13px 18px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.table-ex th:first-child,.table-ex td:first-child{text-align:left}
+.table-ex th{font:600 12.5px var(--body);color:var(--muted);background:var(--surface2);letter-spacing:.02em}
+.table-ex tr:last-child td{border-bottom:0}
+.table-ex td.g{color:var(--good);font-weight:600}
+.table-ex caption{caption-side:bottom;text-align:left;font-size:13px;color:var(--muted);padding:12px 18px}
+
+/* passerelle PlanBiz */
+.bp{background:var(--navy);color:#fff}
+.bp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:center}
+.bp .eyebrow{color:#8FB0FF;margin-bottom:12px}
+.bp h2{font-size:clamp(28px,4vw,42px);line-height:1.1;margin-bottom:14px}
+.bp p.lead{color:var(--navy-ink);font-size:17px;margin:0 0 26px;max-width:50ch}
+.feat{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feat div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px}
+.feat b{display:block;font:600 15.5px var(--display);margin-bottom:4px}
+.feat span{font-size:13.5px;color:var(--navy-ink);line-height:1.5}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:8px}
+.step{position:relative;padding:22px 22px 22px 66px;background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.step::before{counter-increment:s;content:counter(s);position:absolute;left:20px;top:22px;width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:grid;place-items:center;font:700 15px var(--display)}
+.step b{display:block;font:600 16.5px var(--display);margin-bottom:4px}
+.step span{color:var(--muted);font-size:14.5px}
+
+/* FAQ */
+.faq{max-width:780px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 20px;margin-bottom:10px}
+.faq summary{cursor:pointer;list-style:none;padding:18px 28px 18px 0;font:600 16.5px var(--display);position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:0;top:14px;font-size:24px;color:var(--primary);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin:0 0 18px;color:var(--muted)}
+
+/* fin */
+.final{text-align:center;padding:84px 0}
+.final h2{font-size:clamp(28px,4.4vw,44px);line-height:1.1;margin:0 auto 14px;max-width:20ch}
+.final p{color:var(--muted);font-size:17px;margin:0 auto 26px;max-width:52ch}
+.final .cta-row{justify-content:center}
+footer{border-top:1px solid var(--line);padding:26px 0 calc(26px + env(safe-area-inset-bottom,0px));font-size:13.5px;color:var(--muted)}
+footer .in{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:space-between}
+footer a{color:var(--muted)}
+
+@media (max-width:920px){
+  .hero,.bp-grid{grid-template-columns:minmax(0,1fr);gap:36px}
+  .grid3,.steps{grid-template-columns:minmax(0,1fr)}
+  .fgrid{grid-template-columns:1fr 1fr;gap:22px 0}
+  .fact:nth-child(3){border-left:0}
+  .bar nav a.hide-sm{display:none}
+}
+@media (max-width:560px){
+  section.s,.final{padding:60px 0}
+  .hero{padding-top:24px;padding-bottom:56px}
+  .hero .lead{font-size:16.5px}
+  .cta-row .btn{width:100%}
+  .feat{grid-template-columns:1fr}
+  .fact{padding:6px 14px}
+  .two{gap:0 14px}.two div+div{padding-left:14px}
+  .table-ex{overflow-x:auto}
+  .bar nav{gap:12px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="in bar">
+    <a class="brand" href="/"><span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="6" y="17" width="5" height="9" rx="1" fill="currentColor" opacity=".55"/><rect x="13.5" y="11" width="5" height="15" rx="1" fill="currentColor" opacity=".8"/><rect x="21" y="5" width="5" height="21" rx="1" fill="currentColor"/></svg></span>PlanBiz</a>
+    <nav aria-label="Navigation">
+      <a class="hide-sm" href="#profils">Simulateur</a>
+      <a class="hide-sm" href="#planbiz">Business plan</a>
+      <a class="hide-sm" href="#faq">Questions</a>
+      <a class="btn ghost" href="/simulateur-bp-plf2027">Simuler</a>
+    </nav>
+  </div>
+
+  <div class="in hero">
+    <div>
+      <p class="eyebrow"><svg class="flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" rx="2" fill="#C1272D"/><path d="M15 5.2l1.76 5.43h-4.6l3.72 2.7-1.42 4.37M15 5.2l-1.76 5.43h4.6l-3.72 2.7 1.42 4.37" fill="none" stroke="#006233" stroke-width="1.1" stroke-linejoin="round"/></svg>Maroc · Projet de loi de finances 2027</p>
+      <h1>Le PLF 2027 baisse l'impôt sur les salaires. <em>Combien pour toi ?</em></h1>
+      <p class="lead">Entre ton salaire et découvre ton nouveau net, mois par mois jusqu'en 2031. Employeur, tu vois aussi le coût de ton équipe. Importateur, l'avance de 5 % sur ta trésorerie.</p>
+      <div class="cta-row">
+        <a class="btn pri" href="/simulateur-bp-plf2027">Faire ma simulation gratuite</a>
+        <a class="btn ghost" href="#planbiz">Découvrir PlanBiz</a>
+      </div>
+      <ul class="reassure"><li>Gratuit</li><li>Résultat en 2 minutes</li><li>Règles marocaines 2026 à 2031</li></ul>
+    </div>
+
+    <div class="demo-card" aria-live="polite">
+      <p class="k">Exemple de résultat</p>
+      <p class="who">Salaire de base mensuel brut, 2 personnes à charge</p>
+      <div class="pick" role="group" aria-label="Choisis un salaire">
+        <button type="button" data-i="0">8 000</button><button type="button" data-i="1" aria-pressed="true">10 000</button><button type="button" data-i="2">15 000</button><button type="button" data-i="3">20 000</button>
+      </div>
+      <div class="two">
+        <div><small>Net 2026</small><b id="d-a">8 979<span class="cur">DH</span></b></div>
+        <div><small>Net 2027</small><b id="d-b">9 419<span class="cur">DH</span></b></div>
+      </div>
+      <div class="gain"><b id="d-g">+440 DH</b><span id="d-t">de plus par mois en 2027</span></div>
+      <p class="note" id="d-n">Et +440 DH par mois avec le barème définitif de 2031.</p>
+      <a class="btn pri go" href="/simulateur-bp-plf2027">Calculer avec mon salaire</a>
+    </div>
+  </div>
+</header>
+
+<section class="s" id="profils">
+  <div class="in">
+    <div class="s-h">
+      <p class="eyebrow">Un simulateur, trois situations</p>
+      <h2>Ce que tu sauras en deux minutes</h2>
+      <p>Choisis ta situation, saisis quelques montants, et le résultat se met à jour pendant que tu tapes.</p>
+    </div>
+    <div class="grid3">
+      <article class="card">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>
+        <h3>Je suis salarié</h3>
+        <p>Ton net avant et après la réforme, avec tes primes et tes indemnités.</p>
+        <ul><li>Ton gain mensuel et annuel</li><li>Ton bulletin de paie recalculé</li><li>Tes indemnités imposées ou non en 2031</li></ul>
+        <a class="more" href="/simulateur-bp-plf2027#sal">Simuler mon salaire</a>
+      </article>
+      <article class="card">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9.5" r="2.5"/><path d="M3 20c0-3.4 2.8-5.5 6-5.5s6 2.1 6 5.5M15 15.2c3 0 6 1.6 6 4.8"/></svg></span>
+        <h3>J'emploie des salariés</h3>
+        <p>Le budget de ta masse salariale jusqu'en 2031, charges comprises.</p>
+        <ul><li>Coût par poste et coût total</li><li>Import de ton fichier de salariés</li><li>Export Excel prêt pour ta direction</li></ul>
+        <a class="more" href="/simulateur-bp-plf2027#emp">Simuler mon budget</a>
+      </article>
+      <article class="card">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/></svg></span>
+        <h3>J'importe pour revendre</h3>
+        <p>L'avance de 5 % sur tes importations et ce qu'elle bloque dans ta trésorerie.</p>
+        <ul><li>Montant mensuel dès juillet 2027</li><li>Part imputée sur ton impôt</li><li>Excédent à récupérer, année par année</li></ul>
+        <a class="more" href="/simulateur-bp-plf2027#imp">Simuler mon avance</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="facts">
+  <div class="in" style="padding-top:44px;padding-bottom:44px">
+    <div class="fgrid">
+      <div class="fact"><b>60 000 DH</b><span>de revenu annuel sans IR en 2027, au lieu de 40 000 DH</span></div>
+      <div class="fact"><b>45 %</b><span>de déduction pour frais professionnels dès 2027</span></div>
+      <div class="fact"><b>30 %</b><span>de taux maximal visé en 2031, contre 37 % aujourd'hui</span></div>
+      <div class="fact"><b>5 %</b><span>d'avance sur les importations à partir de juillet 2027</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="s">
+  <div class="in">
+    <div class="s-h">
+      <p class="eyebrow">Quelques exemples</p>
+      <h2>Ce que la réforme change sur un salaire</h2>
+      <p>Salaire de base mensuel brut, sans prime ni indemnité, 2 personnes à charge, affilié à la CNSS.</p>
+    </div>
+    <div class="table-ex">
+      <table>
+        <thead><tr><th>Salaire brut</th><th>Net 2026</th><th>Net 2027</th><th>Gain par mois en 2027</th><th>Gain par mois en 2031</th></tr></thead>
+        <tbody>
+          <tr><td>6 000 DH</td><td>5 584 DH</td><td>5 584 DH</td><td>0 DH</td><td>0 DH</td></tr>
+          <tr><td>8 000 DH</td><td>7 348 DH</td><td>7 539 DH</td><td class="g">+191 DH</td><td class="g">+191 DH</td></tr>
+          <tr><td>10 000 DH</td><td>8 979 DH</td><td>9 419 DH</td><td class="g">+440 DH</td><td class="g">+440 DH</td></tr>
+          <tr><td>15 000 DH</td><td>12 400 DH</td><td>12 900 DH</td><td class="g">+500 DH</td><td class="g">+1 418 DH</td></tr>
+          <tr><td>20 000 DH</td><td>15 585 DH</td><td>16 085 DH</td><td class="g">+500 DH</td><td class="g">+2 246 DH</td></tr>
+          <tr><td>30 000 DH</td><td>21 742 DH</td><td>22 242 DH</td><td class="g">+500 DH</td><td class="g">+3 908 DH</td></tr>
+        </tbody>
+        <caption>Le gain de 2031 est calculé à salaire égal, avec le barème cible. Projet de loi présenté le 23 octobre 2026, pas encore voté.</caption>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="s bp" id="planbiz">
+  <div class="in bp-grid">
+    <div>
+      <p class="eyebrow">Et après la simulation ?</p>
+      <h2>Tu as un projet ? Construis ton business plan chiffré.</h2>
+      <p class="lead">Le même compte gratuit te donne accès à PlanBiz, l'outil qui prépare un dossier prêt pour la banque, pour Intelaka ou pour un incubateur. Tes prévisions de chiffre d'affaires, de charges et de trésorerie suivent les règles fiscales et sociales marocaines.</p>
+      <div class="cta-row">
+        <a class="btn light" href="/#inscription">Créer mon compte gratuit</a>
+        <a class="btn ghost" href="/#demo">Voir un exemple complet</a>
+      </div>
+    </div>
+    <div class="feat">
+      <div><b>Prévisions sur 3 ans</b><span>Chiffre d'affaires, charges, résultat et trésorerie mois par mois.</span></div>
+      <div><b>Règles marocaines</b><span>IS, TVA, CNSS, AMO, IR sur salaires, statuts de l'auto-entrepreneur à la SA.</span></div>
+      <div><b>Dossier complet</b><span>Rapport PDF, fichier Excel et pitch deck PowerPoint en un clic.</span></div>
+      <div><b>Assistant IA</b><span>Il remplit ton plan à partir de tes notes et le relit comme un banquier.</span></div>
+      <div><b>Trois scénarios</b><span>Pessimiste, réaliste et optimiste, pour rassurer ton financeur.</span></div>
+      <div><b>Radar des financements</b><span>Les programmes marocains qui correspondent à ton projet.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="s">
+  <div class="in">
+    <div class="s-h">
+      <p class="eyebrow">Comment ça marche</p>
+      <h2>Trois étapes, un seul compte</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><b>Crée ton compte</b><span>Avec ton e-mail, en 30 secondes. C'est gratuit.</span></div>
+      <div class="step"><b>Fais ta simulation</b><span>Salaire, équipe ou importations, avec un assistant IA pour tes questions.</span></div>
+      <div class="step"><b>Lance ton business plan</b><span>Quand tu es prêt, ton projet est à un clic, avec le même compte.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="s" id="faq" style="padding-top:0">
+  <div class="in">
+    <div class="s-h">
+      <p class="eyebrow">Questions fréquentes</p>
+      <h2>Ce que tu te demandes</h2>
+    </div>
+    <div class="faq">
+      <details><summary>Le simulateur est-il vraiment gratuit ?</summary><p>Oui. Il faut seulement un compte PlanBiz, gratuit lui aussi. L'assistant IA répond à 5 questions par compte.</p></details>
+      <details><summary>Les calculs sont-ils fiables ?</summary><p>Ils appliquent les barèmes et les taux publiés dans le projet de loi, ainsi que les cotisations CNSS et AMO en vigueur. Ils ont été recalculés de façon indépendante sur 300 cas. Le texte n'est pas encore voté, donc le résultat reste une estimation.</p></details>
+      <details><summary>Que deviennent mes données ?</summary><p>Les calculs se font dans ton navigateur. Si tu importes un bulletin de paie ou poses une question à l'assistant, les montants sont envoyés au service d'IA le temps de la réponse, et PlanBiz ne les conserve pas.</p></details>
+      <details><summary>Mes indemnités vont-elles être imposées ?</summary><p>À partir de 2031, le projet prévoit d'imposer les indemnités versées au forfait. Celles qui remboursent des frais justifiés restent exonérées. Le simulateur te montre l'effet sur ton net, indemnité par indemnité.</p></details>
+      <details><summary>Je suis RH, puis-je simuler toute mon équipe ?</summary><p>Oui. Importe ton fichier de salariés en Excel ou en CSV, ou télécharge le modèle. Le simulateur regroupe les salariés par profil et exporte le budget en Excel.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="in">
+    <h2>Ton nouveau salaire net t'attend.</h2>
+    <p>Deux minutes pour savoir ce que le PLF 2027 change pour toi, et un business plan complet quand tu en as besoin.</p>
+    <div class="cta-row">
+      <a class="btn pri" href="/simulateur-bp-plf2027">Faire ma simulation gratuite</a>
+      <a class="btn ghost" href="/#inscription" style="color:var(--primary)">Créer mon compte PlanBiz</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="in">
+    <span>© 2026 PlanBiz · Business plans pour les projets au Maroc</span>
+    <span><a href="/legal.html">Mentions légales et confidentialité</a></span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  // Exemples calculés avec le moteur du simulateur (2 personnes à charge, sans prime)
+  const EX = [[7348, 7539, 191], [8979, 9419, 440], [12400, 12900, 1418], [15585, 16085, 2246]];
+  const f = v => new Intl.NumberFormat('fr-FR').format(v).replace(/ /g, ' ');
+  const pick = document.querySelector('.pick');
+  pick.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    pick.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    const [a, n, g31] = EX[+b.dataset.i], g = n - a;
+    document.getElementById('d-a').innerHTML = f(a) + '<span class="cur">DH</span>';
+    document.getElementById('d-b').innerHTML = f(n) + '<span class="cur">DH</span>';
+    document.getElementById('d-g').textContent = '+' + f(g) + ' DH';
+    document.getElementById('d-n').textContent = 'Et +' + f(g31) + ' DH par mois avec le barème définitif de 2031.';
+  });
+})();
+</script>
+</body>
+</html>

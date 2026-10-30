@@ -14,11 +14,7 @@ const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sb_publishable_a-ccau1Xus
 const TYPES = ['prime', 'transport', 'km', 'voiture', 'deplacement', 'tournee', 'representation', 'panier', 'caisse', 'salissure', 'outillage', 'frais', 'avantage', 'autre'];
 const MIMES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
 
-function allowed(origin) {
-  if (!origin) return false;
-  const extra = (process.env.PAIE_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
-  return extra.includes(origin) || /^https:\/\/(planbiz|[a-z0-9-]*simulateur[a-z0-9-]*|[a-z0-9-]*plf[a-z0-9-]*|[a-z0-9-]+-la-s-projects3)\.vercel\.app$/.test(origin);
-}
+const { allowed, readBody, quotaHeaders, pdfPages } = require('./_origins');
 
 const SCHEMA = {
   type: 'object',
@@ -65,10 +61,12 @@ module.exports = async function handler(req, res) {
   if (origin && !allowed(origin)) { res.status(403).json({ error: 'Origine non autorisée.' }); return; }
   if (!process.env.ANTHROPIC_API_KEY) { res.status(503).json({ error: 'Lecture indisponible pour le moment.' }); return; }
 
-  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
+  const body = readBody(req);
+  if (!body) { res.status(400).json({ error: 'Requête invalide.' }); return; }
   const mime = String(body.mime || ''), data = String(body.data || '');
   if (!MIMES.includes(mime) || !data) { res.status(400).json({ error: 'Envoie un PDF ou une photo (JPEG, PNG).' }); return; }
   if (data.length > 4.2e6) { res.status(413).json({ error: 'Fichier trop lourd : 3 Mo au maximum.' }); return; }
+  if (mime === 'application/pdf' && pdfPages(data) > 3) { res.status(413).json({ error: 'Ce PDF a trop de pages : envoie seulement ton bulletin (3 pages au plus).' }); return; }
   if (body.consent !== true) { res.status(400).json({ error: 'Consentement requis.' }); return; }
 
   // quota anonyme
@@ -76,7 +74,7 @@ module.exports = async function handler(req, res) {
   const who = crypto.createHash('sha256').update((process.env.PAIE_SALT || 'planbiz-paie') + '|' + ip).digest('hex').slice(0, 32);
   try {
     const q = await fetch(`${SUPABASE_URL}/rest/v1/rpc/consume_payslip_read`, {
-      method: 'POST', headers: { 'content-type': 'application/json', apikey: SUPABASE_KEY },
+      method: 'POST', headers: quotaHeaders(SUPABASE_KEY),
       body: JSON.stringify({ p_who: who, p_max: parseInt(process.env.PAIE_DAILY_LIMIT || '3', 10), p_global: parseInt(process.env.PAIE_GLOBAL_LIMIT || '300', 10) })
     });
     if ((await q.json()) !== true) { res.status(429).json({ error: 'Limite de lectures atteinte pour aujourd’hui. Tu peux saisir tes rubriques à la main ou réessayer demain.' }); return; }
